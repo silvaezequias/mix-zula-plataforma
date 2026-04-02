@@ -1,0 +1,112 @@
+import { Championship, ChampStatus } from "@/types";
+import { ChevronRight, MapIcon, Medal, Target, Trophy } from "lucide-react";
+
+export const TournamentCard = ({
+  tournament,
+  onClick,
+}: {
+  tournament: Championship;
+  onClick: () => void;
+}) => {
+  const getStatusConfig = (status: ChampStatus) => {
+    switch (status) {
+      case "open":
+        return {
+          label: "INSCRIÇÕES ABERTAS",
+          color: "text-green-500",
+          border: "border-green-500/50",
+        };
+      case "live":
+        return {
+          label: "EM ANDAMENTO",
+          color: "text-indigo-500",
+          border: "border-indigo-500/50",
+          pulse: true,
+        };
+      case "finished":
+        return {
+          label: "FINALIZADO",
+          color: "text-red-500",
+          border: "border-red-500/50",
+        };
+
+      case "ready":
+        return {
+          label: "INICÍADO",
+          color: "text-emerald-500",
+          border: "border-emerald-500/50",
+        };
+      default:
+        return {
+          label: "PREPARANDO",
+          color: "text-primary",
+          border: "border-primary/50",
+        };
+    }
+  };
+
+  const config = getStatusConfig(tournament.status);
+
+  return (
+    <div
+      onClick={onClick}
+      className={`group relative bg-[#111] border-l-4 ${config.border} p-6 sm:p-8 hover:bg-zinc-900 transition-all cursor-pointer overflow-hidden shadow-xl`}
+    >
+      <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFB300] opacity-[0.02] transform rotate-45 translate-x-16 -translate-y-16 group-hover:opacity-[0.05] transition-opacity"></div>
+
+      <div className="relative z-10 flex flex-col h-full">
+        <header className="flex justify-between items-start mb-6">
+          <div className="space-y-1">
+            <span
+              className={`text-[8px] font-black tracking-[0.4em] uppercase ${config.color} ${config.pulse ? "animate-pulse" : ""}`}
+            >
+              {config.label}
+            </span>
+            <h3 className="text-2xl sm:text-3xl font-black italic tracking-tighter uppercase leading-none group-hover:text-[#FFB300] transition-colors">
+              {tournament.name}
+            </h3>
+          </div>
+          <div className="bg-zinc-900 p-2 border border-zinc-800 group-hover:border-[#FFB300] transition-colors">
+            <Trophy
+              size={20}
+              className={
+                tournament.status === "finished"
+                  ? "text-zinc-500"
+                  : "text-[#FFB300]"
+              }
+            />
+          </div>
+        </header>
+
+        <div className="grid grid-cols-2 gap-4 mb-8">
+          <div className="flex items-center gap-2">
+            <MapIcon size={14} className="text-zinc-600" />
+            <span className="text-[10px] font-bold text-zinc-400 uppercase">
+              {tournament.settings.map}
+            </span>
+          </div>
+          <div className="flex items-center gap-2">
+            <Target size={14} className="text-zinc-600" />
+            <span className="text-[10px] font-bold text-zinc-400 uppercase">
+              {tournament.settings.gameMode}
+            </span>
+          </div>
+          <div className="col-span-2 flex items-center gap-2 mt-2">
+            <Medal size={14} className="text-[#FFB300]" />
+            <span className="text-xs font-black text-[#FFB300] uppercase italic tracking-tighter">
+              PRÉMIO: {tournament.prize}
+            </span>
+          </div>
+        </div>
+
+        <div className="mt-auto flex items-center gap-2 text-[9px] font-black text-zinc-500 group-hover:text-white transition-colors uppercase tracking-widest">
+          Acessar informações do torneio{" "}
+          <ChevronRight
+            size={14}
+            className="group-hover:translate-x-1 transition-transform"
+          />
+        </div>
+      </div>
+    </div>
+  );
+};

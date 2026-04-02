@@ -94,7 +94,7 @@ export const MOCK_TOURNAMENTS: Championship[] = [
     name: "MIX Zula Teste - 2026",
     prize: "sem premiação",
     status: "open",
-    players: generateMockPlayers(19),
+    players: generateMockPlayers(36),
     teams: [
       {
         id: "t1",

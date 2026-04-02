@@ -451,7 +451,7 @@ export const GamesTab: React.FC<GamesTabProps> = ({
                   }`}
                 >
                   {match.status === "iniciado"
-                    ? "JOGO INICIADA"
+                    ? "JOGO INICIADO"
                     : "INICIAR JOGO"}
                 </button>
               </div>
