@@ -20,6 +20,7 @@ export function Header({
     { name: "INÍCIO", href: "/" },
     { name: "TORNEIOS", href: "/torneios" },
     { name: "Contato", href: "/contato" },
+    { name: "Atualizar Cadastro", href: "/atualizar-cadastro" },
   ];
 
   return (

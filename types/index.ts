@@ -8,18 +8,6 @@ export type Role =
   | "PLAYER"
   | "STREAMER";
 
-export interface Player {
-  id: string;
-  discordName: string;
-  discordId: string;
-  gameNick: string;
-  role: Role;
-  bio?: string;
-  color?: string;
-  roundStats: RoundStat[];
-  stats?: { kills: number; deaths: number; assists: number };
-}
-
 export interface RoundStat {
   round: number;
   kills: number;

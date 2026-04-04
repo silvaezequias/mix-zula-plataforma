@@ -12,12 +12,8 @@ import {
   Minus,
   Shuffle,
 } from "lucide-react";
-import { Match, MatchStatus, Player, Team } from "@/types";
-
-/* ===============================================================================
-  INTERFACES DE DEPENDÊNCIA (Tipos)
-===============================================================================
-*/
+import { Match, MatchStatus, Team } from "@/types";
+import { PayloadUser } from "@/types/next-auth";
 
 interface GamesTabProps {
   matches: Match[];
@@ -47,25 +43,28 @@ const KdaModal = ({
   onClose,
   onSave,
 }: {
-  player: Player;
+  player: PayloadUser;
   currentRound: number;
   onClose: () => void;
   onSave: (k: number, d: number, a: number) => void;
 }) => {
   // Busca os dados já salvos especificamente para este round
-  const existingRoundStats = player.roundStats?.find(
-    (s) => s.round === currentRound,
-  );
+  const existingRoundStats = {
+    round: 0,
+    kills: 0,
+    deaths: 0,
+    assists: 0,
+  };
+  // player.roundStats?.find(
+  //   (s) => s.round === currentRound,
+  // );
 
   const [k, setK] = useState(existingRoundStats?.kills || 0);
   const [d, setD] = useState(existingRoundStats?.deaths || 0);
   const [a, setA] = useState(existingRoundStats?.assists || 0);
 
   // Soma acumulada para exibir o impacto total no placar
-  const totalKills =
-    (player.roundStats?.reduce((acc, curr) => acc + curr.kills, 0) || 0) -
-    (existingRoundStats?.kills || 0) +
-    k;
+  const totalKills = 0;
 
   return (
     <div className="fixed inset-0 z-250 flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm uppercase italic">
@@ -87,7 +86,7 @@ const KdaModal = ({
               JOGADOR
             </p>
             <p className="text-xl text-white font-black italic">
-              {player.gameNick}
+              {player.player?.nickname}
             </p>
             <div className="inline-block px-3 py-1 bg-primary/10 border border-primary/20 mt-2">
               <span className="text-[10px] text-primary font-black uppercase">
@@ -163,15 +162,15 @@ const TeamMatchCard = ({
   isStaff: boolean;
   matchStatus: MatchStatus;
   onSetWinner: () => void;
-  onEditKda: (p: Player) => void;
+  onEditKda: (p: PayloadUser) => void;
   isCurrentMatch: boolean;
   displaySide: "TR" | "CT";
 }) => {
   // Função para somar KD de todos os rounds salvos no histórico
-  const getPlayerKdaText = (p: Player) => {
-    const k = p.roundStats?.reduce((acc, curr) => acc + curr.kills, 0) || 0;
-    const d = p.roundStats?.reduce((acc, curr) => acc + curr.deaths, 0) || 0;
-    const a = p.roundStats?.reduce((acc, curr) => acc + curr.assists, 0) || 0;
+  const getPlayerKdaText = () => {
+    const k = 0;
+    const d = 0;
+    const a = 0;
     return `${k}/${d}/${a}`;
   };
 
@@ -210,14 +209,14 @@ const TeamMatchCard = ({
             className="flex justify-between items-center text-[10px] font-bold py-1 border-b border-zinc-900/30 group"
           >
             <span className="text-zinc-400 group-hover:text-white transition-colors uppercase italic">
-              {p.gameNick}
+              {p.player?.nickname}
             </span>
             <div className="flex items-center gap-3">
               <span
                 className="text-zinc-600 font-mono tracking-tighter"
                 title="Kills / Deaths / Assists"
               >
-                {getPlayerKdaText(p)}
+                {getPlayerKdaText()}
               </span>
               {isStaff && matchStatus !== "finalizado" && isCurrentMatch && (
                 <button
@@ -270,7 +269,7 @@ export const GamesTab: React.FC<GamesTabProps> = ({
   onUpdateMatchRound,
   onSwapSides,
 }) => {
-  const [editingPlayer, setEditingPlayer] = useState<Player | null>(null);
+  const [editingPlayer, setEditingPlayer] = useState<PayloadUser | null>(null);
   const [editingMatchId, setEditingMatchId] = useState<string | null>(null);
 
   // Ordenação por fase e ordem de criação

@@ -1,24 +1,16 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, Suspense } from "react";
 
-import {
-  Trophy,
-  ShieldCheck,
-  Gamepad2,
-  ChevronRight,
-  AlertTriangle,
-  Calendar,
-} from "lucide-react";
-import { useRouter, useSearchParams } from "next/navigation";
-import { signIn, useSession } from "next-auth/react";
+import { Trophy, ShieldCheck } from "lucide-react";
+import { useSession } from "next-auth/react";
 import { brand } from "@/config/brand";
 import { parseDate, parseDateString } from "@/lib/formatter";
 import { easyFetch } from "@/lib/fetch";
+import { UpdateUserForm } from "./UpdateUserForm";
 
 export default function UpdateUserPage() {
-  const router = useRouter();
-  const { status, data: session } = useSession();
+  const { data: session } = useSession();
 
   const [formData, setFormData] = useState({
     playerNickname: "",
@@ -30,22 +22,13 @@ export default function UpdateUserPage() {
   const birthDate = formData.birthDate || session?.user?.birthDate || "";
 
   const [error, setError] = useState<string | null>(null);
+  const [apiResponseStatus, setApiResponseStatus] = useState(0);
   const [loading, setLoading] = useState(false);
 
   const canUpdate =
     !!(birthDate && playerNickname) &&
     (birthDate != session?.user?.birthDate ||
       playerNickname != session?.user?.player?.nickname);
-
-  const searchParams = useSearchParams();
-  const redirectUrl = searchParams.get("redirect");
-  const safeRedirect = redirectUrl || "/";
-
-  useEffect(() => {
-    if (status === "unauthenticated") {
-      router.push(`/login/?redirect=${encodeURIComponent(safeRedirect)}`);
-    }
-  }, [router, safeRedirect, status]);
 
   const handleInputChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
@@ -89,7 +72,7 @@ export default function UpdateUserPage() {
 
         if (response.status !== 200) return setError(response.message);
 
-        await signIn("discord", { redirect: false });
+        setApiResponseStatus(response.status);
       });
   };
 
@@ -115,68 +98,18 @@ export default function UpdateUserPage() {
 
         <div className="bg-[#111] border-t-4 border-primary p-8 sm:p-10 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-8 bg-primary transform skew-x-35 translate-x-16 -translate-y-4 opacity-50"></div>
-          <form onSubmit={handleUpdate} className="space-y-6">
-            <div className="space-y-2">
-              <label className="text-[10px] font-black text-zinc-500 flex items-center gap-2">
-                <Gamepad2 size={14} className="text-primary" /> Nome (NICK
-                IN-GAME) *
-              </label>
-              <input
-                type="text"
-                name="playerNickname"
-                placeholder="EX: GHOST_STRIKE"
-                value={playerNickname}
-                onChange={handleInputChange}
-                className="w-full bg-[#1a1a1a] border border-zinc-800 p-4 text-xs font-black italic text-white outline-none focus:border-primary transition-all placeholder:text-zinc-700"
-              />
-            </div>
-
-            <div className="gap-6">
-              <div className="space-y-2">
-                <label className="text-[10px] font-black text-zinc-500 flex items-center gap-2">
-                  <Calendar size={14} className="text-primary" /> DATA DE
-                  NASCIMENTO *
-                </label>
-                <input
-                  type="date"
-                  name="birthDate"
-                  value={birthDate}
-                  onChange={handleInputChange}
-                  className="w-full bg-[#1a1a1a] border border-zinc-800 p-4 text-xs font-black italic text-white outline-none focus:border-primary transition-all scheme-dark"
-                />
-              </div>
-            </div>
-
-            {error && (
-              <div className="bg-red-500/10 border border-red-500/50 p-4 flex items-center gap-3 animate-in fade-in slide-in-from-top-1">
-                <AlertTriangle size={16} className="text-red-500" />
-                <span className="text-[10px] font-black text-red-500 uppercase italic tracking-tight leading-tight">
-                  {error}
-                </span>
-              </div>
-            )}
-
-            <div className="pt-4">
-              <button
-                type="submit"
-                disabled={!canUpdate}
-                className={`w-full font-black py-5 text-sm tracking-[0.4em] transition-all flex items-center justify-center gap-4 uppercase italic
-                  ${
-                    canUpdate
-                      ? "bg-primary text-black hover:brightness-110 shadow-[0_10px_30px_rgba(255,179,0,0.15)] active:scale-[0.98] border-b-4 border-black/20"
-                      : "bg-zinc-800 text-zinc-600 cursor-not-allowed border-zinc-700"
-                  }`}
-              >
-                {loading ? (
-                  <div className="w-6 h-6 border-2 border-black/30 border-t-black rounded-full animate-spin"></div>
-                ) : (
-                  <>
-                    Atualizar <ChevronRight size={18} />
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+          <Suspense fallback={<div>Loading...</div>}>
+            <UpdateUserForm
+              birthDate={birthDate}
+              playerNickname={playerNickname}
+              canSubmit={canUpdate}
+              handleInputChange={handleInputChange}
+              handleUpdate={handleUpdate}
+              loading={loading}
+              messageError={error}
+              apiResponseStatus={apiResponseStatus}
+            />
+          </Suspense>
         </div>
 
         <div className="mt-8 flex flex-col items-center gap-4 opacity-40">

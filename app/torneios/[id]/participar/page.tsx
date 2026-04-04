@@ -14,9 +14,9 @@ import {
   Info,
   Play,
 } from "lucide-react";
-import { Player } from "@/types";
 import { MOCK_TOURNAMENTS } from "@/contansts/data";
 import { useRouter } from "next/navigation";
+import { PayloadUser } from "@/types/next-auth";
 
 export default function RegistrationPage() {
   const params = useParams();
@@ -24,7 +24,7 @@ export default function RegistrationPage() {
   const tournamentId = params?.id as string;
 
   // Estados Locais (Em uma app real, viriam de um contexto de Auth ou API)
-  const [currentUser, setCurrentUser] = useState<Player | null>(null);
+  const [currentUser, setCurrentUser] = useState<PayloadUser | null>(null);
   const [loading, setLoading] = useState(false);
   const [registered, setRegistered] = useState(false);
 
@@ -52,15 +52,15 @@ export default function RegistrationPage() {
 
   // Simulação de Login (Para testes na página)
   const simulateLogin = () => {
-    setCurrentUser({
-      id: "meuid_123",
-      gameNick: "NICK_DO_JOGO",
-      discordName: "nick_do_discord",
-      discordId: "123456789123456789",
-      role: "PLAYER",
-      roundStats: [],
-      stats: { kills: 0, deaths: 0, assists: 0 },
-    });
+    // setCurrentUser({
+    //   id: "meuid_123",
+    //   player?.nickname: "NICK_DO_JOGO",
+    //   discordName: "nick_do_discord",
+    //   discordId: "123456789123456789",
+    //   role: "PLAYER",
+    //   roundStats: [],
+    //   stats: { kills: 0, deaths: 0, assists: 0 },
+    // });
   };
 
   if (!tournament) {
@@ -211,8 +211,8 @@ export default function RegistrationPage() {
                       INSCRIÇÃO CONCLUÍDA
                     </h3>
                     <p className="text-zinc-500 text-[10px] font-bold uppercase">
-                      {currentUser.gameNick}, VOCÊ ESTÁ INSCRITO NO TORNEIO{" "}
-                      {tournament.name}!
+                      {currentUser.player?.nickname}, VOCÊ ESTÁ INSCRITO NO
+                      TORNEIO {tournament.name}!
                     </p>
                   </div>
                   <div className="p-6 bg-zinc-900 border-l-4 border-green-500 text-left">
@@ -234,7 +234,7 @@ export default function RegistrationPage() {
                         Jogador Logado
                       </p>
                       <h3 className="text-2xl font-black text-white italic tracking-tighter uppercase">
-                        {currentUser.gameNick}
+                        {currentUser.player?.nickname}
                       </h3>
                     </div>
                     <div className="text-right">
@@ -282,13 +282,13 @@ export default function RegistrationPage() {
                         <li className="text-[10px] text-zinc-500 font-bold flex justify-between items-center">
                           <span>DISCORD</span>
                           <span className="text-zinc-200 font-black italic uppercase tracking-widest">
-                            {currentUser.discordName}
+                            {currentUser.name}
                           </span>
                         </li>
                         <li className="text-[10px] text-zinc-500 font-bold flex justify-between items-center">
                           <span>NICK REGISTRADO</span>
                           <span className="text-zinc-200 font-black italic uppercase tracking-widest">
-                            {currentUser.gameNick}
+                            {currentUser.player?.nickname}
                           </span>
                         </li>
                       </ul>

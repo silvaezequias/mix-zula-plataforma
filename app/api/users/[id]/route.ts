@@ -1,5 +1,9 @@
 import controller from "@/middleware";
-import { Middleware } from "nextfastapi/types";
+import {
+  ControllerRequest,
+  DefaultParams,
+  Middleware,
+} from "nextfastapi/types";
 import { AuthenticatedSession, FlowContext } from "@/middleware/flow";
 import {
   BadRequestError,
@@ -8,6 +12,7 @@ import {
 } from "nextfastapi/errors";
 import validation, { UserValidationProps } from "@/lib/validation";
 import { prisma } from "@/infra/prisma";
+import { NextRequest } from "next/server";
 
 type InputBody = Pick<UserValidationProps, "birthDate" | "playerNickname">;
 type Context = { inputBody: Partial<InputBody> } & FlowContext;
@@ -90,4 +95,15 @@ const handlePatch: Middleware<AuthenticatedContext> = async (req) => {
 };
 
 controller.patch(handlePatchValidation, handlePatchAuthorization, handlePatch);
-export const PATCH = controller.expose();
+
+export async function PATCH(
+  request: NextRequest,
+  context: {
+    params: Promise<Params>;
+  },
+) {
+  return controller.expose()(
+    request as ControllerRequest<FlowContext>,
+    context as unknown as { params: DefaultParams },
+  );
+}

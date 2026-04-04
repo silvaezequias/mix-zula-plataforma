@@ -36,10 +36,10 @@ export const TeamsView = ({ championsip }: { championsip: Championship }) => (
               >
                 <div className="flex items-center gap-3">
                   <div className="w-6 h-6 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500 group-hover:text-primary transition-colors uppercase italic font-bold">
-                    {player.gameNick.charAt(0)}
+                    {player.player?.nickname.charAt(0)}
                   </div>
                   <span className="text-xs font-black italic text-zinc-300 group-hover:text-white transition-colors uppercase">
-                    {player.gameNick}
+                    {player.player?.nickname}
                   </span>
                 </div>
                 <div className="flex items-center gap-2">
