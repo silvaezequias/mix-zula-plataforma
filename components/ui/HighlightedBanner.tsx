@@ -14,7 +14,7 @@ export const HightlightedBanner = ({
   return (
     <div
       onClick={onClick}
-      className="relative h-10 bg-[#FFB300] flex items-center overflow-hidden cursor-pointer group z-100 border-b border-black/10 shadow-[0_4px_15px_rgba(255,179,0,0.3)]"
+      className="relative h-10 bg-primary flex items-center overflow-hidden cursor-pointer group z-100 border-b border-black/10 shadow-[0_4px_15px_rgba(255,179,0,0.3)]"
     >
       <div className="animate-marquee">
         {Array.from({ length: 10 }).map((_, i) => (
@@ -27,7 +27,7 @@ export const HightlightedBanner = ({
         ))}
       </div>
       {cta && (
-        <div className="absolute right-0 top-0 bottom-0 bg-[#FFB300] pl-6 pr-4 flex items-center shadow-[-20px_0_20px_rgba(255,179,0,1)]">
+        <div className="absolute right-0 top-0 bottom-0 bg-primary pl-6 pr-4 flex items-center shadow-[-20px_0_20px_rgba(255,179,0,1)]">
           <span className="text-[10px] font-black text-black uppercase mr-2 hidden md:inline-block">
             {cta}
           </span>

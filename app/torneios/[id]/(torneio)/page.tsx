@@ -1,82 +1,47 @@
 "use client";
 
-import React, { useState, useMemo, useEffect } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useParams, useRouter } from "next/navigation";
 import { Menu, X, Check, AlertTriangle } from "lucide-react";
 
-import {
-  Championship,
-  ChampSettings,
-  ChampStatus,
-  Match,
-  Player,
-  Role,
-  Team,
-} from "@/types";
+import { Championship, Match, Role, Team } from "@/types";
+import { AVAILABLE_ROLES, MOCK_TOURNAMENTS } from "@/contansts/data";
 
-import {
-  AVAILABLE_ROLES,
-  INITIAL_STAFF,
-  MOCK_MAPS,
-  MOCK_TOURNAMENTS,
-} from "@/contansts/data";
-
-// Importação dos componentes separados
 import { UserManagementModal } from "@/components/modals/UserManagementModal";
 import { ChampionshipDetailView } from "./ChampionshipDetailView";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Page } from "@/components/Page";
 import { Layout } from "@/components/Layout";
 import { Logo } from "@/components/Brand";
+import { useSession } from "next-auth/react";
+import { PayloadUser } from "@/types/next-auth";
 
-/* ===============================================================================
-  PÁGINA PRINCIPAL (DETALHES DO TORNEIO)
-===============================================================================
-*/
 export default function TournamentPage() {
   const params = useParams();
   const router = useRouter();
+
+  const { data: session, status } = useSession();
+
+  const isAuthenticated = status === "authenticated";
+
   const tournamentId = params?.id as string;
 
-  // --- ESTADOS DE SESSÃO ---
-  const [user, setUser] = useState<Player | null>(null);
-  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
-
-  // --- ESTADOS DO CAMPEONATO ---
   const [championships, setChampionships] =
     useState<Championship[]>(MOCK_TOURNAMENTS);
-  const [staffList, setStaffList] = useState<Player[]>(INITIAL_STAFF);
+  const [staffList, setStaffList] = useState<PayloadUser[]>([]);
 
-  const [showRulesModal, setShowRulesModal] = useState<boolean>(false);
   const [showUserModal, setShowUserModal] = useState<boolean>(false);
   const [showRoleModal, setShowRoleModal] = useState<boolean>(false);
-  const [selectedUser, setSelectedUser] = useState<Player | null>(null);
+  const [selectedUser, setSelectedUser] = useState<PayloadUser | null>(null);
 
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
 
-  // --- VERIFICAÇÃO DE LOGIN (LOCALSTORAGE) ---
-  useEffect(() => {
-    const savedUser = localStorage.getItem("arena_user");
-    if (!savedUser) {
-      router.push("/login"); // Redireciona se não houver usuário
-    } else {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setIsCheckingAuth(false);
-      setUser(JSON.parse(savedUser));
-    }
-  }, [router]);
-
-  // --- DADOS COMPUTADOS ---
   const activeChamp = useMemo(
     () => championships.find((c) => c.id === tournamentId) || null,
     [championships, tournamentId],
   );
 
-  const isStaff = useMemo(() => {
-    if (!user) return false;
-    const staffRoles = ["ADMIN", "MODERADOR", "JUIZ", "STREAMER", "Ajudante"];
-    return staffRoles.includes(user.role);
-  }, [user]);
+  const isStaff = true;
 
   const handleRandomize = () => {
     if (!activeChamp) return;
@@ -124,20 +89,6 @@ export default function TournamentPage() {
     }, 3000);
   };
 
-  const updateChampSettings = (
-    field: keyof ChampSettings,
-    value: number | boolean | string,
-  ) => {
-    if (!activeChamp) return;
-    setChampionships((prev) =>
-      prev.map((c) =>
-        c.id === activeChamp.id
-          ? { ...c, settings: { ...c.settings, [field]: value } }
-          : c,
-      ),
-    );
-  };
-
   const updateChampInfo = (
     field: keyof Championship,
     value: number | boolean | string,
@@ -175,13 +126,21 @@ export default function TournamentPage() {
     setShowRoleModal(false);
   };
 
-  if (isCheckingAuth) return null; // Ou um loading spinner
+  useEffect(() => {
+    if (status === "unauthenticated") {
+      router.push(
+        `/login/?redirect=${encodeURIComponent(window.location.href)}`,
+      );
+    }
+  }, [router, status]);
+
+  if (!isAuthenticated) return null;
 
   if (!activeChamp) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 text-white uppercase italic">
         <div className="text-center space-y-4">
-          <AlertTriangle size={48} className="text-[#FFB300] mx-auto" />
+          <AlertTriangle size={48} className="text-primary mx-auto" />
           <h2 className="text-2xl font-black italic tracking-tighter">
             TORNEIO NÃO LOCALIZADO
           </h2>
@@ -190,7 +149,7 @@ export default function TournamentPage() {
           </p>
           <button
             onClick={() => router.push("/torneios")}
-            className="text-[#FFB300] hover:text-white transition-colors underline text-xs font-bold mt-4 uppercase"
+            className="text-primary hover:text-white transition-colors underline text-xs font-bold mt-4 uppercase"
           >
             Voltar ao Menu Principal
           </button>
@@ -241,7 +200,7 @@ export default function TournamentPage() {
           {/* Sidebar Staff */}
           <Sidebar
             staff={staffList}
-            currentUser={user}
+            currentUser={session.user}
             activeChamp={activeChamp}
             isStaff={isStaff}
             isOpen={isMobileMenuOpen}
@@ -253,140 +212,6 @@ export default function TournamentPage() {
           />
         </div>
 
-        {/* --- MODAIS (REGRAS COM SELECT DE ESTADO) --- */}
-
-        {showRulesModal && (
-          <div className="fixed inset-0 z-120 flex items-center justify-center p-2 sm:p-4 bg-black/90 backdrop-blur-sm uppercase italic">
-            <div className="bg-[#111] border-2 border-zinc-800 w-full max-w-2xl max-h-[90vh] overflow-y-auto uppercase relative shadow-2xl">
-              <div className="bg-[#FFB300] p-4 flex justify-between items-center text-black font-black italic sticky top-0 z-10">
-                <h3 className="text-lg sm:text-xl uppercase tracking-tighter italic">
-                  PARAMETRIZAR MISSÃO
-                </h3>
-                <button onClick={() => setShowRulesModal(false)}>
-                  <X />
-                </button>
-              </div>
-
-              <div className="p-6 sm:p-8 grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
-                <div className="space-y-4">
-                  <h4 className="text-[#FFB300] font-black italic text-[10px] mb-2 uppercase">
-                    GERAL
-                  </h4>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-zinc-500 uppercase">
-                      NOME DO TORNEIO
-                    </label>
-                    <input
-                      type="text"
-                      className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white italic outline-none uppercase"
-                      value={activeChamp.name}
-                      onChange={(e) => updateChampInfo("name", e.target.value)}
-                    />
-                  </div>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-zinc-500 uppercase">
-                      MAPA ATUAL
-                    </label>
-                    <select
-                      className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white outline-none appearance-none"
-                      value={activeChamp.settings.map}
-                      onChange={(e) =>
-                        updateChampSettings("map", e.target.value)
-                      }
-                    >
-                      {MOCK_MAPS.map((m) => (
-                        <option key={m.id} value={m.name}>
-                          {m.name}
-                        </option>
-                      ))}
-                    </select>
-                  </div>
-                </div>
-
-                <div className="space-y-4">
-                  <h4 className="text-[#FFB300] font-black italic text-[10px] mb-2 uppercase">
-                    ESTADO & EQUIPES
-                  </h4>
-                  <div className="space-y-1">
-                    <label className="text-[9px] font-bold text-zinc-500 uppercase">
-                      STATUS DO CAMPEONATO
-                    </label>
-                    <select
-                      className="w-full bg-zinc-900 border border-zinc-800 p-2 text-[#FFB300] font-black outline-none appearance-none"
-                      value={activeChamp.status}
-                      onChange={(e) => {
-                        const newStatus = e.target.value as ChampStatus;
-                        if (
-                          newStatus === "live" &&
-                          activeChamp.teams.length === 0
-                        )
-                          return;
-                        updateChampInfo("status", newStatus);
-                      }}
-                    >
-                      <option value="open">INSCRIÇÃO (ABERTO)</option>
-                      <option value="setting_teams">DEFININDO EQUIPES</option>
-                      <option
-                        value="live"
-                        disabled={activeChamp.teams.length === 0}
-                      >
-                        EM ANDAMENTO (LIVE)
-                      </option>
-                      <option value="finished">FINALIZADO / ENCERRADO</option>
-                    </select>
-                  </div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-zinc-500 uppercase">
-                        MAX. TIMES
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white outline-none"
-                        value={activeChamp.settings.totalTeams}
-                        onChange={(e) =>
-                          updateChampSettings(
-                            "totalTeams",
-                            parseInt(e.target.value),
-                          )
-                        }
-                      />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[9px] font-bold text-zinc-500 uppercase">
-                        JOG. POR TIME
-                      </label>
-                      <input
-                        type="number"
-                        className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white outline-none"
-                        value={activeChamp.settings.playersPerTeam}
-                        onChange={(e) =>
-                          updateChampSettings(
-                            "playersPerTeam",
-                            parseInt(e.target.value),
-                          )
-                        }
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              <div className="p-6 sm:p-8 bg-zinc-900/50 flex justify-end">
-                <button
-                  onClick={() => setShowRulesModal(false)}
-                  className="w-full sm:w-auto bg-[#FFB300] text-black font-black italic px-10 py-3 text-xs uppercase tracking-widest"
-                >
-                  SALVAR ALTERAÇÕES
-                </button>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* --- MODAIS DE BROADCAST & USUÁRIO --- */}
-        {/* ... (Modais mantidos conforme versão anterior para brevidade, integrando as mesmas props) ... */}
-
         {showUserModal && selectedUser && isStaff && (
           <UserManagementModal
             user={selectedUser}
@@ -395,11 +220,10 @@ export default function TournamentPage() {
           />
         )}
 
-        {/* Modal de Seleção de Cargo */}
         {showRoleModal && selectedUser && (
           <div className="fixed inset-0 z-160 flex items-center justify-center p-4">
-            <div className="bg-black/95 border-2 border-[#FFB300] w-full max-w-sm flex flex-col shadow-2xl animate-in zoom-in-95">
-              <div className="bg-[#FFB300] p-4 flex justify-between items-center text-black font-black italic">
+            <div className="bg-black/95 border-2 border-primary w-full max-w-sm flex flex-col shadow-2xl animate-in zoom-in-95">
+              <div className="bg-primary p-4 flex justify-between items-center text-black font-black italic">
                 <h3 className="text-lg uppercase">ALTERAR CARGO</h3>
                 <button onClick={() => setShowRoleModal(false)}>
                   <X />
@@ -410,16 +234,18 @@ export default function TournamentPage() {
                   <div
                     key={roleOption.value}
                     onClick={() => applyRoleChange(roleOption.value)}
-                    className={`p-4 border border-zinc-800 flex items-center justify-between cursor-pointer transition-all ${selectedUser.role === roleOption.value ? "bg-[#FFB300]/10 border-[#FFB300]" : "bg-zinc-900/50 hover:bg-zinc-800"}`}
+                    className={`p-4 border border-zinc-800 flex items-center justify-between cursor-pointer transition-all ${/*selectedUser.role /**/ "ADMIN" === roleOption.value ? "bg-primary/10 border-primary" : "bg-zinc-900/50 hover:bg-zinc-800"}`}
                   >
                     <span
                       className={`text-xs font-black italic ${roleOption.color} tracking-widest uppercase`}
                     >
                       {roleOption.label}
                     </span>
-                    {selectedUser.role === roleOption.value && (
-                      <Check size={16} className="text-[#FFB300]" />
-                    )}
+                    {
+                      /*selectedUser.role /**/ "ADMIN" === roleOption.value && (
+                        <Check size={16} className="text-primary" />
+                      )
+                    }
                   </div>
                 ))}
               </div>

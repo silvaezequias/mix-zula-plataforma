@@ -52,7 +52,7 @@ export const TournamentCard = ({
       onClick={onClick}
       className={`group relative bg-[#111] border-l-4 ${config.border} p-6 sm:p-8 hover:bg-zinc-900 transition-all cursor-pointer overflow-hidden shadow-xl`}
     >
-      <div className="absolute top-0 right-0 w-32 h-32 bg-[#FFB300] opacity-[0.02] transform rotate-45 translate-x-16 -translate-y-16 group-hover:opacity-[0.05] transition-opacity"></div>
+      <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-[0.02] transform rotate-45 translate-x-16 -translate-y-16 group-hover:opacity-[0.05] transition-opacity"></div>
 
       <div className="relative z-10 flex flex-col h-full">
         <header className="flex justify-between items-start mb-6">
@@ -62,17 +62,17 @@ export const TournamentCard = ({
             >
               {config.label}
             </span>
-            <h3 className="text-2xl sm:text-3xl font-black italic tracking-tighter uppercase leading-none group-hover:text-[#FFB300] transition-colors">
+            <h3 className="text-2xl sm:text-3xl font-black italic tracking-tighter uppercase leading-none group-hover:text-primary transition-colors">
               {tournament.name}
             </h3>
           </div>
-          <div className="bg-zinc-900 p-2 border border-zinc-800 group-hover:border-[#FFB300] transition-colors">
+          <div className="bg-zinc-900 p-2 border border-zinc-800 group-hover:border-primary transition-colors">
             <Trophy
               size={20}
               className={
                 tournament.status === "finished"
                   ? "text-zinc-500"
-                  : "text-[#FFB300]"
+                  : "text-primary"
               }
             />
           </div>
@@ -92,8 +92,8 @@ export const TournamentCard = ({
             </span>
           </div>
           <div className="col-span-2 flex items-center gap-2 mt-2">
-            <Medal size={14} className="text-[#FFB300]" />
-            <span className="text-xs font-black text-[#FFB300] uppercase italic tracking-tighter">
+            <Medal size={14} className="text-primary" />
+            <span className="text-xs font-black text-primary uppercase italic tracking-tighter">
               PRÉMIO: {tournament.prize}
             </span>
           </div>

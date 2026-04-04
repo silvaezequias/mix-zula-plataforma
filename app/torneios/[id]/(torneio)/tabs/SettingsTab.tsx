@@ -64,21 +64,26 @@ export const SettingsTab = (props: SettingsTabProps) => {
             value={championship.prize}
             onChange={(v: string) => updateChampInfo("prize", v)}
           />
-          <div className="space-y-1">
-            <label className="text-[9px] font-bold text-zinc-500 uppercase">
-              Mapa da Missão
+
+          <div className="pt-4 border-t border-zinc-800">
+            <label className="text-[9px] font-bold text-zinc-500 uppercase block mb-3 italic">
+              Link de Recrutamento Direto
             </label>
-            <select
-              className="w-full bg-zinc-900 border border-zinc-800 p-3 text-white italic outline-none focus:border-[#FFB300]"
-              value={championship.settings.map}
-              onChange={(e) => updateChampSettings("map", e.target.value)}
-            >
-              {MOCK_MAPS.map((m) => (
-                <option key={m.id} value={m.name}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
+            <div className="flex gap-2">
+              <div className="flex-1 bg-zinc-900 border border-zinc-800 p-3 text-[10px] text-zinc-500 truncate font-mono italic">
+                {window.location.origin}/torneios/{tournamentId}/participar
+              </div>
+              <button
+                onClick={handleCopyLink}
+                className={`px-6 transition-all flex items-center justify-center ${copied ? "bg-green-600 text-white" : "bg-zinc-800 text-primary hover:bg-zinc-700"}`}
+              >
+                {copied ? <Check size={18} /> : <Copy size={18} />}
+              </button>
+            </div>
+            <p className="text-[8px] text-zinc-700 mt-2 italic font-bold">
+              Nota: Apenas agentes autorizados pela Staff devem receber este
+              link.
+            </p>
           </div>
         </div>
       </Card>
@@ -115,32 +120,28 @@ export const SettingsTab = (props: SettingsTabProps) => {
               checked={championship.settings.sideSwap}
               onChange={(v: boolean) => updateChampSettings("sideSwap", v)}
             />
-          </div>
 
-          <div className="pt-4 border-t border-zinc-800">
-            <label className="text-[9px] font-bold text-zinc-500 uppercase block mb-3 italic">
-              Link de Recrutamento Direto
-            </label>
-            <div className="flex gap-2">
-              <div className="flex-1 bg-zinc-900 border border-zinc-800 p-3 text-[10px] text-zinc-500 truncate font-mono italic">
-                {window.location.origin}/torneios/{tournamentId}/participar
-              </div>
-              <button
-                onClick={handleCopyLink}
-                className={`px-6 transition-all flex items-center justify-center ${copied ? "bg-green-600 text-white" : "bg-zinc-800 text-[#FFB300] hover:bg-zinc-700"}`}
+            <div className="space-y-1 col-span-2">
+              <label className="text-[9px] font-bold text-zinc-500 uppercase">
+                Mapa da Missão
+              </label>
+              <select
+                className="w-full bg-zinc-900 border border-zinc-800 p-3 text-white italic outline-none focus:border-primary"
+                value={championship.settings.map}
+                onChange={(e) => updateChampSettings("map", e.target.value)}
               >
-                {copied ? <Check size={18} /> : <Copy size={18} />}
-              </button>
+                {MOCK_MAPS.map((m) => (
+                  <option key={m.id} value={m.name}>
+                    {m.name}
+                  </option>
+                ))}
+              </select>
             </div>
-            <p className="text-[8px] text-zinc-700 mt-2 italic font-bold">
-              Nota: Apenas agentes autorizados pela Staff devem receber este
-              link.
-            </p>
           </div>
         </div>
       </Card>
 
-      <Card title="Ações" icon={Power} className="col-span-1 md:col-span-2">
+      <Card title="Ações" icon={Power} className="col-span-1">
         <div className="space-y-4 flex-1 flex flex-col justify-between">
           <div className="space-y-3">
             <p className="text-[9px] text-zinc-600 font-bold leading-relaxed uppercase">
@@ -149,7 +150,7 @@ export const SettingsTab = (props: SettingsTabProps) => {
             </p>
 
             <button
-              className="w-full bg-[#FFB300] text-black font-black py-4 text-xs tracking-[0.2em] hover:brightness-110 active:scale-[0.98] transition-all uppercase italic shadow-[0_10px_20px_rgba(255,179,0,0.1)] flex items-center justify-center gap-3 group border-b-4 border-black/20"
+              className="w-full bg-primary text-black font-black py-4 text-xs tracking-[0.2em] hover:brightness-110 active:scale-[0.98] transition-all uppercase italic shadow-[0_10px_20px_rgba(255,179,0,0.1)] flex items-center justify-center gap-3 group border-b-4 border-black/20"
               onClick={() => onRandomize()}
             >
               <Shuffle
@@ -193,7 +194,7 @@ export const SettingsTab = (props: SettingsTabProps) => {
         </div>
         <div className="col-span-1 flex justify-center items-start pt-4">
           <button
-            className="w-full bg-[#FFB300] text-black font-black py-5 text-sm tracking-[0.4em] hover:brightness-110 active:scale-[0.98] transition-all uppercase italic shadow-[0_10px_30px_rgba(255,179,0,0.1)] border-b-4 border-black/20 flex items-center justify-center gap-4 group"
+            className="w-full bg-primary text-black font-black py-5 text-sm tracking-[0.4em] hover:brightness-110 active:scale-[0.98] transition-all uppercase italic shadow-[0_10px_30px_rgba(255,179,0,0.1)] border-b-4 border-black/20 flex items-center justify-center gap-4 group"
             onClick={() => console.log("Informações atualizadas no radar.")}
           >
             <Check
@@ -223,7 +224,7 @@ const Card = ({
     <div
       className={`space-y-8 bg-[#111] border border-zinc-800 p-8 shadow-2xl relative overflow-hidden ${className || ""}`}
     >
-      <div className="flex items-center gap-3 text-[#FFB300]">
+      <div className="flex items-center gap-3 text-primary">
         <Icon size={20} />
         <h3 className="text-xl font-bold italic tracking-tighter">{title}</h3>
       </div>
@@ -250,7 +251,7 @@ export const ConfigInput = ({
       </label>
       <input
         type={type}
-        className="w-full bg-zinc-900 border border-zinc-800 p-3 text-white italic outline-none focus:border-[#FFB300] text-sm font-bold"
+        className="w-full bg-zinc-900 border border-zinc-800 p-3 text-white italic outline-none focus:border-primary text-sm font-bold"
         value={value}
         onChange={(e) => onChange(e.target.value)}
       />
@@ -267,13 +268,13 @@ const ConfigSwitch = ({
   checked: boolean;
   onChange: (checked: boolean) => void;
 }) => (
-  <div className="flex items-center justify-between p-4 bg-zinc-900/50 border border-zinc-800 group hover:border-[#FFB300]/30 transition-colors">
+  <div className="flex items-center justify-between p-4 bg-zinc-900/50 border border-zinc-800 group hover:border-primary/30 transition-colors">
     <label className="text-[9px] font-black text-zinc-500 uppercase italic group-hover:text-zinc-300 transition-colors">
       {label}
     </label>
     <button
       onClick={() => onChange(!checked)}
-      className={`relative inline-flex h-6 w-12 items-center transition-all focus:outline-none border-2 ${checked ? "bg-[#FFB300] border-[#FFB300]" : "bg-zinc-800 border-zinc-700"}`}
+      className={`relative inline-flex h-6 w-12 items-center transition-all focus:outline-none border-2 ${checked ? "bg-primary border-primary" : "bg-zinc-800 border-zinc-700"}`}
     >
       <span
         className={`inline-block h-4 w-4 transform transition-transform duration-200 ${checked ? "translate-x-6 bg-black" : "translate-x-1 bg-zinc-500"}`}

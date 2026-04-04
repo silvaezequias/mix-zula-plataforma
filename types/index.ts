@@ -1,3 +1,5 @@
+import { PayloadUser } from "./next-auth";
+
 export type Role =
   | "ADMIN"
   | "MODERADOR"
@@ -44,7 +46,7 @@ export interface ChampSettings {
 export interface Team {
   id: string;
   name: string;
-  players: Player[];
+  players: PayloadUser[];
   side: "TR" | "CT";
 }
 
@@ -83,7 +85,7 @@ export interface Championship {
   name: string;
   prize: string;
   status: ChampStatus;
-  players: Player[];
+  players: PayloadUser[];
   teams: Team[];
   matches: Match[];
   broadcast: {

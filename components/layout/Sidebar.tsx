@@ -1,5 +1,5 @@
 import React from "react";
-import { Championship, Player } from "@/types";
+import { Championship } from "@/types";
 import {
   ExternalLink,
   Radio,
@@ -8,15 +8,18 @@ import {
   User as UserIcon,
   X,
 } from "lucide-react";
+import { PayloadUser } from "@/types/next-auth";
+import { brand } from "@/config/brand";
+import { signOut } from "next-auth/react";
 
 interface SidebarProps {
-  staff: Player[];
-  currentUser: Player | null;
+  staff: PayloadUser[];
+  currentUser: PayloadUser | null;
   activeChamp: Championship | null;
   isStaff: boolean;
   isOpen: boolean;
   onClose: () => void;
-  onManageUser: (p: Player) => void;
+  onManageUser: (p: PayloadUser) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -32,24 +35,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
     (s) => s.id === activeChamp?.broadcast?.streamerId,
   );
 
-  // Função para realizar o logout
-  const handleLogout = () => {
-    // Remove os dados do usuário do armazenamento local
-    localStorage.removeItem("arena_user");
-    // Recarrega a página para acionar os checks de autenticação nas páginas protegidas
-    window.location.reload();
-  };
-
   return (
     <aside
       className={`fixed lg:relative inset-y-0 right-0 w-72 bg-[#0a0a0a] flex flex-col border-l border-zinc-900 z-100 transition-transform duration-300 transform lg:translate-x-0 order-1 lg:order-2 ${
         isOpen ? "translate-x-0" : "translate-x-full lg:translate-x-0"
       }`}
     >
-      <div className="p-6 sm:p-8 border-b border-zinc-900 mb-6 bg-[#FFB300] text-black flex justify-between items-center italic">
+      <div className="p-6 sm:p-8 border-b border-zinc-900 mb-6 bg-primary text-black flex justify-between items-center italic">
         <div className="flex flex-col">
           <h2 className="font-black italic text-2xl tracking-tighter leading-none mb-1 uppercase">
-            MIX ZULA
+            {brand.name}
           </h2>
           <p className="font-black text-[9px] tracking-[0.3em] opacity-80 italic uppercase">
             TORNEIOS
@@ -65,7 +60,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
 
       <div className="px-6 flex-1 overflow-y-auto max-h-screen custom-scrollbar italic">
         <h4 className="text-[10px] font-black text-zinc-500 tracking-[0.2em] mb-6 flex items-center gap-2 italic uppercase">
-          <Shield size={12} className="text-[#FFB300]" /> EQUIPE TÉCNICA
+          <Shield size={12} className="text-primary" /> EQUIPE TÉCNICA
         </h4>
         <div className="space-y-4 mb-10 overflow-y-auto h-[45%] pr-2">
           {staff.map((member) => (
@@ -76,15 +71,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 isStaff ? "cursor-pointer group" : ""
               }`}
             >
-              <span className="text-xs font-black italic text-white block uppercase group-hover:text-[#FFB300] transition-colors">
-                {member.gameNick}
+              <span className="text-xs font-black italic text-white block uppercase group-hover:text-primary transition-colors">
+                {member.player?.nickname}
               </span>
               <span
                 className={`text-[9px] font-black italic ${
-                  member.color || "text-zinc-500"
+                  /* member.color || /**/ "text-zinc-500"
                 } tracking-widest uppercase`}
               >
-                {member.role}
+                USER ROLE AQUI
               </span>
             </div>
           ))}
@@ -94,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
             <Tv size={40} />
           </div>
-          <div className="flex items-center gap-2 text-[#FFB300] mb-4">
+          <div className="flex items-center gap-2 text-primary mb-4">
             <Radio
               size={14}
               className={activeChamp?.status === "live" ? "animate-pulse" : ""}
@@ -109,7 +104,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 className="flex items-center gap-3 bg-black/40 p-2 border border-zinc-800 cursor-pointer"
                 onClick={() => isStaff && onManageUser(selectedStreamer)}
               >
-                <div className="w-10 h-10 bg-[#FFB300] flex items-center justify-center text-black shadow-lg">
+                <div className="w-10 h-10 bg-primary flex items-center justify-center text-black shadow-lg">
                   <UserIcon size={20} />
                 </div>
                 <div>
@@ -117,7 +112,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                     STREAMER
                   </p>
                   <p className="text-xs font-black italic text-white truncate w-32 uppercase">
-                    {selectedStreamer.gameNick}
+                    {selectedStreamer.player?.nickname}
                   </p>
                 </div>
               </div>
@@ -125,7 +120,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 href={activeChamp.broadcast.link}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full bg-[#FFB300] text-black font-black italic py-3 text-[10px] tracking-widest flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase mt-2 shadow-[0_4px_10px_rgba(255,179,0,0.2)]"
+                className="w-full bg-primary text-black font-black italic py-3 text-[10px] tracking-widest flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase mt-2 shadow-[0_4px_10px_rgba(255,179,0,0.2)]"
               >
                 ASSISTIR <ExternalLink size={12} />
               </a>
@@ -144,12 +139,12 @@ export const Sidebar: React.FC<SidebarProps> = ({
             className="flex items-center gap-3 mb-4 cursor-pointer group"
             onClick={() => isStaff && onManageUser(currentUser)}
           >
-            <div className="w-8 h-8 bg-[#FFB300] flex items-center justify-center text-black font-black text-xs uppercase italic group-hover:scale-110 transition-transform">
-              {currentUser.gameNick.charAt(0)}
+            <div className="w-8 h-8 bg-primary flex items-center justify-center text-black font-black text-xs uppercase italic group-hover:scale-110 transition-transform">
+              {currentUser.name!.charAt(0)}
             </div>
             <div className="flex flex-col">
               <span className="text-[11px] font-black text-white italic truncate w-24 uppercase">
-                {currentUser.gameNick}
+                {currentUser.name}
               </span>
               <span className="text-[9px] text-zinc-500 font-bold uppercase">
                 MEU PERFIL
@@ -163,7 +158,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         )}
 
         <button
-          onClick={handleLogout}
+          onClick={() => signOut()}
           className="w-full flex items-center justify-center gap-3 py-3 text-zinc-600 hover:text-red-500 transition-all text-[10px] font-black italic tracking-widest uppercase border border-zinc-800 hover:border-red-500/50 shadow-sm active:scale-95"
         >
           SAIR

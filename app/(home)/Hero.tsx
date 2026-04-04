@@ -7,7 +7,7 @@ export const Hero = () => {
   return (
     <section className="relative min-h-[85vh] flex items-center px-6 lg:px-12 overflow-hidden">
       <div className="relative z-10 max-w-4xl space-y-8 animate-in fade-in slide-in-from-left-8 duration-1000">
-        <div className="flex flex-col md:flex-row items-center gap-3 text-[#FFB300] text-xs font-black">
+        <div className="flex flex-col md:flex-row items-center gap-3 text-primary text-xs font-black">
           <Shield size={16} />
           <span className="tracking-[0.5em] text-center uppercase">
             Plataforma Oficial de Competição
@@ -16,7 +16,7 @@ export const Hero = () => {
 
         <h2 className="text-5xl sm:text-8xl text-center md:text-start font-black italic tracking-tighter leading-tight uppercase">
           DOMINE A <br />
-          <span className="text-[#FFB300]">OPERAÇÃO.</span>
+          <span className="text-primary">OPERAÇÃO.</span>
         </h2>
 
         <p className="text-zinc-500 font-bold max-w-xl text-xs text-center md:text-start sm:text-base leading-relaxed uppercase">
@@ -28,7 +28,7 @@ export const Hero = () => {
         <div className="flex flex-col sm:flex-row items-center gap-6 pt-4">
           <button
             onClick={() => router.push("/torneios")}
-            className="w-full sm:w-auto bg-[#FFB300] text-black px-12 py-5 font-black text-sm tracking-widest flex items-center justify-center gap-4 hover:brightness-110 transition-all shadow-[0_10px_30px_rgba(255,179,0,0.2)] active:scale-95 uppercase"
+            className="w-full sm:w-auto bg-primary text-black px-12 py-5 font-black text-sm tracking-widest flex items-center justify-center gap-4 hover:brightness-110 transition-all shadow-[0_10px_30px_rgba(255,179,0,0.2)] active:scale-95 uppercase"
           >
             CONFERIR TORNEIOS <Play size={18} fill="currentColor" />
           </button>

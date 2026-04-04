@@ -111,8 +111,8 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
         )}
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-[#111] p-6 border-l-2 border-[#FFB300]">
-          <Medal className="text-[#FFB300] mb-4" size={24} />
+        <div className="bg-[#111] p-6 border-l-2 border-primary">
+          <Medal className="text-primary mb-4" size={24} />
           <p className="text-[10px] text-zinc-500 font-black">PREMIAÇÃO</p>
           <p className="text-xl font-black italic text-white">
             {championship.prize}
@@ -134,20 +134,20 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
         </div>
       </div>
       <div className="bg-[#111] border border-zinc-800 p-8">
-        <h4 className="text-xs font-black text-[#FFB300] mb-6 italic tracking-widest">
+        <h4 className="text-xs font-black text-primary mb-6 italic tracking-widest">
           REGRAS DO TORNEIO
         </h4>
         <ul className="space-y-4 text-[11px] font-bold text-zinc-400">
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-[#FFB300]">01.</span> NICK EM JOGO DEVE SER
+            <span className="text-primary">01.</span> NICK EM JOGO DEVE SER
             IDENTICO AO CADASTRADO.
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-[#FFB300]">02.</span>
+            <span className="text-primary">02.</span>
             USO DE SOFTWARE EXTERNO RESULTARÁ EM BANIMENTO.
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-[#FFB300]">03.</span>
+            <span className="text-primary">03.</span>
             <span>
               ROUNDS POR LADO:{" "}
               <span className="font-black text-white">
@@ -156,7 +156,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-[#FFB300]">04.</span>
+            <span className="text-primary">04.</span>
             <span>
               TROCA DE LADOS PERMITIDA:{" "}
               <span className="font-black text-white">
@@ -166,7 +166,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-[#FFB300]">04.</span>
+            <span className="text-primary">04.</span>
             <span>
               TOTAL DE TIMES:{" "}
               <span className="font-black text-white">
@@ -176,7 +176,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-[#FFB300]">04.</span>
+            <span className="text-primary">04.</span>
             <span>
               JOGADORES POR TIME:{" "}
               <span className="font-black text-white">

@@ -1,4 +1,4 @@
-import { Championship, Match, MatchStatus, Player } from "@/types";
+import { Championship, Match, MatchStatus } from "@/types";
 import { useState } from "react";
 import { GamesTab } from "./tabs/GamesTab";
 import { InformationTab } from "./tabs/InformationTab";
@@ -7,16 +7,17 @@ import { DrawingTab } from "./tabs/DrawingTab";
 import { Tab, Window } from "@/components/ui/Window";
 import { SettingsTab } from "./tabs/SettingsTab";
 import { TeamsView } from "./tabs/TeamsTab";
+import { PayloadUser } from "@/types/next-auth";
 
 export type Tabs = "info" | "inscritos" | "teams" | "games";
 
 interface DetailProps {
-  players: Player[];
+  players: PayloadUser[];
   activeChamp: Championship;
   isStaff: boolean;
   tournamentId: string;
   onRandomize: () => void;
-  onManageUser: (p: Player) => void;
+  onManageUser: (p: PayloadUser) => void;
   setChampionships: React.Dispatch<React.SetStateAction<Championship[]>>;
 }
 
@@ -35,7 +36,7 @@ export const ChampionshipDetailView: React.FC<DetailProps> = (props) => {
 
   const [selectedChampId] = useState<string | null>(null);
   const [, setShowKdaModal] = useState(false);
-  const [selectedPlayer] = useState<Player | null>(null);
+  const [selectedPlayer] = useState<PayloadUser | null>(null);
 
   const updateMatchStatus = (matchId: string, status: MatchStatus) => {
     setChampionships((prev) =>
@@ -142,11 +143,7 @@ export const ChampionshipDetailView: React.FC<DetailProps> = (props) => {
       id: "teams",
       label: "EQUIPES",
       content: isRandomizing ? (
-        <DrawingTab
-          championship={activeChamp}
-          isRandomizing={isRandomizing}
-          onManageUser={onManageUser}
-        />
+        <DrawingTab isRandomizing={isRandomizing} />
       ) : (
         <TeamsView championsip={activeChamp} />
       ),
@@ -204,9 +201,7 @@ export const ChampionshipDetailView: React.FC<DetailProps> = (props) => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500">
-      <div className="flex gap-8 lg:gap-10">
-        <Window tabs={tabs} focusAtTab={isRandomizing ? "teams" : "teams"} />
-      </div>
+      <Window tabs={tabs} focusAtTab={isRandomizing ? "teams" : "teams"} />
     </div>
   );
 };

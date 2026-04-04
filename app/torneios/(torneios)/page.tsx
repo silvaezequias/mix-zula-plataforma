@@ -1,6 +1,5 @@
 "use client";
 
-import React from "react";
 import { useRouter } from "next/navigation";
 import { Trophy, Clock, LayoutGrid } from "lucide-react";
 import { MOCK_TOURNAMENTS } from "@/contansts/data";

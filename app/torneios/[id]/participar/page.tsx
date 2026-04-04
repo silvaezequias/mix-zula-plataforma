@@ -67,7 +67,7 @@ export default function RegistrationPage() {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 text-white uppercase italic">
         <div className="text-center space-y-4">
-          <AlertTriangle size={48} className="text-[#FFB300] mx-auto" />
+          <AlertTriangle size={48} className="text-primary mx-auto" />
           <h2 className="text-2xl font-black italic tracking-tighter">
             TORNEIO NÃO LOCALIZADO
           </h2>
@@ -76,7 +76,7 @@ export default function RegistrationPage() {
           </p>
           <button
             onClick={() => router.push("/torneios")}
-            className="text-[#FFB300] hover:text-white transition-colors underline text-xs font-bold mt-4 uppercase"
+            className="text-primary hover:text-white transition-colors underline text-xs font-bold mt-4 uppercase"
           >
             Voltar ao Menu Principal
           </button>
@@ -89,13 +89,13 @@ export default function RegistrationPage() {
     <div className="min-h-screen bg-[#050505] text-white font-sans uppercase italic tracking-widest overflow-x-hidden">
       {/* Background Decorativo Estilo Zula */}
       <div className="fixed inset-0 pointer-events-none opacity-10">
-        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-[#FFB300] blur-[150px] rounded-full"></div>
+        <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-primary blur-[150px] rounded-full"></div>
         <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-zinc-800 blur-[120px] rounded-full"></div>
       </div>
 
       <main className="relative z-10 max-w-5xl mx-auto px-6 py-12 sm:py-20 animate-in fade-in duration-700">
         {/* Breadcrumb / Back */}
-        <div className="flex items-center gap-2 text-zinc-500 hover:text-[#FFB300] transition-all cursor-pointer mb-10 group w-fit">
+        <div className="flex items-center gap-2 text-zinc-500 hover:text-primary transition-all cursor-pointer mb-10 group w-fit">
           <ChevronLeft
             size={18}
             className="group-hover:-translate-x-1 transition-transform"
@@ -109,7 +109,7 @@ export default function RegistrationPage() {
           {/* Coluna Esquerda: Informações da Missão */}
           <div className="lg:col-span-7 space-y-12">
             <header>
-              <div className="inline-block bg-[#FFB300] text-black px-4 py-1 text-[10px] font-black mb-4 skew-x-[-15deg]">
+              <div className="inline-block bg-primary text-black px-4 py-1 text-[10px] font-black mb-4 skew-x-[-15deg]">
                 <span className="inline-block skew-x-15">
                   CONVITE DE INSCRIÇÃO
                 </span>
@@ -119,20 +119,20 @@ export default function RegistrationPage() {
               </h1>
               <div className="flex flex-wrap gap-8 text-zinc-400">
                 <div className="flex items-center gap-3">
-                  <MapPin size={18} className="text-[#FFB300]" />
+                  <MapPin size={18} className="text-primary" />
                   <span className="text-xs font-black uppercase tracking-tighter">
                     {tournament.settings.map}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Target size={18} className="text-[#FFB300]" />
+                  <Target size={18} className="text-primary" />
                   <span className="text-xs font-black uppercase tracking-tighter">
                     {tournament.settings.gameMode}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
-                  <Trophy size={18} className="text-[#FFB300]" />
-                  <span className="text-xs font-black uppercase tracking-tighter text-[#FFB300]">
+                  <Trophy size={18} className="text-primary" />
+                  <span className="text-xs font-black uppercase tracking-tighter text-primary">
                     {tournament.prize}
                   </span>
                 </div>
@@ -140,9 +140,9 @@ export default function RegistrationPage() {
             </header>
 
             <section className="bg-[#111] border border-zinc-800 p-8 sm:p-10 space-y-8 shadow-2xl relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-1 bg-[#FFB300]"></div>
+              <div className="absolute top-0 right-0 w-32 h-1 bg-primary"></div>
               <div className="flex items-center gap-4">
-                <Info size={24} className="text-[#FFB300]" />
+                <Info size={24} className="text-primary" />
                 <h3 className="text-xl font-black uppercase italic tracking-tighter">
                   Briefing da Missão
                 </h3>
@@ -165,7 +165,7 @@ export default function RegistrationPage() {
                     key={i}
                     className="flex items-center gap-3 bg-black/40 p-3 border border-zinc-900"
                   >
-                    <div className="w-1.5 h-1.5 bg-[#FFB300] transform rotate-45"></div>
+                    <div className="w-1.5 h-1.5 bg-primary transform rotate-45"></div>
                     <span className="text-[10px] text-zinc-300 font-black uppercase">
                       {text}
                     </span>
@@ -195,7 +195,7 @@ export default function RegistrationPage() {
                   </div>
                   <button
                     onClick={simulateLogin}
-                    className="w-full bg-white text-black font-black py-5 text-sm tracking-[0.3em] hover:bg-[#FFB300] transition-all uppercase italic shadow-xl active:scale-95"
+                    className="w-full bg-white text-black font-black py-5 text-sm tracking-[0.3em] hover:bg-primary transition-all uppercase italic shadow-xl active:scale-95"
                   >
                     Entrar com Discord
                   </button>
@@ -242,7 +242,7 @@ export default function RegistrationPage() {
                         Ocupação
                       </p>
                       <h3
-                        className={`text-2xl font-black italic tracking-tighter ${isFull ? "text-red-500" : "text-[#FFB300]"}`}
+                        className={`text-2xl font-black italic tracking-tighter ${isFull ? "text-red-500" : "text-primary"}`}
                       >
                         {currentPlayersCount}/{maxPlayers}
                       </h3>
@@ -252,7 +252,7 @@ export default function RegistrationPage() {
                   <div className="space-y-4">
                     <div className="w-full h-1.5 bg-zinc-900 rounded-full overflow-hidden">
                       <div
-                        className={`h-full transition-all duration-1000 ease-out ${isFull ? "bg-red-600" : "bg-[#FFB300] shadow-[0_0_10px_rgba(255,179,0,0.5)]"}`}
+                        className={`h-full transition-all duration-1000 ease-out ${isFull ? "bg-red-600" : "bg-primary shadow-[0_0_10px_rgba(255,179,0,0.5)]"}`}
                         style={{
                           width: `${(currentPlayersCount / maxPlayers) * 100}%`,
                         }}
@@ -265,9 +265,9 @@ export default function RegistrationPage() {
                   </div>
 
                   <div className="space-y-6">
-                    <div className="bg-zinc-900/30 p-5 border border-zinc-800 group hover:border-[#FFB300]/50 transition-colors">
+                    <div className="bg-zinc-900/30 p-5 border border-zinc-800 group hover:border-primary/50 transition-colors">
                       <div className="flex items-center gap-3 mb-4">
-                        <Zap size={16} className="text-[#FFB300]" />
+                        <Zap size={16} className="text-primary" />
                         <span className="text-[11px] font-black text-white italic uppercase tracking-widest">
                           Protocolos de Entrada
                         </span>
@@ -304,7 +304,7 @@ export default function RegistrationPage() {
                           ${
                             isFull || tournament.status !== "open"
                               ? "bg-zinc-800 text-zinc-600 cursor-not-allowed border-zinc-700"
-                              : "bg-[#FFB300] text-black hover:brightness-110 active:scale-[0.98] shadow-[#FFB300]/10"
+                              : "bg-primary text-black hover:brightness-110 active:scale-[0.98] shadow-primary/10"
                           }`}
                       >
                         {loading ? (

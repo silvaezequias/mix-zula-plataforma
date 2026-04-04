@@ -19,10 +19,10 @@ export function Footer() {
           © 2026 {brand.name} • TODOS OS DIREITOS RESERVADOS
         </p>
         <div className="flex gap-6">
-          <div className="w-8 h-8 rounded-full border border-zinc-800 flex items-center justify-center hover:border-[#FFB300] transition-colors cursor-pointer text-zinc-600 hover:text-[#FFB300]">
+          <div className="w-8 h-8 rounded-full border border-zinc-800 flex items-center justify-center hover:border-primary transition-colors cursor-pointer text-zinc-600 hover:text-primary">
             <Activity size={14} />
           </div>
-          <div className="w-8 h-8 rounded-full border border-zinc-800 flex items-center justify-center hover:border-[#FFB300] transition-colors cursor-pointer text-zinc-600 hover:text-[#FFB300]">
+          <div className="w-8 h-8 rounded-full border border-zinc-800 flex items-center justify-center hover:border-primary transition-colors cursor-pointer text-zinc-600 hover:text-primary">
             <Users size={14} />
           </div>
         </div>

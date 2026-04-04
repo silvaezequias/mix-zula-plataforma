@@ -69,8 +69,8 @@ const KdaModal = ({
 
   return (
     <div className="fixed inset-0 z-250 flex items-center justify-center p-4 bg-black/95 backdrop-blur-sm uppercase italic">
-      <div className="bg-[#111] border-2 border-[#FFB300] w-full max-w-sm shadow-[0_0_50px_rgba(255,179,0,0.2)] overflow-hidden animate-in zoom-in-95">
-        <div className="bg-[#FFB300] p-4 flex justify-between items-center text-black font-black">
+      <div className="bg-[#111] border-2 border-primary w-full max-w-sm shadow-[0_0_50px_rgba(255,179,0,0.2)] overflow-hidden animate-in zoom-in-95">
+        <div className="bg-primary p-4 flex justify-between items-center text-black font-black">
           <h3 className="text-lg tracking-tighter italic">
             REGISTRO DE RODADA: R{currentRound}
           </h3>
@@ -89,8 +89,8 @@ const KdaModal = ({
             <p className="text-xl text-white font-black italic">
               {player.gameNick}
             </p>
-            <div className="inline-block px-3 py-1 bg-[#FFB300]/10 border border-[#FFB300]/20 mt-2">
-              <span className="text-[10px] text-[#FFB300] font-black uppercase">
+            <div className="inline-block px-3 py-1 bg-primary/10 border border-primary/20 mt-2">
+              <span className="text-[10px] text-primary font-black uppercase">
                 PLACAR TOTAL: {totalKills} KILLS
               </span>
             </div>
@@ -102,7 +102,7 @@ const KdaModal = ({
               </label>
               <input
                 type="number"
-                className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white font-black text-center outline-none focus:border-[#FFB300]"
+                className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white font-black text-center outline-none focus:border-primary"
                 value={k}
                 onChange={(e) => setK(parseInt(e.target.value) || 0)}
               />
@@ -113,7 +113,7 @@ const KdaModal = ({
               </label>
               <input
                 type="number"
-                className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white font-black text-center outline-none focus:border-[#FFB300]"
+                className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white font-black text-center outline-none focus:border-primary"
                 value={d}
                 onChange={(e) => setD(parseInt(e.target.value) || 0)}
               />
@@ -124,7 +124,7 @@ const KdaModal = ({
               </label>
               <input
                 type="number"
-                className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white font-black text-center outline-none focus:border-[#FFB300]"
+                className="w-full bg-zinc-900 border border-zinc-800 p-2 text-white font-black text-center outline-none focus:border-primary"
                 value={a}
                 onChange={(e) => setA(parseInt(e.target.value) || 0)}
               />
@@ -132,7 +132,7 @@ const KdaModal = ({
           </div>
           <button
             onClick={() => onSave(k, d, a)}
-            className="w-full bg-[#FFB300] text-black font-black py-4 text-xs tracking-widest hover:brightness-110 transition-all uppercase italic"
+            className="w-full bg-primary text-black font-black py-4 text-xs tracking-widest hover:brightness-110 transition-all uppercase italic"
           >
             SALVAR NO HISTÓRICO
           </button>
@@ -183,7 +183,7 @@ const TeamMatchCard = ({
           : isLost
             ? "border-zinc-800 opacity-30 grayscale"
             : isCurrentMatch
-              ? "border-[#FFB300] bg-[#FFB300]/5"
+              ? "border-primary bg-primary/5"
               : "border-zinc-900 opacity-20 grayscale scale-[0.98]"
       }`}
     >
@@ -199,7 +199,7 @@ const TeamMatchCard = ({
           </span>
         </div>
         {isWinner && (
-          <Trophy size={16} className="text-[#FFB300] animate-bounce" />
+          <Trophy size={16} className="text-primary animate-bounce" />
         )}
       </div>
 
@@ -222,7 +222,7 @@ const TeamMatchCard = ({
               {isStaff && matchStatus !== "finalizado" && isCurrentMatch && (
                 <button
                   onClick={() => onEditKda(p)}
-                  className="text-zinc-700 hover:text-[#FFB300] transition-transform active:scale-110"
+                  className="text-zinc-700 hover:text-primary transition-transform active:scale-110"
                 >
                   <Settings size={10} />
                 </button>
@@ -311,23 +311,23 @@ export const GamesTab: React.FC<GamesTabProps> = ({
             <div className="flex flex-col items-center gap-2 mb-10">
               <div className="flex items-center gap-4">
                 <div
-                  className={`h-px w-12 sm:w-32 transition-colors ${isCurrentMatch ? "bg-[#FFB300]" : "bg-zinc-800"}`}
+                  className={`h-px w-12 sm:w-32 transition-colors ${isCurrentMatch ? "bg-primary" : "bg-zinc-800"}`}
                 ></div>
                 <h4
-                  className={`font-black text-xs sm:text-sm tracking-[0.5em] uppercase italic transition-colors ${isCurrentMatch ? "text-[#FFB300]" : "text-zinc-600"}`}
+                  className={`font-black text-xs sm:text-sm tracking-[0.5em] uppercase italic transition-colors ${isCurrentMatch ? "text-primary" : "text-zinc-600"}`}
                 >
                   {match.phase === 2
                     ? "GRANDE FINAL"
                     : `CONFRONTO ${match.id.replace("m", "")}`}
                 </h4>
                 <div
-                  className={`h-px w-12 sm:w-32 transition-colors ${isCurrentMatch ? "bg-[#FFB300]" : "bg-zinc-800"}`}
+                  className={`h-px w-12 sm:w-32 transition-colors ${isCurrentMatch ? "bg-primary" : "bg-zinc-800"}`}
                 ></div>
               </div>
 
               {/* Controle de Rounds (Apenas se em destaque) */}
               <div
-                className={`flex items-center gap-4 bg-zinc-900 border px-6 py-2 mt-3 shadow-2xl transition-all ${isCurrentMatch ? "border-[#FFB300] shadow-[0_0_20px_rgba(255,179,0,0.1)]" : "border-zinc-800 opacity-40"}`}
+                className={`flex items-center gap-4 bg-zinc-900 border px-6 py-2 mt-3 shadow-2xl transition-all ${isCurrentMatch ? "border-primary shadow-[0_0_20px_rgba(255,179,0,0.1)]" : "border-zinc-800 opacity-40"}`}
               >
                 <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic mr-2">
                   RODADA ATUAL:
@@ -335,7 +335,7 @@ export const GamesTab: React.FC<GamesTabProps> = ({
                 {isStaff && !isFinished && isCurrentMatch && (
                   <button
                     onClick={() => onUpdateMatchRound(match.id, false)}
-                    className="text-zinc-600 hover:text-[#FFB300] transition-colors"
+                    className="text-zinc-600 hover:text-primary transition-colors"
                   >
                     <Minus size={16} />
                   </button>
@@ -348,7 +348,7 @@ export const GamesTab: React.FC<GamesTabProps> = ({
                 {isStaff && !isFinished && isCurrentMatch && (
                   <button
                     onClick={() => onUpdateMatchRound(match.id, true)}
-                    className="text-zinc-600 hover:text-[#FFB300] transition-colors"
+                    className="text-zinc-600 hover:text-primary transition-colors"
                   >
                     <Plus size={16} />
                   </button>
@@ -376,15 +376,15 @@ export const GamesTab: React.FC<GamesTabProps> = ({
               {/* Conector VS com Ação de Troca de Lados */}
               <div className="flex flex-row md:flex-col mb-10 md:mb-0 items-center justify-center h-full min-w-25 relative">
                 <div
-                  className={`hidden md:block w-px h-32 transition-colors ${isCurrentMatch ? "bg-[#FFB300]/40" : "bg-zinc-800"}`}
+                  className={`hidden md:block w-px h-32 transition-colors ${isCurrentMatch ? "bg-primary/40" : "bg-zinc-800"}`}
                 ></div>
                 <div
-                  className={`md:hidden h-px w-16 transition-colors ${isCurrentMatch ? "bg-[#FFB300]/40" : "bg-zinc-800"}`}
+                  className={`md:hidden h-px w-16 transition-colors ${isCurrentMatch ? "bg-primary/40" : "bg-zinc-800"}`}
                 ></div>
 
                 <div className="flex flex-col items-center gap-4 z-10 mx-15">
                   <div
-                    className={`p-3 border-2 transform rotate-45 transition-all ${isCurrentMatch ? "bg-[#FFB300] border-[#FFB300] shadow-[0_0_15px_rgba(255,179,0,0.3)]" : "bg-zinc-900 border-zinc-800"}`}
+                    className={`p-3 border-2 transform rotate-45 transition-all ${isCurrentMatch ? "bg-primary border-primary shadow-[0_0_15px_rgba(255,179,0,0.3)]" : "bg-zinc-900 border-zinc-800"}`}
                   >
                     <Sword
                       size={20}
@@ -394,7 +394,7 @@ export const GamesTab: React.FC<GamesTabProps> = ({
                   {isStaff && !isLocked && !isFinished && isCurrentMatch && (
                     <button
                       onClick={() => onSwapSides(match.id)}
-                      className="bg-zinc-900 p-2 border border-zinc-800 hover:border-[#FFB300] hover:text-[#FFB300] text-zinc-500 transition-all rounded-full shadow-xl animate-in fade-in"
+                      className="bg-zinc-900 p-2 border border-zinc-800 hover:border-primary hover:text-primary text-zinc-500 transition-all rounded-full shadow-xl animate-in fade-in"
                       title="Inverter Lados (TR/CT)"
                     >
                       <Shuffle size={14} />
@@ -403,10 +403,10 @@ export const GamesTab: React.FC<GamesTabProps> = ({
                 </div>
 
                 <div
-                  className={`hidden md:block w-px h-32 transition-colors ${isCurrentMatch ? "bg-[#FFB300]/40" : "bg-zinc-800"}`}
+                  className={`hidden md:block w-px h-32 transition-colors ${isCurrentMatch ? "bg-primary/40" : "bg-zinc-800"}`}
                 ></div>
                 <div
-                  className={`md:hidden h-px w-16 transition-colors ${isCurrentMatch ? "bg-[#FFB300]/40" : "bg-zinc-800"}`}
+                  className={`md:hidden h-px w-16 transition-colors ${isCurrentMatch ? "bg-primary/40" : "bg-zinc-800"}`}
                 ></div>
 
                 {/* Status Badge */}
@@ -415,7 +415,7 @@ export const GamesTab: React.FC<GamesTabProps> = ({
                     match.status === "iniciado"
                       ? "bg-indigo-600 border-indigo-400 text-white animate-pulse shadow-[0_0_15px_rgba(99,102,241,0.4)]"
                       : isCurrentMatch
-                        ? "bg-zinc-900 border-[#FFB300] text-[#FFB300]"
+                        ? "bg-zinc-900 border-primary text-primary"
                         : "bg-zinc-950 border-zinc-800 text-zinc-700"
                   }`}
                 >
@@ -447,7 +447,7 @@ export const GamesTab: React.FC<GamesTabProps> = ({
                   className={`px-10 py-3 text-[11px] font-black border transition-all uppercase italic tracking-[0.3em] ${
                     match.status === "iniciado"
                       ? "bg-indigo-600 border-indigo-500 text-white shadow-[0_0_25px_rgba(99,102,241,0.3)]"
-                      : "bg-transparent border-[#FFB300] text-[#FFB300] hover:bg-[#FFB300] hover:text-black"
+                      : "bg-transparent border-primary text-primary hover:bg-primary hover:text-black"
                   }`}
                 >
                   {match.status === "iniciado"
@@ -465,10 +465,10 @@ export const GamesTab: React.FC<GamesTabProps> = ({
         sortedMatches.every((m) => m.status === "finalizado") && (
           <div className="py-24 text-center space-y-6 animate-in zoom-in duration-1000">
             <div className="relative inline-block">
-              <div className="absolute inset-0 bg-[#FFB300] blur-3xl opacity-5"></div>
+              <div className="absolute inset-0 bg-primary blur-3xl opacity-5"></div>
               <Trophy
                 size={80}
-                className="text-[#FFB300] mx-auto relative z-10"
+                className="text-primary mx-auto relative z-10"
               />
             </div>
             <div className="space-y-2">

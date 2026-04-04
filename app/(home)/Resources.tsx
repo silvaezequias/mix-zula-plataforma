@@ -5,8 +5,8 @@ export const Resources = () => {
     <section className="px-6 lg:px-12 py-20 border-t border-zinc-900 bg-zinc-950/30">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-12">
         <div className="flex gap-6 group">
-          <div className="bg-zinc-900 p-4 border border-zinc-800 group-hover:border-[#FFB300] transition-colors h-fit">
-            <Sword size={24} className="text-[#FFB300]" />
+          <div className="bg-zinc-900 p-4 border border-zinc-800 group-hover:border-primary transition-colors h-fit">
+            <Sword size={24} className="text-primary" />
           </div>
           <div className="space-y-2">
             <h4 className="text-lg font-black uppercase">
@@ -20,8 +20,8 @@ export const Resources = () => {
         </div>
 
         <div className="flex gap-6 group">
-          <div className="bg-zinc-900 p-4 border border-zinc-800 group-hover:border-[#FFB300] transition-colors h-fit">
-            <Target size={24} className="text-[#FFB300]" />
+          <div className="bg-zinc-900 p-4 border border-zinc-800 group-hover:border-primary transition-colors h-fit">
+            <Target size={24} className="text-primary" />
           </div>
           <div className="space-y-2">
             <h4 className="text-lg font-black uppercase">Tracking de KD</h4>
@@ -33,8 +33,8 @@ export const Resources = () => {
         </div>
 
         <div className="flex gap-6 group">
-          <div className="bg-zinc-900 p-4 border border-zinc-800 group-hover:border-[#FFB300] transition-colors h-fit">
-            <Globe size={24} className="text-[#FFB300]" />
+          <div className="bg-zinc-900 p-4 border border-zinc-800 group-hover:border-primary transition-colors h-fit">
+            <Globe size={24} className="text-primary" />
           </div>
           <div className="space-y-2">
             <h4 className="text-lg font-black uppercase">Lives Oficiais</h4>
