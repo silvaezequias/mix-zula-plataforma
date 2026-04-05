@@ -161,6 +161,76 @@ export const MOCK_TOURNAMENTS: Championship[] = [
       map: "Suburbio",
     },
   },
+  {
+    id: "2",
+    name: "2 Teste - MIX ZULA",
+    prize: "sem premiação",
+    status: "open",
+    players: generateMockPlayers(19),
+    teams: [
+      {
+        id: "t1",
+        name: "Equipe Alpha",
+        players: generateMockPlayers(5),
+        side: "TR",
+      },
+      {
+        id: "t2",
+        name: "Equipe Bravo",
+        players: generateMockPlayers(5),
+        side: "CT",
+      },
+      {
+        id: "t3",
+        name: "Equipe Charlie",
+        players: generateMockPlayers(5),
+        side: "TR",
+      },
+      {
+        id: "t4",
+        name: "Equipe Delta",
+        players: generateMockPlayers(5),
+        side: "CT",
+      },
+    ],
+    matches: [
+      {
+        id: "m1",
+        teamAId: "t1",
+        teamBId: "t2",
+        status: "preparando",
+        phase: 1,
+        order: 1,
+        currentRound: 0,
+        swappedSides: false,
+      },
+      {
+        id: "m2",
+        teamAId: "t3",
+        teamBId: "t4",
+        status: "desligado",
+        phase: 1,
+        order: 2,
+        currentRound: 10,
+        swappedSides: true,
+        winnerId: "t3",
+      },
+    ],
+    broadcast: {
+      platform: "YOUTUBE",
+      link: "https://www.youtube.com/watch?v=example",
+      time: "20:00",
+      streamerId: "",
+    },
+    settings: {
+      playersPerTeam: 5,
+      totalTeams: 4,
+      rounds: 10,
+      sideSwap: true,
+      gameMode: "SABOTAGEM",
+      map: "Favela",
+    },
+  },
 ];
 
 export const MOCK_PLAYERS = generateMockPlayers(20);

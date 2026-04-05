@@ -17,8 +17,6 @@ export type InformationTabProps = {
 };
 
 export const InformationTab = ({ championship }: InformationTabProps) => {
-  const isAdmin = true; // TODO: substituir pela verificação real de permissão
-
   const router = useRouter();
   const tournamentId = championship.id; // Certifique-se de que o ID do torneio esteja disponível no objeto championship
 
@@ -67,43 +65,22 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
 
   return (
     <div className="space-y-6 uppercase animate-in fade-in duration-500">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 px-2 flex-wrap">
-        {!isAdmin && championship.status === "open" ? (
-          <>
-            <ActionButton
-              className="w-full ring ring-red-400 col-span-2 hidden md:inline-block"
-              onClick={handleAction}
-            >
-              <LogIn
-                size={20}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-              <span className="text-sm font-black italic tracking-tighter uppercase">
-                PARTICIPAR DO TORNEIO
-              </span>
-            </ActionButton>
-            <ActionButton
-              className="w-full ring ring-red-400 col-span-1 md:hidden"
-              onClick={handleAction}
-            >
-              <LogIn
-                size={20}
-                className="group-hover:translate-x-1 transition-transform"
-              />
-              <span className="text-sm font-black italic tracking-tighter uppercase">
-                PARTICIPAR DO TORNEIO
-              </span>
-            </ActionButton>
-          </>
-        ) : (
-          <>
-            <span />
-            <span />
-          </>
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-2">
+        {championship.status === "open" && (
+          <ActionButton className="w-full sm:col-span-2" onClick={handleAction}>
+            <LogIn
+              size={20}
+              className="group-hover:translate-x-1 transition-transform"
+            />
+            <span className="text-sm font-black italic tracking-tighter uppercase">
+              PARTICIPAR DO TORNEIO
+            </span>
+          </ActionButton>
         )}
+
         {status && (
           <span
-            className={`${status.className} text-white w-full col-span-1 md:col-span-1  px-6 py-2 font-black text-sm uppercase flex items-center justify-center gap-2 italic tracking-widest`}
+            className={`${status.className} text-white w-full sm:col-span-1 px-6 py-2 font-black text-sm uppercase flex items-center justify-center gap-2 italic tracking-widest`}
           >
             <status.icon size={16} className="animate-pulse" />
             {status.label}

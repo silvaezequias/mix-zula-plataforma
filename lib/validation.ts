@@ -80,7 +80,7 @@ function validateDate(dateString: string) {
     });
   }
 
-  return date;
+  return dateString;
 }
 
 export default validation;

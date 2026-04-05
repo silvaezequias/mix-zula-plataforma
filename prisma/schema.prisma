@@ -27,12 +27,13 @@ type Stat {
 }
 
 model User {
-  id            String    @id @default(auto()) @map("_id") @db.ObjectId
-  discordId     String?
-  name          String?
-  email         String?   @unique
+  id        String  @id @default(auto()) @map("_id") @db.ObjectId
+  discordId String?
+  name      String?
+  email     String? @unique
+  birthDate String?
+
   emailVerified DateTime?
-  birthDate     DateTime?
   isOnboarded   Boolean   @default(false)
 
   image String?

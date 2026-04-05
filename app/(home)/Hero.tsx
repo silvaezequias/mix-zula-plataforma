@@ -1,3 +1,5 @@
+"use client";
+
 import { Activity, Play, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 

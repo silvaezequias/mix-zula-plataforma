@@ -2,13 +2,8 @@ import NextAuth, { AuthOptions } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import { prisma } from "@/infra/prisma";
-import { parseDateString } from "@/lib/formatter";
 
 const { DISCORD_CLIENT_ID = "", DISCORD_CLIENT_SECRET = "" } = process.env;
-
-if (!DISCORD_CLIENT_ID || !DISCORD_CLIENT_SECRET) {
-  throw new Error("Missing Discord env variables");
-}
 
 export const authOptions: AuthOptions = {
   adapter: PrismaAdapter(prisma),
@@ -39,9 +34,7 @@ export const authOptions: AuthOptions = {
         if (storedUser) {
           token.isOnboarded = storedUser.isOnboarded ?? false;
           token.player = storedUser.player ?? null;
-          token.birthDate = storedUser.birthDate
-            ? parseDateString(storedUser.birthDate)
-            : null;
+          token.birthDate = storedUser.birthDate ? storedUser.birthDate : null;
         }
       }
       return token;

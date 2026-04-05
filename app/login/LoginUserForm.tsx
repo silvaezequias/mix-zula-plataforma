@@ -17,13 +17,14 @@ export const LoginUserForm = ({ loading, setLoading }: LoginUserFormProps) => {
   const router = useRouter();
 
   const isAuthenticated = status === "authenticated";
-  const isOnboarded = isAuthenticated && (session?.user.isOnboarded || false);
+  const isOnboarded = !!session?.user?.isOnboarded;
 
   const discordData: PayloadUser | null = session?.user ?? null;
 
   const searchParams = useSearchParams();
   const redirectUrl = searchParams.get("redirect");
-  const safeRedirect = redirectUrl || "/";
+  const safeRedirect =
+    redirectUrl && redirectUrl.startsWith("/") ? redirectUrl : "/";
   const redirectBeforeUserUpdateUrl = `/atualizar-cadastro/?redirect=${encodeURIComponent(safeRedirect)}`;
 
   const handleFinalLogin = (e: React.FormEvent) => {
@@ -45,7 +46,7 @@ export const LoginUserForm = ({ loading, setLoading }: LoginUserFormProps) => {
           loading={loading}
           onSignIn={() => {
             setLoading(true);
-            signIn("discord", { callbackUrl: window.location.href });
+            signIn("discord", { callbackUrl: safeRedirect });
           }}
         />
       </div>
@@ -95,7 +96,7 @@ export const LoginUserForm = ({ loading, setLoading }: LoginUserFormProps) => {
                       : "bg-primary text-black hover:brightness-110 shadow-[0_10px_20px_rgba(255,179,0,0.15)] active:scale-[0.98]"
                   }`}
         >
-          ENTRAR <ChevronRight size={18} />
+          CONTINUAR <ChevronRight size={18} />
         </button>
       </div>
     </form>

@@ -1,8 +1,10 @@
+"use server";
+
 import { Footer } from "./Footer";
 import { Header } from "./Header";
 import Container from "./ui/Container";
 
-export function Layout({
+export async function Layout({
   children,
   hideHeader,
 }: {

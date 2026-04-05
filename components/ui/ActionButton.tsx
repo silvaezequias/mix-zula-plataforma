@@ -17,7 +17,7 @@ export const ActionButton = ({
       onClick={onClick}
       disabled={disabled}
       className={clsx(
-        "group relative inline-flex items-center justify-center gap-3",
+        "group relative cursor-pointer inline-flex items-center justify-center gap-3",
         "w-full sm:w-auto",
         "px-8 py-4",
         "font-semibold tracking-wide",

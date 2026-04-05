@@ -1,3 +1,5 @@
+"use client";
+
 import { ChevronRight, Medal } from "lucide-react";
 import { useRouter } from "next/navigation";
 

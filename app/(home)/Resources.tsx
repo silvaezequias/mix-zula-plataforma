@@ -1,3 +1,5 @@
+"use client";
+
 import { Globe, Sword, Target } from "lucide-react";
 
 export const Resources = () => {

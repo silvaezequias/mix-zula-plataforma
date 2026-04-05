@@ -1,80 +1,16 @@
-"use client";
-
-import React, { useState, Suspense } from "react";
-
-import { Trophy, ShieldCheck } from "lucide-react";
-import { useSession } from "next-auth/react";
+import { RequestWithSearchParams } from "@/types/frontend";
+import { requireAuth } from "@/lib/authorization/accessControl";
+import { ShieldCheck, Trophy } from "lucide-react";
 import { brand } from "@/config/brand";
-import { parseDate, parseDateString } from "@/lib/formatter";
-import { easyFetch } from "@/lib/fetch";
 import { UpdateUserForm } from "./UpdateUserForm";
+import { redirect } from "next/navigation";
 
-export default function UpdateUserPage() {
-  const { data: session } = useSession();
+export default async function UpdateRegistration(req: RequestWithSearchParams) {
+  const { session, searchParams } = await requireAuth(req);
 
-  const [formData, setFormData] = useState({
-    playerNickname: "",
-    birthDate: "",
-  });
-
-  const playerNickname =
-    formData.playerNickname || session?.user?.player?.nickname || "";
-  const birthDate = formData.birthDate || session?.user?.birthDate || "";
-
-  const [error, setError] = useState<string | null>(null);
-  const [apiResponseStatus, setApiResponseStatus] = useState(0);
-  const [loading, setLoading] = useState(false);
-
-  const canUpdate =
-    !!(birthDate && playerNickname) &&
-    (birthDate != session?.user?.birthDate ||
-      playerNickname != session?.user?.player?.nickname);
-
-  const handleInputChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
-  ) => {
-    const { name, value } = e.target;
-
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "playerNickname" ? value.replace(/ /g, "") : value,
-    }));
-    setError(null);
-  };
-
-  const handleUpdate = (e: React.FormEvent) => {
-    e.preventDefault();
-
-    if (!playerNickname) {
-      setError("O seu nome dentro do jogo é obrigatório para a identificação.");
-      return;
-    }
-    if (!birthDate) {
-      setError(
-        "A data de nascimento é necessária para os protocolos de idade.",
-      );
-      return;
-    }
-
-    const raw = JSON.stringify({
-      birthDate: parseDateString(parseDate(birthDate)),
-      playerNickname: playerNickname,
-    });
-
-    setLoading(true);
-    easyFetch(`/api/users/${session?.user.id}`, {
-      method: "PATCH",
-      body: raw,
-    })
-      .then((res) => res.json())
-      .then(async (response) => {
-        setLoading(false);
-
-        if (response.status !== 200) return setError(response.message);
-
-        setApiResponseStatus(response.status);
-      });
-  };
+  if (session.user.isOnboarded) {
+    if (searchParams.redirect) redirect(searchParams.redirect);
+  }
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans uppercase italic tracking-widest flex items-center justify-center p-4 relative overflow-hidden selection:bg-primary selection:text-black">
@@ -97,21 +33,9 @@ export default function UpdateUserPage() {
         </div>
 
         <div className="bg-[#111] border-t-4 border-primary p-8 sm:p-10 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-32 h-8 bg-primary transform skew-x-35 translate-x-16 -translate-y-4 opacity-50"></div>
-          <Suspense fallback={<div>Loading...</div>}>
-            <UpdateUserForm
-              birthDate={birthDate}
-              playerNickname={playerNickname}
-              canSubmit={canUpdate}
-              handleInputChange={handleInputChange}
-              handleUpdate={handleUpdate}
-              loading={loading}
-              messageError={error}
-              apiResponseStatus={apiResponseStatus}
-            />
-          </Suspense>
+          <div className="absolute top-0 right-0 w-48 h-8 bg-primary transform skew-x-35 translate-x-16 -translate-y-4 opacity-50"></div>
+          <UpdateUserForm user={session.user} />
         </div>
-
         <div className="mt-8 flex flex-col items-center gap-4 opacity-40">
           <div className="flex items-center gap-4 text-zinc-500">
             <div className="h-px w-12 bg-zinc-800"></div>

@@ -1,8 +1,9 @@
 "use client";
 
-import React, { Suspense, useState } from "react";
+import { Suspense, useState } from "react";
 import { Trophy, Info } from "lucide-react";
 import { LoginUserForm } from "./LoginUserForm";
+import { brand } from "@/config/brand";
 
 const BackgroundEffects = () => (
   <div className="fixed inset-0 pointer-events-none">
@@ -17,7 +18,8 @@ const Header = () => (
       <Trophy className="text-black w-10 h-10" />
     </div>
     <h1 className="text-3xl sm:text-4xl font-black italic tracking-tighter text-center leading-none">
-      MIX <span className="text-primary">ZULA</span>
+      {brand.splittedName[0]}{" "}
+      <span className="text-primary">{brand.splittedName[1]}</span>
     </h1>
     <p className="text-zinc-500 text-[9px] font-bold tracking-[0.4em] mt-3 uppercase">
       Entre com sua conta do discord

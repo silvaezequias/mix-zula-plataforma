@@ -64,7 +64,6 @@ export const ChampionshipDetailView: React.FC<DetailProps> = (props) => {
               : m,
           );
 
-          // Lógica simples de avanço: Se m1 e m2 acabaram, cria a final
           const m1 = matches.find((m) => m.id === "m1");
           const m2 = matches.find((m) => m.id === "m2");
           if (

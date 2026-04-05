@@ -3,10 +3,8 @@ import { ChevronRight, MapIcon, Medal, Target, Trophy } from "lucide-react";
 
 export const TournamentCard = ({
   tournament,
-  onClick,
 }: {
   tournament: Championship;
-  onClick: () => void;
 }) => {
   const getStatusConfig = (status: ChampStatus) => {
     switch (status) {
@@ -49,7 +47,6 @@ export const TournamentCard = ({
 
   return (
     <div
-      onClick={onClick}
       className={`group relative bg-[#111] border-l-4 ${config.border} p-6 sm:p-8 hover:bg-zinc-900 transition-all cursor-pointer overflow-hidden shadow-xl`}
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-[0.02] transform rotate-45 translate-x-16 -translate-y-16 group-hover:opacity-[0.05] transition-opacity"></div>
