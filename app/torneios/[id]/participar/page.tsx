@@ -53,10 +53,9 @@ export default async function RegistrationPage(props: {
 
   const user = session.user;
 
-  const maxPlayers =
-    tournament.settings.totalTeams * tournament.settings.playersPerTeam;
+  const maxPlayers = tournament.totalTeams * tournament.playersPerTeam;
 
-  const currentPlayersCount = tournament.players.length;
+  const currentPlayersCount = 36;
   const isFull = currentPlayersCount >= maxPlayers;
 
   return (
@@ -86,19 +85,13 @@ export default async function RegistrationPage(props: {
                 </span>
               </div>
               <h1 className="text-4xl sm:text-7xl font-black italic tracking-tighter leading-none mb-6 uppercase">
-                {tournament.name}
+                {tournament.title}
               </h1>
               <div className="flex flex-wrap gap-8 text-zinc-400">
                 <div className="flex items-center gap-3">
-                  <MapPin size={18} className="text-primary" />
-                  <span className="text-xs font-black uppercase tracking-tighter">
-                    {tournament.settings.map}
-                  </span>
-                </div>
-                <div className="flex items-center gap-3">
                   <Target size={18} className="text-primary" />
                   <span className="text-xs font-black uppercase tracking-tighter">
-                    {tournament.settings.gameMode}
+                    {tournament.gameMode}
                   </span>
                 </div>
                 <div className="flex items-center gap-3">
@@ -128,9 +121,9 @@ export default async function RegistrationPage(props: {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[
                   `Máximo de Agentes: ${maxPlayers}`,
-                  `Rounds por Lado: ${tournament.settings.rounds}`,
-                  `Troca de Lados: ${tournament.settings.sideSwap ? "Habilitado" : "Desabilitado"}`,
-                  `${tournament.status === "open" ? "Inscrições Abertas" : "Fechado"}`,
+                  `Rounds por Lado: ${tournament.matchesPerMatch}`,
+                  `Troca de Lados: ${tournament.swapTeam ? "Habilitado" : "Desabilitado"}`,
+                  `${tournament.status === "OPEN" ? "Inscrições Abertas" : "Fechado"}`,
                 ].map((text, i) => (
                   <div
                     key={i}
@@ -160,7 +153,7 @@ export default async function RegistrationPage(props: {
                       </h3>
                       <p className="text-zinc-500 text-[10px] font-bold uppercase">
                         {user.player?.nickname}, VOCÊ ESTÁ INSCRITO NO TORNEIO{" "}
-                        {tournament!.name}!
+                        {tournament!.title}!
                       </p>
                     </div>
                     <div className="p-6 bg-zinc-900 border-l-4 border-green-500 text-left">
@@ -243,10 +236,10 @@ export default async function RegistrationPage(props: {
 
                       <div className="space-y-3 ">
                         <ActionButton
-                          disabled={isFull || tournament.status !== "open"}
+                          disabled={isFull || tournament.status !== "OPEN"}
                           className={`w-full sm:w-full font-black py-6 text-sm tracking-[0.4em] transition-all shadow-2xl flex items-center justify-center gap-4 uppercase
                           ${
-                            isFull || tournament.status !== "open"
+                            isFull || tournament.status !== "OPEN"
                               ? "bg-zinc-800 text-zinc-600 cursor-not-allowed border-zinc-700"
                               : "bg-primary text-black hover:brightness-110 active:scale-[0.98] shadow-primary/10"
                           }`}

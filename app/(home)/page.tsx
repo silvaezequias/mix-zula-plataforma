@@ -12,7 +12,7 @@ import Link from "next/link";
 
 export default async function LandingPage() {
   const highlightedTournament = MOCK_TOURNAMENTS.find(
-    (t) => t.status === "open",
+    (t) => t.status === "OPEN",
   );
 
   return (
@@ -21,13 +21,13 @@ export default async function LandingPage() {
         <Link href={`/torneios/${highlightedTournament.id}/participar`}>
           <HightlightedBanner cta="INSCREVER AGORA">
             <Zap size={14} fill="black" />
-            ALISTAMENTO ABERTO: {highlightedTournament.name}
+            ALISTAMENTO ABERTO: {highlightedTournament.title}
             <span className="opacity-40">•</span>
             PREMIAÇÃO: {highlightedTournament.prize}
             <span className="opacity-40">•</span>
-            VAGAS: {highlightedTournament.players.length}/
-            {highlightedTournament.settings.totalTeams *
-              highlightedTournament.settings.playersPerTeam}
+            VAGAS: {0}/
+            {highlightedTournament.totalTeams *
+              highlightedTournament.playersPerTeam}
             <span className="opacity-40">•</span>
           </HightlightedBanner>
         </Link>
