@@ -41,5 +41,11 @@ export async function getAuthOrThrow() {
     });
   }
 
+  if (!session.user.discordId) {
+    throw new UnauthorizedError({
+      message: "Sua sessão está inválida. Por favor faça login novamente.",
+    });
+  }
+
   return session;
 }

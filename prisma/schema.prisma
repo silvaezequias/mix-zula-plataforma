@@ -41,8 +41,9 @@ model User {
   player       Player?
   generalStats Stat[]
 
-  accounts Account[]
-  sessions Session[]
+  accounts    Account[]
+  sessions    Session[]
+  tournaments Tournament[]
 }
 
 model Account {
@@ -74,4 +75,79 @@ model Session {
   expires      DateTime
 
   user User @relation(fields: [userId], references: [id])
+}
+
+model Tournament {
+  id      String @id @default(auto()) @map("_id") @db.ObjectId
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String @db.ObjectId
+
+  preset      String? @default("custom")
+  title       String
+  description String
+  prize       String
+
+  startDate DateTime
+  endType   EndType   @default(MANUAL)
+  endDate   DateTime?
+
+  format         Format         @default(SINGLE_ELIMINATION)
+  gameMode       GameMode       @default(SABOTAGEM)
+  statsType      StatsType      @default(MATCH)
+  teamManagement TeamManagement @default(RANDOM)
+
+  swapTeam        Boolean @default(true)
+  matchesPerMatch Int     @default(1)
+
+  totalTeams       Int
+  playersPerTeam   Int
+  maxPlayers       Int
+  maxRegistrations Int
+
+  confirmationSystem Boolean @default(false)
+  confirmationTime   Int     @default(5)
+
+  hasSubstitutes   Boolean
+  substitutesLimit Int
+
+  broadcastPlatform BroadcastPlatform?
+  broadcastUrl      String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+enum EndType {
+  DATE
+  MANUAL
+}
+
+enum Format {
+  SINGLE_ELIMINATION
+  DOUBLE_ELIMINATION
+  SWISS
+}
+
+enum GameMode {
+  SABOTAGEM
+  MATA_MATA
+  PROCURADO
+  ESCOLTA
+  ELIMINAÇÃO
+}
+
+enum StatsType {
+  ROUND
+  MATCH
+}
+
+enum TeamManagement {
+  RANDOM
+  CLAN
+}
+
+enum BroadcastPlatform {
+  TWITCH
+  YOUTUBE
+  NONE
 }

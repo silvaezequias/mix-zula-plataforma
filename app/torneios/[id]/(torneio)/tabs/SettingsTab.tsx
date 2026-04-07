@@ -1,4 +1,4 @@
-import { MOCK_MAPS } from "@/contansts/data";
+import { MOCK_MAPS } from "@/constants/data";
 import { Championship } from "@/types";
 import {
   Check,

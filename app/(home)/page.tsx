@@ -1,7 +1,7 @@
 "use server";
 
 import { Zap } from "lucide-react";
-import { MOCK_TOURNAMENTS } from "@/contansts/data";
+import { MOCK_TOURNAMENTS } from "@/constants/data";
 import { HightlightedBanner } from "@/components/ui/HighlightedBanner";
 import { Layout } from "@/components/Layout";
 import { Page } from "@/components/Page";

@@ -1,6 +1,13 @@
 import { Championship, Role } from "@/types";
 import { PayloadUser } from "@/types/next-auth";
 
+export const BETA_WHITELIST = [
+  "367725991994458115",
+  "557416664484937748",
+  "299624104632254466",
+  "597565657848217611",
+];
+
 export const AVAILABLE_ROLES: { label: string; value: Role; color: string }[] =
   [
     { label: "ADMINISTRADOR", value: "ADMIN", color: "text-red-500" },
@@ -246,4 +253,20 @@ export const MOCK_MAPS = [
   { id: "m4", name: "CASTELO" },
   { id: "m5", name: "CHINA" },
   { id: "m6", name: "FAVELA" },
+];
+
+export const BROADCAST_PLATFORMS = [
+  "YouTube",
+  "Twitch",
+  "Kick",
+  "TikTok",
+  "Outro",
+];
+
+export const GAME_MODES = [
+  "Sabotagem",
+  "Mata-Mata em Equipe",
+  "Procurado",
+  "Escolta",
+  "Eliminação",
 ];

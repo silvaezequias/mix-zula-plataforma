@@ -2,6 +2,7 @@
 
 import { Footer } from "./Footer";
 import { Header } from "./Header";
+import { Page } from "./Page";
 import Container from "./ui/Container";
 
 export async function Layout({
@@ -12,10 +13,10 @@ export async function Layout({
   hideHeader?: boolean;
 }) {
   return (
-    <div>
+    <Page>
       {!hideHeader && <Header />}
       <Container>{children}</Container>
       <Footer />
-    </div>
+    </Page>
   );
 }

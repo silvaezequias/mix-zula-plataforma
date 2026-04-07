@@ -4,7 +4,7 @@ import { Player } from "@prisma/client";
 
 export type PayloadUser = {
   id: string;
-  discordId: string | null;
+  discordId: string;
   name?: string | null;
   email?: string | null;
   image?: string | null;

@@ -19,10 +19,10 @@ export const authOptions: AuthOptions = {
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        const discordId =
-          account?.provider === "discord" ? account.providerAccountId : null;
+        if (user && account?.provider === "discord") {
+          token.discordId = account.providerAccountId;
+        }
 
-        token.discordId = discordId ?? token.discordId ?? null;
         token.id = user.id;
         token.name = user.name;
 
@@ -45,6 +45,7 @@ export const authOptions: AuthOptions = {
         session.user.isOnboarded = token.isOnboarded ?? false;
         session.user.player = token.player ?? null;
         session.user.birthDate = token.birthDate ?? null;
+        session.user.discordId = token.discordId ?? null;
       }
       return session;
     },

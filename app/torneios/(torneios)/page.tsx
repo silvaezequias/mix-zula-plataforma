@@ -1,7 +1,7 @@
 "use server";
 
 import { Trophy, Clock, LayoutGrid } from "lucide-react";
-import { MOCK_TOURNAMENTS } from "@/contansts/data";
+import { MOCK_TOURNAMENTS } from "@/constants/data";
 import { TournamentCard } from "./TournamentCard";
 import { Page } from "@/components/Page";
 import { Layout } from "@/components/Layout";

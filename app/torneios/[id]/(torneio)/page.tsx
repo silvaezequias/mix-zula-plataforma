@@ -3,7 +3,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
-import { MOCK_TOURNAMENTS } from "@/contansts/data";
+import { MOCK_TOURNAMENTS } from "@/constants/data";
 import { Tournament } from "./Tournament";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
