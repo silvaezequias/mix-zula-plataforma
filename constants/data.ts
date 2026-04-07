@@ -1,5 +1,6 @@
-import { Championship, Role } from "@/types";
+import { Role } from "@/types";
 import { PayloadUser } from "@/types/next-auth";
+import { Tournament } from "@prisma/client";
 
 export const BETA_WHITELIST = [
   "367725991994458115",
@@ -97,146 +98,36 @@ export const generateMockPlayers = (count: number): PayloadUser[] => {
   }));
 };
 
-export const MOCK_TOURNAMENTS: Championship[] = [
+export const MOCK_TOURNAMENTS: Tournament[] = [
   {
     id: "1",
-    name: "MIX Zula Teste - 2026",
+    title: "MIX Zula Teste - 2026",
     prize: "sem premiação",
-    status: "open",
-    players: generateMockPlayers(36),
-    teams: [
-      {
-        id: "t1",
-        name: "Equipe Alpha",
-        players: generateMockPlayers(5),
-        side: "TR",
-      },
-      {
-        id: "t2",
-        name: "Equipe Bravo",
-        players: generateMockPlayers(5),
-        side: "CT",
-      },
-      {
-        id: "t3",
-        name: "Equipe Charlie",
-        players: generateMockPlayers(5),
-        side: "TR",
-      },
-      {
-        id: "t4",
-        name: "Equipe Delta",
-        players: generateMockPlayers(5),
-        side: "CT",
-      },
-    ],
-    matches: [
-      {
-        id: "m1",
-        teamAId: "t1",
-        teamBId: "t2",
-        status: "preparando",
-        phase: 1,
-        order: 1,
-        currentRound: 0,
-        swappedSides: false,
-      },
-      {
-        id: "m2",
-        teamAId: "t3",
-        teamBId: "t4",
-        status: "desligado",
-        phase: 1,
-        order: 2,
-        currentRound: 10,
-        swappedSides: true,
-        winnerId: "t3",
-      },
-    ],
-    broadcast: {
-      platform: "YOUTUBE",
-      link: "https://www.youtube.com/watch?v=example",
-      time: "20:00",
-      streamerId: "",
-    },
-    settings: {
-      playersPerTeam: 5,
-      totalTeams: 4,
-      rounds: 10,
-      sideSwap: true,
-      gameMode: "SABOTAGEM",
-      map: "Suburbio",
-    },
-  },
-  {
-    id: "2",
-    name: "2 Teste - MIX ZULA",
-    prize: "sem premiação",
-    status: "open",
-    players: generateMockPlayers(19),
-    teams: [
-      {
-        id: "t1",
-        name: "Equipe Alpha",
-        players: generateMockPlayers(5),
-        side: "TR",
-      },
-      {
-        id: "t2",
-        name: "Equipe Bravo",
-        players: generateMockPlayers(5),
-        side: "CT",
-      },
-      {
-        id: "t3",
-        name: "Equipe Charlie",
-        players: generateMockPlayers(5),
-        side: "TR",
-      },
-      {
-        id: "t4",
-        name: "Equipe Delta",
-        players: generateMockPlayers(5),
-        side: "CT",
-      },
-    ],
-    matches: [
-      {
-        id: "m1",
-        teamAId: "t1",
-        teamBId: "t2",
-        status: "preparando",
-        phase: 1,
-        order: 1,
-        currentRound: 0,
-        swappedSides: false,
-      },
-      {
-        id: "m2",
-        teamAId: "t3",
-        teamBId: "t4",
-        status: "desligado",
-        phase: 1,
-        order: 2,
-        currentRound: 10,
-        swappedSides: true,
-        winnerId: "t3",
-      },
-    ],
-    broadcast: {
-      platform: "YOUTUBE",
-      link: "https://www.youtube.com/watch?v=example",
-      time: "20:00",
-      streamerId: "",
-    },
-    settings: {
-      playersPerTeam: 5,
-      totalTeams: 4,
-      rounds: 10,
-      sideSwap: true,
-      gameMode: "SABOTAGEM",
-      map: "Favela",
-    },
+    status: "OPEN",
+    ownerId: "",
+    preset: null,
+    description: "",
+    startDate: new Date(),
+    endType: "DATE",
+    endDate: null,
+    format: "SINGLE_ELIMINATION",
+    gameMode: "SABOTAGEM",
+    statsType: "ROUND",
+    teamManagement: "RANDOM",
+    swapTeam: false,
+    matchesPerMatch: 0,
+    totalTeams: 0,
+    playersPerTeam: 0,
+    maxPlayers: 0,
+    maxRegistrations: 0,
+    confirmationSystem: false,
+    confirmationTime: 0,
+    hasSubstitutes: false,
+    substitutesLimit: 0,
+    broadcastPlatform: null,
+    broadcastUrl: null,
+    createdAt: new Date(),
+    updatedAt: new Date(),
   },
 ];
 

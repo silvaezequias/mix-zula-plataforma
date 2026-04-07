@@ -110,27 +110,3 @@ export interface Match {
   currentRound: number; // Rodada atual controlada pela staff
   swappedSides: boolean; // Estado para controle de inversão de lado
 }
-
-export interface Championship {
-  id: string;
-  name: string;
-  prize: string;
-  status: ChampStatus;
-  players: PayloadUser[];
-  teams: Team[];
-  matches: Match[];
-  broadcast: {
-    platform: string;
-    link: string;
-    time: string;
-    streamerId: string;
-  };
-  settings: {
-    playersPerTeam: number;
-    totalTeams: number;
-    rounds: number;
-    sideSwap: boolean;
-    gameMode: string;
-    map: string;
-  };
-}
