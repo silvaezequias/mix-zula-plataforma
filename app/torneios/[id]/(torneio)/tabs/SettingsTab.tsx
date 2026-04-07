@@ -1,5 +1,4 @@
-import { MOCK_MAPS } from "@/constants/data";
-import { Championship } from "@/types";
+import { FullTournament } from "@/types";
 import {
   Check,
   Copy,
@@ -14,40 +13,27 @@ import {
 import { JSX, useState } from "react";
 
 type SettingsTabProps = {
-  championship: Championship;
-  tournamentId: string;
+  tournament: FullTournament;
   isRandomizing: boolean;
-  updateChampInfo: (field: keyof Championship, value: string) => void;
   onRandomize: () => void;
-  updateChampSettings: (
-    field: keyof Championship["settings"],
-    value: string | number | boolean,
-  ) => void;
 };
 
 export const SettingsTab = (props: SettingsTabProps) => {
-  const {
-    championship,
-    tournamentId,
-    updateChampInfo,
-    updateChampSettings,
-    onRandomize,
-  } = props;
+  const { tournament, onRandomize } = props;
 
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
-    const link = `${window.location.origin}/torneios/${tournamentId}/participar`;
+    const link = `${window.location.origin}/torneios/${tournament.id}/participar`;
     navigator.clipboard.writeText(link);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const maxPlayersCount =
-    championship.settings.playersPerTeam * championship.settings.totalTeams;
+  const maxPlayersCount = tournament.playersPerTeam * tournament.totalTeams;
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-500">
+    <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-8 animate-in fade-in duration-500">
       <Card
         icon={Sliders}
         title="Parâmetros de Operação"
@@ -56,13 +42,13 @@ export const SettingsTab = (props: SettingsTabProps) => {
         <div className="space-y-4">
           <ConfigInput
             label="Nome do Torneio"
-            value={championship.name}
-            onChange={(v: string) => updateChampInfo("name", v)}
+            value={tournament.title}
+            onChange={(name: string) => {}}
           />
           <ConfigInput
             label="Premiação"
-            value={championship.prize}
-            onChange={(v: string) => updateChampInfo("prize", v)}
+            value={tournament.prize}
+            onChange={(prize: string) => {}}
           />
 
           <div className="pt-4 border-t border-zinc-800">
@@ -71,7 +57,7 @@ export const SettingsTab = (props: SettingsTabProps) => {
             </label>
             <div className="flex gap-2">
               <div className="flex-1 bg-zinc-900 border border-zinc-800 p-3 text-[10px] text-zinc-500 truncate font-mono italic">
-                {window.location.origin}/torneios/{tournamentId}/participar
+                {window.location.origin}/torneios/{tournament.id}/participar
               </div>
               <button
                 onClick={handleCopyLink}
@@ -94,49 +80,26 @@ export const SettingsTab = (props: SettingsTabProps) => {
             <ConfigInput
               label="Máx. Rodadas"
               type="number"
-              value={championship.settings.rounds}
-              onChange={(v: string) =>
-                updateChampSettings("rounds", `${parseInt(v)}`)
-              }
+              value={tournament.matchesPerMatch}
+              onChange={(v: string) => {}}
             />
             <ConfigInput
               label="Máx. Times"
               type="number"
-              value={championship.settings.totalTeams}
-              onChange={(v: string) =>
-                updateChampSettings("totalTeams", `${parseInt(v)}`)
-              }
+              value={tournament.totalTeams}
+              onChange={(v: string) => {}}
             />
             <ConfigInput
               label="Máx. Jogadores por Time"
               type="number"
-              value={championship.settings.playersPerTeam}
-              onChange={(v: string) =>
-                updateChampSettings("playersPerTeam", `${parseInt(v)}`)
-              }
+              value={tournament.playersPerTeam}
+              onChange={(v: string) => {}}
             />
             <ConfigSwitch
               label="Troca de Lados"
-              checked={championship.settings.sideSwap}
-              onChange={(v: boolean) => updateChampSettings("sideSwap", v)}
+              checked={tournament.swapTeam}
+              onChange={(v: boolean) => {}}
             />
-
-            <div className="space-y-1 col-span-2">
-              <label className="text-[9px] font-bold text-zinc-500 uppercase">
-                Mapa da Missão
-              </label>
-              <select
-                className="w-full bg-zinc-900 border border-zinc-800 p-3 text-white italic outline-none focus:border-primary"
-                value={championship.settings.map}
-                onChange={(e) => updateChampSettings("map", e.target.value)}
-              >
-                {MOCK_MAPS.map((m) => (
-                  <option key={m.id} value={m.name}>
-                    {m.name}
-                  </option>
-                ))}
-              </select>
-            </div>
           </div>
         </div>
       </Card>
@@ -157,7 +120,7 @@ export const SettingsTab = (props: SettingsTabProps) => {
                 size={18}
                 className="group-hover:scale-125 transition-transform"
               />
-              {championship.status === "ready"
+              {tournament.status === "READY"
                 ? "RE-SORTEAR EQUIPES"
                 : "SORTEAR EQUIPES"}
             </button>
@@ -176,19 +139,19 @@ export const SettingsTab = (props: SettingsTabProps) => {
       <Card
         icon={Settings}
         title="Resumo Técnico"
-        className="col-span-1 md:col-span-2"
+        className="col-span-1 lg:col-span-2 xl:col-span-3"
       >
         <div className="space-y-4 text-[10px] font-bold border-b border-zinc-800 pb-6 mb-6">
           <div className="flex justify-between uppercase">
             <span className="text-zinc-500">INSCRITOS</span>
             <span>
-              {championship.players.length} / {maxPlayersCount}
+              {tournament.participants.length} / {maxPlayersCount}
             </span>
           </div>
           <div className="flex justify-between uppercase">
             <span className="text-zinc-500">LISTA DE ESPERA</span>
             <span className="text-orange-500 italic">
-              {Math.max(0, championship.players.length - maxPlayersCount)}
+              {Math.max(0, tournament.participants.length - maxPlayersCount)}
             </span>
           </div>
         </div>

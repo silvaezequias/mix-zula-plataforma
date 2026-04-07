@@ -1,6 +1,7 @@
 import { prisma } from "@/infra/prisma";
 import validation from "@/lib/validation";
-import { Tournament } from "@prisma/client";
+import { Prisma, Tournament } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 import { InternalError } from "nextfastapi/errors";
 
 export type TournamentProps = Partial<Tournament>;
@@ -90,6 +91,83 @@ async function create(ownerId: string, data: TournamentProps) {
   return createdTournament;
 }
 
+function list(select?: Prisma.TournamentSelect, cursor?: { id: string }) {
+  if (!cursor) {
+    return unstable_cache(
+      async () => {
+        return prisma.tournament.findMany({
+          take: 10,
+          orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+          select: select,
+        });
+      },
+      ["tournaments-initial"],
+      { tags: ["tournaments"] },
+    )();
+  }
+
+  return prisma.tournament.findMany({
+    take: 10,
+    skip: 1,
+    cursor: { id: cursor.id },
+    orderBy: [{ createdAt: "desc" }, { id: "desc" }],
+    select: select,
+  });
+}
+
+async function findById(tournamentId: string) {
+  const includedTeam = {
+    select: {
+      id: true,
+      name: true,
+      members: {
+        include: {
+          participant: {
+            select: {
+              user: true,
+            },
+          },
+        },
+      },
+    },
+  };
+
+  const tournament = await prisma.tournament.findUnique({
+    where: { id: tournamentId },
+    include: {
+      teams: {
+        include: {
+          members: {
+            include: {
+              participant: {
+                select: {
+                  user: true,
+                },
+              },
+            },
+          },
+        },
+      },
+      matches: {
+        include: {
+          team1: includedTeam,
+          team2: includedTeam,
+          winnerTeam: includedTeam,
+        },
+      },
+      participants: {
+        include: {
+          user: true,
+        },
+      },
+    },
+  });
+
+  return tournament;
+}
+
 export const TournamentService = {
   create,
+  list,
+  findById,
 };

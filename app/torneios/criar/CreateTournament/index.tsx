@@ -85,6 +85,7 @@ export default function CreateTournament() {
         endDate: undefined,
         teamManagement: TeamManagement.RANDOM,
         statsType: StatsType.MATCH,
+        substitutesLimit: +(formData.substitutesLimit ?? 0),
       });
 
       if (result.success) router.push(`/torneios/${result.data!.id}`);

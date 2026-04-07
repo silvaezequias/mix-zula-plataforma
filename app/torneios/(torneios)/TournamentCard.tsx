@@ -1,38 +1,40 @@
-import { Championship, ChampStatus } from "@/types";
-import { ChevronRight, MapIcon, Medal, Target, Trophy } from "lucide-react";
+import { Tournament, TournamentStatus } from "@prisma/client";
+import { ChevronRight, Medal, Target, Trophy, Users } from "lucide-react";
 
-export const TournamentCard = ({
-  tournament,
-}: {
-  tournament: Championship;
-}) => {
-  const getStatusConfig = (status: ChampStatus) => {
+export const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
+  const getStatusConfig = (status: TournamentStatus) => {
     switch (status) {
-      case "open":
+      case "OPEN":
         return {
           label: "INSCRIÇÕES ABERTAS",
           color: "text-green-500",
           border: "border-green-500/50",
         };
-      case "live":
+      case "LIVE":
         return {
           label: "EM ANDAMENTO",
           color: "text-indigo-500",
           border: "border-indigo-500/50",
           pulse: true,
         };
-      case "finished":
+      case "FINISHED":
         return {
           label: "FINALIZADO",
           color: "text-red-500",
           border: "border-red-500/50",
         };
 
-      case "ready":
+      case "READY":
         return {
           label: "INICÍADO",
           color: "text-emerald-500",
           border: "border-emerald-500/50",
+        };
+      case "CLOSED":
+        return {
+          label: "FECHADO",
+          color: "text-red-500",
+          border: "border-red-500/50",
         };
       default:
         return {
@@ -60,14 +62,14 @@ export const TournamentCard = ({
               {config.label}
             </span>
             <h3 className="text-2xl sm:text-3xl font-black italic tracking-tighter uppercase leading-none group-hover:text-primary transition-colors">
-              {tournament.name}
+              {tournament.title}
             </h3>
           </div>
           <div className="bg-zinc-900 p-2 border border-zinc-800 group-hover:border-primary transition-colors">
             <Trophy
               size={20}
               className={
-                tournament.status === "finished"
+                tournament.status === "FINISHED"
                   ? "text-zinc-500"
                   : "text-primary"
               }
@@ -77,15 +79,15 @@ export const TournamentCard = ({
 
         <div className="grid grid-cols-2 gap-4 mb-8">
           <div className="flex items-center gap-2">
-            <MapIcon size={14} className="text-zinc-600" />
+            <Users size={14} className="text-zinc-600" />
             <span className="text-[10px] font-bold text-zinc-400 uppercase">
-              {tournament.settings.map}
+              0/{tournament.maxRegistrations}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Target size={14} className="text-zinc-600" />
             <span className="text-[10px] font-bold text-zinc-400 uppercase">
-              {tournament.settings.gameMode}
+              {tournament.gameMode}
             </span>
           </div>
           <div className="col-span-2 flex items-center gap-2 mt-2">

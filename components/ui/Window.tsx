@@ -26,7 +26,7 @@ export const Window = ({ tabs, focusAtTab }: WindowProps) => {
   }, [focusAtTab, tabs]);
 
   return (
-    <div className="lg:col-span-8 space-y-6 w-full">
+    <div className="lg:col-span-8 space-y-6 w-full h-full">
       <div className="flex border-b border-zinc-800 overflow-x-auto">
         {tabs.map((tab) => {
           const isActive = activeTab === tab.id;
@@ -52,7 +52,7 @@ export const Window = ({ tabs, focusAtTab }: WindowProps) => {
           );
         })}
       </div>
-      <div className="pt-2 md:max-h-[70vh] overflow-y-auto custom-scrollbar">
+      <div className="pt-2 overflow-y-auto custom-scrollbar h-full">
         {tabs.find((tab) => tab.id === activeTab)?.content}
       </div>
     </div>

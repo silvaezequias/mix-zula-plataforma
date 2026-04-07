@@ -41,9 +41,10 @@ model User {
   player       Player?
   generalStats Stat[]
 
-  accounts    Account[]
-  sessions    Session[]
-  tournaments Tournament[]
+  accounts     Account[]
+  sessions     Session[]
+  tournaments  Tournament[]
+  participants Participant[]
 }
 
 model Account {
@@ -77,6 +78,109 @@ model Session {
   user User @relation(fields: [userId], references: [id])
 }
 
+model Team {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  tournamentId String @db.ObjectId
+
+  name String?
+  seed Int?
+  side TeamSide @default(CT)
+
+  createdAt  DateTime     @default(now())
+  tournament Tournament   @relation(fields: [tournamentId], references: [id])
+  members    TeamMember[]
+
+  matchesAsTeam1      Match[] @relation("Team1")
+  matchesAsTeam2      Match[] @relation("Team2")
+  matchesAsWinnerTeam Match[] @relation("WinnerTeam")
+}
+
+enum TeamSide {
+  TR
+  CT
+}
+
+model TeamMember {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  teamId        String @db.ObjectId
+  participantId String @db.ObjectId
+
+  team        Team        @relation(fields: [teamId], references: [id])
+  participant Participant @relation(fields: [participantId], references: [id])
+}
+
+model Match {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  tournamentId String @db.ObjectId
+  roundId      String @db.ObjectId
+
+  team1Id String? @db.ObjectId
+  team2Id String? @db.ObjectId
+
+  winnerTeamId String? @db.ObjectId
+
+  status MatchStatus @default(WAITING)
+
+  nextMatchId String? @db.ObjectId
+
+  team1      Team? @relation("Team1", fields: [team1Id], references: [id])
+  team2      Team? @relation("Team2", fields: [team2Id], references: [id])
+  winnerTeam Team? @relation("WinnerTeam", fields: [winnerTeamId], references: [id])
+
+  round      Round      @relation(fields: [roundId], references: [id])
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+}
+
+enum MatchStatus {
+  WAITING
+  READY
+  CONFIRMING
+  ONGOING
+  FINISHED
+  WALKOVER
+  CANCELLED
+}
+
+model Round {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  tournamentId String @db.ObjectId
+
+  number Int     @default(1)
+  name   String?
+
+  createdAt DateTime @default(now())
+
+  matches Match[]
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+}
+
+model Participant {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  tournamentId String @db.ObjectId
+  userId       String @db.ObjectId
+
+  status    String
+  confirmed Boolean @default(false)
+
+  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  user       User       @relation(fields: [userId], references: [id])
+
+  teamMembers TeamMember[]
+}
+
+enum ParticipantStatus {
+  ACTIVE
+  ELIMINATED
+  RESERVED
+  REPLACED
+}
+
 model Tournament {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   owner   User   @relation(fields: [ownerId], references: [id])
@@ -91,10 +195,11 @@ model Tournament {
   endType   EndType   @default(MANUAL)
   endDate   DateTime?
 
-  format         Format         @default(SINGLE_ELIMINATION)
-  gameMode       GameMode       @default(SABOTAGEM)
-  statsType      StatsType      @default(MATCH)
-  teamManagement TeamManagement @default(RANDOM)
+  format         Format           @default(SINGLE_ELIMINATION)
+  gameMode       GameMode         @default(SABOTAGEM)
+  statsType      StatsType        @default(MATCH)
+  teamManagement TeamManagement   @default(RANDOM)
+  status         TournamentStatus @default(CLOSED)
 
   swapTeam        Boolean @default(true)
   matchesPerMatch Int     @default(1)
@@ -115,6 +220,20 @@ model Tournament {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+
+  participants Participant[]
+  matches      Match[]
+  teams        Team[]
+  rounds       Round[]
+}
+
+enum TournamentStatus {
+  CLOSED
+  OPEN
+  SETTING_TEAM
+  READY
+  LIVE
+  FINISHED
 }
 
 enum EndType {

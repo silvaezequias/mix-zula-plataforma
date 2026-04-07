@@ -3,10 +3,10 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
-import { MOCK_TOURNAMENTS } from "@/constants/data";
-import { Tournament } from "./Tournament";
+import { TournamentSection } from "./Tournament";
 import { AlertTriangle } from "lucide-react";
 import Link from "next/link";
+import { TournamentService } from "@/features/tournament/service";
 
 export default async function TournamentPage(props: {
   params: Promise<{ id: string }>;
@@ -18,12 +18,9 @@ export default async function TournamentPage(props: {
     redirect(`/login?redirect=/torneios/${params.id}`);
   }
 
-  const tournamentId = params.id;
+  const tournament = await TournamentService.findById(params.id);
 
-  const activeChamp =
-    MOCK_TOURNAMENTS.find((c) => c.id === tournamentId) || null;
-
-  if (!activeChamp) {
+  if (!tournament) {
     return (
       <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 text-white uppercase italic">
         <div className="text-center space-y-4">
@@ -44,5 +41,5 @@ export default async function TournamentPage(props: {
     );
   }
 
-  return <Tournament session={session} initialChampionship={activeChamp} />;
+  return <TournamentSection session={session} tournament={tournament} />;
 }

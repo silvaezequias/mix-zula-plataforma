@@ -1,14 +1,16 @@
 "use server";
 
+import Link from "next/link";
 import { Trophy, Clock, LayoutGrid } from "lucide-react";
-import { MOCK_TOURNAMENTS } from "@/constants/data";
 import { TournamentCard } from "./TournamentCard";
 import { Page } from "@/components/Page";
 import { Layout } from "@/components/Layout";
 import { brand } from "@/config/brand";
-import Link from "next/link";
+import { TournamentService } from "@/features/tournament/service";
 
 export default async function TournamentListPage() {
+  const tournaments = await TournamentService.list();
+
   return (
     <Page>
       <Layout>
@@ -43,11 +45,11 @@ export default async function TournamentListPage() {
             </div>
 
             <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-              {MOCK_TOURNAMENTS.length} TORNEIOs LOCALIZADOS
+              {tournaments.length} TORNEIOs LOCALIZADOS
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 animate-in slide-in-from-bottom-4 duration-700">
-            {MOCK_TOURNAMENTS.map((tournament) => (
+            {tournaments.map((tournament) => (
               <Link key={tournament.id} href={`/torneios/${tournament.id}`}>
                 <TournamentCard tournament={tournament} />
               </Link>

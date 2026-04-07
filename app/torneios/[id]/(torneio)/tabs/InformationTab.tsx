@@ -1,63 +1,74 @@
 import { ActionButton } from "@/components/ui/ActionButton";
-import { Championship } from "@/types";
+import { FullTournament } from "@/types";
+import { TournamentStatus } from "@prisma/client";
 import {
+  Ban,
   LogIn,
-  MapIcon,
   Medal,
   Radio,
   Settings,
   Shuffle,
   Target,
   UserRoundPlus,
+  Users,
 } from "lucide-react";
+
 import { useRouter } from "next/navigation";
+import { JSX } from "react";
 
 export type InformationTabProps = {
-  championship: Championship;
+  tournament: FullTournament;
 };
 
-export const InformationTab = ({ championship }: InformationTabProps) => {
+export const InformationTab = ({ tournament }: InformationTabProps) => {
   const router = useRouter();
-  const tournamentId = championship.id; // Certifique-se de que o ID do torneio esteja disponível no objeto championship
+  const tournamentId = tournament.id;
 
   const handleAction = () => {
     router.push(`/torneios/${tournamentId}/participar`);
   };
 
-  const statusMap = {
-    live: {
+  const statusMap: Record<
+    TournamentStatus,
+    {
+      label: string;
+      className: string;
+      icon: JSX.ElementType;
+    }
+  > = {
+    LIVE: {
       label: "EM ANDAMENTO",
       className: "bg-indigo-600",
       icon: Radio,
     },
-    ready: {
+    READY: {
       label: "PREPARANDO PARA INÍCIO",
       className: "bg-emerald-600",
       icon: Radio,
     },
-    open: {
+    OPEN: {
       label: "INCRIÇÕES ABERTAS",
       className: "bg-green-600",
       icon: UserRoundPlus,
     },
-    setting_teams: {
+    SETTING_TEAM: {
       label: "DEFININDO EQUIPES",
       className: "bg-yellow-600",
       icon: Shuffle,
     },
-    randomizing: {
-      label: "RANDOMIZANDO EQUIPES",
-      className: "bg-purple-600",
-      icon: Shuffle,
-    },
-    finished: {
+    FINISHED: {
       label: "FINALIZADO",
       className: "bg-red-600",
       icon: Medal,
     },
+    CLOSED: {
+      label: "FECHADO",
+      className: "bg-red-800",
+      icon: Ban,
+    },
   } as const;
 
-  const status = statusMap[championship.status] || {
+  const status = statusMap[tournament.status] || {
     label: "STATUS DESCONHECIDO",
     className: "bg-gray-600",
     icon: Settings,
@@ -66,7 +77,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
   return (
     <div className="space-y-6 uppercase animate-in fade-in duration-500">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-2">
-        {championship.status === "open" && (
+        {tournament.status === "OPEN" && (
           <ActionButton className="w-full sm:col-span-2" onClick={handleAction}>
             <LogIn
               size={20}
@@ -92,21 +103,21 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
           <Medal className="text-primary mb-4" size={24} />
           <p className="text-[10px] text-zinc-500 font-black">PREMIAÇÃO</p>
           <p className="text-xl font-black italic text-white">
-            {championship.prize}
-          </p>
-        </div>
-        <div className="bg-[#111] p-6 border-l-2 border-zinc-700">
-          <MapIcon className="text-zinc-500 mb-4" size={24} />
-          <p className="text-[10px] text-zinc-500 font-black">MAPA</p>
-          <p className="text-xl font-black italic text-white">
-            {championship.settings.map}
+            {tournament.prize}
           </p>
         </div>
         <div className="bg-[#111] p-6 border-l-2 border-zinc-700">
           <Target className="text-zinc-500 mb-4" size={24} />
           <p className="text-[10px] text-zinc-500 font-black">MODO</p>
           <p className="text-xl font-black italic text-white">
-            {championship.settings.gameMode}
+            {tournament.gameMode}
+          </p>
+        </div>
+        <div className="bg-[#111] p-6 border-l-2 border-zinc-700">
+          <Users className="text-zinc-500 mb-4" size={24} />
+          <p className="text-[10px] text-zinc-500 font-black">INSCRITOS</p>
+          <p className="text-xl font-black italic text-white">
+            {tournament.participants.length}/{tournament.maxPlayers}
           </p>
         </div>
       </div>
@@ -128,7 +139,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
             <span>
               ROUNDS POR LADO:{" "}
               <span className="font-black text-white">
-                {championship.settings.rounds}.
+                {10} {/* tournament.rounds /** */}.
               </span>
             </span>
           </li>
@@ -137,7 +148,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
             <span>
               TROCA DE LADOS PERMITIDA:{" "}
               <span className="font-black text-white">
-                {championship.settings.sideSwap ? "SIM" : "NÃO"}
+                {tournament.swapTeam ? "SIM" : "NÃO"}
               </span>
               .
             </span>
@@ -147,7 +158,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
             <span>
               TOTAL DE TIMES:{" "}
               <span className="font-black text-white">
-                {championship.settings.totalTeams}
+                {tournament.totalTeams}
               </span>
               .
             </span>
@@ -157,7 +168,7 @@ export const InformationTab = ({ championship }: InformationTabProps) => {
             <span>
               JOGADORES POR TIME:{" "}
               <span className="font-black text-white">
-                {championship.settings.playersPerTeam}
+                {tournament.playersPerTeam}
               </span>
               .
             </span>

@@ -1,3 +1,4 @@
+import { MatchStatus, Prisma } from "@prisma/client";
 import { PayloadUser } from "./next-auth";
 
 export type Role =
@@ -14,6 +15,53 @@ export interface RoundStat {
   deaths: number;
   assists: number;
 }
+
+type IncludedTeam = {
+  select: {
+    id: true;
+    name: true;
+    members: {
+      include: {
+        participant: {
+          select: {
+            user: true;
+          };
+        };
+      };
+    };
+  };
+};
+
+export type FullTournament = Prisma.TournamentGetPayload<{
+  include: {
+    teams: {
+      include: {
+        members: {
+          include: {
+            participant: {
+              select: {
+                user: true;
+              };
+            };
+          };
+        };
+      };
+    };
+    matches: {
+      include: {
+        team1: IncludedTeam;
+        team2: IncludedTeam;
+        winnerTeam: IncludedTeam;
+      };
+    };
+    participants: {
+      select: {
+        user: true;
+        id: true;
+      };
+    };
+  };
+}>;
 
 export interface BroadcastSettings {
   platform: string;
@@ -50,11 +98,6 @@ export enum GameMode {
   Deathmatch = "MATA-MATA",
   Defuse = "SABOTAGEM",
 }
-export type MatchStatus =
-  | "desligado"
-  | "preparando"
-  | "iniciado"
-  | "finalizado";
 
 export interface Match {
   id: string;

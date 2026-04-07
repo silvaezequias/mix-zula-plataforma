@@ -5,7 +5,7 @@ import { TournamentService, TournamentProps } from "./service";
 import { safeExecute } from "@/lib/safeExecute";
 import { BETA_WHITELIST } from "@/constants/data";
 import { UnauthorizedError } from "nextfastapi/errors";
-import { revalidatePath } from "next/cache";
+import { revalidatePath, revalidateTag } from "next/cache";
 
 export async function createTournamentAction(formData: TournamentProps) {
   return await safeExecute(async () => {
@@ -23,6 +23,7 @@ export async function createTournamentAction(formData: TournamentProps) {
     );
 
     revalidatePath("/torneios");
+    revalidateTag("tournaments", "max");
 
     return newTournament;
   });

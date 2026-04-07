@@ -1,13 +1,6 @@
 import React from "react";
-import { Championship } from "@/types";
-import {
-  ExternalLink,
-  Radio,
-  Shield,
-  Tv,
-  User as UserIcon,
-  X,
-} from "lucide-react";
+import { FullTournament } from "@/types";
+import { ExternalLink, Radio, Shield, Tv, X } from "lucide-react";
 import { PayloadUser } from "@/types/next-auth";
 import { brand } from "@/config/brand";
 import { signOut } from "next-auth/react";
@@ -15,7 +8,7 @@ import { signOut } from "next-auth/react";
 interface SidebarProps {
   staff: PayloadUser[];
   currentUser: PayloadUser | null;
-  activeChamp: Championship | null;
+  tournament: FullTournament | null;
   isStaff: boolean;
   isOpen: boolean;
   onClose: () => void;
@@ -25,16 +18,12 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({
   staff,
   currentUser,
-  activeChamp,
+  tournament,
   isStaff,
   isOpen,
   onClose,
   onManageUser,
 }) => {
-  const selectedStreamer = staff.find(
-    (s) => s.id === activeChamp?.broadcast?.streamerId,
-  );
-
   return (
     <aside
       className={`fixed lg:relative inset-y-0 right-0 w-72 bg-[#0a0a0a] flex flex-col border-l border-zinc-900 z-100 transition-transform duration-300 transform lg:translate-x-0 order-1 lg:order-2 ${
@@ -92,32 +81,16 @@ export const Sidebar: React.FC<SidebarProps> = ({
           <div className="flex items-center gap-2 text-primary mb-4">
             <Radio
               size={14}
-              className={activeChamp?.status === "live" ? "animate-pulse" : ""}
+              className={tournament?.status === "LIVE" ? "animate-pulse" : ""}
             />
             <span className="text-[10px] font-black italic uppercase tracking-widest">
               LIVE TRANSMISSÃO
             </span>
           </div>
-          {activeChamp?.broadcast?.link && selectedStreamer ? (
+          {tournament?.broadcastUrl ? (
             <div className="space-y-4 relative">
-              <div
-                className="flex items-center gap-3 bg-black/40 p-2 border border-zinc-800 cursor-pointer"
-                onClick={() => isStaff && onManageUser(selectedStreamer)}
-              >
-                <div className="w-10 h-10 bg-primary flex items-center justify-center text-black shadow-lg">
-                  <UserIcon size={20} />
-                </div>
-                <div>
-                  <p className="text-[9px] text-zinc-500 font-bold uppercase leading-none">
-                    STREAMER
-                  </p>
-                  <p className="text-xs font-black italic text-white truncate w-32 uppercase">
-                    {selectedStreamer.player?.nickname}
-                  </p>
-                </div>
-              </div>
               <a
-                href={activeChamp.broadcast.link}
+                href={tournament.broadcastUrl!}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="w-full bg-primary text-black font-black italic py-3 text-[10px] tracking-widest flex items-center justify-center gap-2 hover:brightness-110 transition-all uppercase mt-2 shadow-[0_4px_10px_rgba(255,179,0,0.2)]"
