@@ -57,6 +57,7 @@ export type FullTournament = Prisma.TournamentGetPayload<{
     participants: {
       select: {
         user: true;
+        role: true;
         id: true;
       };
     };

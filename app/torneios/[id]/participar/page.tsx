@@ -3,7 +3,6 @@
 import { redirect } from "next/navigation";
 import {
   Trophy,
-  MapPin,
   Target,
   CheckCircle2,
   AlertTriangle,
@@ -13,10 +12,10 @@ import {
   Play,
 } from "lucide-react";
 import Link from "next/link";
-import { MOCK_TOURNAMENTS } from "@/constants/data";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { TournamentService } from "@/features/tournament/service";
 
 export default async function RegistrationPage(props: {
   params: Promise<{ id: string }>;
@@ -24,7 +23,7 @@ export default async function RegistrationPage(props: {
   const params = await props.params;
   const session = await getServerSession(authOptions);
 
-  const tournament = MOCK_TOURNAMENTS.find((t) => t.id === params.id);
+  const tournament = await TournamentService.findById(params.id);
 
   if (!tournament) {
     return (
@@ -51,11 +50,14 @@ export default async function RegistrationPage(props: {
     redirect(`/login?redirect=/torneios/${params.id}/participar`);
   }
 
+  if (!session.user.isOnboarded) {
+    redirect(`/atualizar-cadastro?redirect=/torneios/${params.id}/participar`);
+  }
+
   const user = session.user;
 
   const maxPlayers = tournament.totalTeams * tournament.playersPerTeam;
-
-  const currentPlayersCount = 36;
+  const currentPlayersCount = tournament.participants.length;
   const isFull = currentPlayersCount >= maxPlayers;
 
   return (
@@ -66,15 +68,17 @@ export default async function RegistrationPage(props: {
       </div>
 
       <main className="relative z-10 max-w-5xl mx-auto px-6 py-12 sm:py-20 animate-in fade-in duration-700">
-        <div className="flex items-center gap-2 text-zinc-500 hover:text-primary transition-all cursor-pointer mb-10 group w-fit">
-          <ChevronLeft
-            size={18}
-            className="group-hover:-translate-x-1 transition-transform"
-          />
-          <span className="text-[10px] font-black uppercase">
-            Voltar para Operações
-          </span>
-        </div>
+        <Link href="/torneios">
+          <div className="flex items-center gap-2 text-zinc-500 hover:text-primary transition-all cursor-pointer mb-10 group w-fit">
+            <ChevronLeft
+              size={18}
+              className="group-hover:-translate-x-1 transition-transform"
+            />
+            <span className="text-[10px] font-black uppercase">
+              Voltar para Lista de Torneios
+            </span>
+          </div>
+        </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
           <div className="lg:col-span-7 space-y-12">
@@ -108,15 +112,11 @@ export default async function RegistrationPage(props: {
               <div className="flex items-center gap-4">
                 <Info size={24} className="text-primary" />
                 <h3 className="text-xl font-black uppercase italic tracking-tighter">
-                  Briefing da Missão
+                  DESCRIÇÃO DO TORNEIO
                 </h3>
               </div>
               <p className="text-zinc-500 text-sm leading-relaxed font-semibold normal-case italic border-l-2 border-zinc-800 pl-6">
-                O torneio de Zula Global{" - "}
-                <span className="font-bold">MIX ZULA</span> chega com muita
-                competitividade e a oportunidade perfeita para você mostrar sua
-                habilidade contra outros jogadores — garanta sua vaga agora e
-                inscreva-se para entrar nessa disputa!
+                {tournament.description}
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {[

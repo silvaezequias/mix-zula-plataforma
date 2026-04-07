@@ -2,25 +2,27 @@
 
 import { useState } from "react";
 import { FullTournament } from "@/types";
-import { PayloadUser } from "@/types/next-auth";
 import { TournamentDetailView } from "./TournamentDetailView";
 import { Sidebar } from "@/components/layout/Sidebar";
 import { Page } from "@/components/Page";
 import { Logo } from "@/components/Brand";
 import { Menu, X } from "lucide-react";
 import { Session } from "next-auth";
+import { Participant } from "@prisma/client";
 
 export function TournamentSection({
   session,
+  sessionMember,
   tournament,
 }: {
   session: Session;
   tournament: FullTournament;
+  sessionMember: Participant | null;
 }) {
-  const [staffList] = useState<PayloadUser[]>([]);
+  const [staffList] = useState(
+    tournament.participants.filter((p) => p.role !== "PLAYER"),
+  );
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
-  const isStaff = true;
 
   return (
     <Page>
@@ -39,7 +41,7 @@ export function TournamentSection({
           <div className="p-6">
             <TournamentDetailView
               tournament={tournament}
-              isStaff={isStaff}
+              sessionMember={sessionMember}
               onRandomize={() => {}}
               onManageUser={() => {}}
             />
@@ -50,7 +52,7 @@ export function TournamentSection({
           staff={staffList}
           currentUser={session.user}
           tournament={tournament}
-          isStaff={isStaff}
+          sessionMember={sessionMember}
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
           onManageUser={() => {}}

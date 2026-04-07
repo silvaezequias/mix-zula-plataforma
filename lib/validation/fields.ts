@@ -48,8 +48,6 @@ export function validateNumber(
 ) {
   validateRequired(value, field);
 
-  console.log(field, value);
-
   if (typeof value !== "number" || isNaN(value)) {
     throwError(`${field} precisa ser um número válido`);
   }

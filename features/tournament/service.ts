@@ -1,13 +1,13 @@
 import { prisma } from "@/infra/prisma";
 import validation from "@/lib/validation";
-import { Prisma, Tournament } from "@prisma/client";
+import { ParticipantRole, Prisma, Tournament } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { InternalError } from "nextfastapi/errors";
 
 export type TournamentProps = Partial<Tournament>;
 
 async function create(ownerId: string, data: TournamentProps) {
-  const validData = await validation.tournament(
+  const validData = validation.tournament(
     {
       preset: false,
       title: true,
@@ -79,6 +79,15 @@ async function create(ownerId: string, data: TournamentProps) {
 
         broadcastPlatform: validData.broadcastPlatform,
         broadcastUrl: validData.broadcastUrl,
+      },
+    });
+
+    await prisma.participant.create({
+      data: {
+        status: "ACTIVE",
+        userId: ownerId,
+        role: ParticipantRole.ADMIN,
+        tournamentId: createdTournament.id,
       },
     });
   } catch (err) {
@@ -166,8 +175,17 @@ async function findById(tournamentId: string) {
   return tournament;
 }
 
+async function findParticipantByUserId(tournamentId: string, userId: string) {
+  const participant = await prisma.participant.findUnique({
+    where: { tournamentId_userId: { tournamentId, userId } },
+  });
+
+  return participant;
+}
+
 export const TournamentService = {
   create,
   list,
   findById,
+  findParticipantByUserId,
 };

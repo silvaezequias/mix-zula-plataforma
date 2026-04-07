@@ -1,11 +1,10 @@
-// app/torneios/[id]/page.tsx
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { redirect } from "next/navigation";
 
+import Link from "next/link";
 import { TournamentSection } from "./Tournament";
 import { AlertTriangle } from "lucide-react";
-import Link from "next/link";
 import { TournamentService } from "@/features/tournament/service";
 
 export default async function TournamentPage(props: {
@@ -41,5 +40,16 @@ export default async function TournamentPage(props: {
     );
   }
 
-  return <TournamentSection session={session} tournament={tournament} />;
+  const currentMember = await TournamentService.findParticipantByUserId(
+    tournament.id,
+    session.user.id,
+  );
+
+  return (
+    <TournamentSection
+      session={session}
+      tournament={tournament}
+      sessionMember={currentMember}
+    />
+  );
 }

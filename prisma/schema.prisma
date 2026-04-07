@@ -154,24 +154,27 @@ model Round {
 
   createdAt DateTime @default(now())
 
-  matches Match[]
-
+  matches    Match[]
   tournament Tournament @relation(fields: [tournamentId], references: [id])
 }
 
 model Participant {
   id String @id @default(auto()) @map("_id") @db.ObjectId
 
+  role ParticipantRole @default(PLAYER)
+
   tournamentId String @db.ObjectId
   userId       String @db.ObjectId
 
-  status    String
-  confirmed Boolean @default(false)
+  status    ParticipantStatus
+  confirmed Boolean           @default(false)
 
   tournament Tournament @relation(fields: [tournamentId], references: [id])
   user       User       @relation(fields: [userId], references: [id])
 
   teamMembers TeamMember[]
+
+  @@unique([tournamentId, userId])
 }
 
 enum ParticipantStatus {
@@ -179,6 +182,12 @@ enum ParticipantStatus {
   ELIMINATED
   RESERVED
   REPLACED
+}
+
+enum ParticipantRole {
+  PLAYER
+  MODERATOR
+  ADMIN
 }
 
 model Tournament {

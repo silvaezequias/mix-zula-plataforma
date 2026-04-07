@@ -4,12 +4,13 @@ import { ExternalLink, Radio, Shield, Tv, X } from "lucide-react";
 import { PayloadUser } from "@/types/next-auth";
 import { brand } from "@/config/brand";
 import { signOut } from "next-auth/react";
+import { Participant, ParticipantRole } from "@prisma/client";
 
 interface SidebarProps {
-  staff: PayloadUser[];
+  staff: FullTournament["participants"][number][];
   currentUser: PayloadUser | null;
   tournament: FullTournament | null;
-  isStaff: boolean;
+  sessionMember: Participant | null;
   isOpen: boolean;
   onClose: () => void;
   onManageUser: (p: PayloadUser) => void;
@@ -19,11 +20,19 @@ export const Sidebar: React.FC<SidebarProps> = ({
   staff,
   currentUser,
   tournament,
-  isStaff,
+  sessionMember,
   isOpen,
   onClose,
   onManageUser,
 }) => {
+  const isStaff = sessionMember && sessionMember?.role !== "PLAYER";
+
+  const roleColors: Record<ParticipantRole, string> = {
+    ADMIN: "text-red-500",
+    MODERATOR: "text-emerald-500",
+    PLAYER: "text-zinc-300",
+  };
+
   return (
     <aside
       className={`fixed lg:relative inset-y-0 right-0 w-72 bg-[#0a0a0a] flex flex-col border-l border-zinc-900 z-100 transition-transform duration-300 transform lg:translate-x-0 order-1 lg:order-2 ${
@@ -55,20 +64,20 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {staff.map((member) => (
             <div
               key={member.id}
-              onClick={() => isStaff && onManageUser(member)}
+              onClick={() => isStaff}
               className={`bg-zinc-900/30 border-l-2 border-zinc-800 p-3 hover:bg-zinc-900 transition-colors ${
                 isStaff ? "cursor-pointer group" : ""
               }`}
             >
-              <span className="text-xs font-black italic text-white block uppercase group-hover:text-primary transition-colors">
-                {member.player?.nickname}
+              <span className="text-xs font-black italic text-white block group-hover:text-primary transition-colors">
+                {member.user.player?.nickname}
               </span>
               <span
                 className={`text-[9px] font-black italic ${
-                  /* member.color || /**/ "text-zinc-500"
+                  roleColors[member.role]
                 } tracking-widest uppercase`}
               >
-                USER ROLE AQUI
+                {member.role}
               </span>
             </div>
           ))}
@@ -120,7 +129,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 {currentUser.name}
               </span>
               <span className="text-[9px] text-zinc-500 font-bold uppercase">
-                MEU PERFIL
+                {sessionMember?.role ?? "SEM CARGO"}
               </span>
             </div>
           </div>
