@@ -1,6 +1,7 @@
 import React from "react";
 import { Gamepad, Trophy } from "lucide-react";
 import { FullTournament } from "@/types";
+import { MatchHeader, DisplayTeams, HandleGameSection } from "./Match";
 
 interface GamesTabProps {
   tournament: FullTournament;
@@ -23,7 +24,13 @@ export const GamesTab: React.FC<GamesTabProps> = ({ tournament }) => {
   return (
     <div className="py-10 px-4 space-y-24 flex flex-col items-center italic tracking-widest">
       {matches.map((match) => {
-        return <div key={match.id}>teste</div>;
+        return (
+          <div key={match.id}>
+            <MatchHeader match={match} />
+            <DisplayTeams match={match} tournament={tournament} />
+            <HandleGameSection match={match} />
+          </div>
+        );
       })}
 
       {matches.length > 0 && matches.every((m) => m.status === "FINISHED") && (

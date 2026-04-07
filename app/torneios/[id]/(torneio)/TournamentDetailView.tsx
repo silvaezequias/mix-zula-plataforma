@@ -49,7 +49,7 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
       id: "games",
       label: "JOGOS",
       enabled: !isRandomizing,
-      content: <GamesTab isStaff={isStaff} tournament={tournament} />,
+      content: <GamesTab tournament={tournament} />,
     },
     {
       id: "settings",
