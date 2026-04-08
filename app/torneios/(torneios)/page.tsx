@@ -14,7 +14,9 @@ import { ActionButton } from "@/components/ui/ActionButton";
 
 export default async function TournamentListPage() {
   const session = await getServerSession(authOptions);
-  const tournaments = await TournamentService.list();
+  const tournaments = (await TournamentService.list()).sort((a, b) => {
+    return Number(b.status === "OPEN") - Number(a.status === "OPEN");
+  });
 
   const canCreateTournament =
     session && BETA_WHITELIST.includes(session.user.discordId);

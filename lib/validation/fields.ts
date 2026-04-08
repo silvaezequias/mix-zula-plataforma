@@ -78,15 +78,15 @@ export function validateEnum<T>(value: T, field: string, validValues: T[]) {
 }
 
 export function validateTitle(title: string) {
-  return validateString(title, "Título", 3, 100);
+  return validateString(title, "Título", 3, 70);
 }
 
 export function validateDescription(description: string) {
-  return validateString(description, "Descrição", 10, 1000);
+  return validateString(description, "Descrição", 10, 2000);
 }
 
 export function validatePrize(prize: string) {
-  return validateString(prize, "Premiação", 1, 200);
+  return validateString(prize, "Premiação", 1, 70);
 }
 
 export function validateStringDate(dateString: string) {
