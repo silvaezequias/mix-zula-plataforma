@@ -1,5 +1,6 @@
 import clsx from "clsx";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export type Tab = {
   id: string;
@@ -13,16 +14,23 @@ export type WindowProps = {
   focusAtTab: string;
 };
 
-export const Window = ({ tabs, focusAtTab: activeTab }: WindowProps) => {
+export const Window = ({ tabs, focusAtTab }: WindowProps) => {
   const router = useRouter();
+
+  const [activeTab, setActiveTab] = useState(focusAtTab);
 
   const handleChangeTab = (tabId: string) => {
     if (tabs.find((t) => t.id)?.enabled) {
-      router.push(`?tab=${tabId}`);
+      changeTab(tabId);
     } else {
       const someEnabledTab = tabs.find((t) => t.enabled);
-      if (someEnabledTab) router.push(`?tab=${someEnabledTab.id}`);
+      if (someEnabledTab) changeTab(someEnabledTab.id);
     }
+  };
+
+  const changeTab = (tabId: string) => {
+    router.replace(`?tab=${tabId}`);
+    setActiveTab(tabId);
   };
 
   return (

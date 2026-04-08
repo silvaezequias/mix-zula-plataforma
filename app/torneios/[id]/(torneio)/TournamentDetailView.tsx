@@ -47,7 +47,7 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
 
   if (sessionMember) {
     tabs.push({
-      id: "players",
+      id: "participants",
       label: "INSCRITOS",
       enabled: !isRandomizing,
       content: (
@@ -87,7 +87,9 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
 
   if (
     isStaff &&
-    (["MODERADOR", "ADMIN"] as ParticipantRole[]).includes(sessionMember.role)
+    (["MODERADOR", "ADMIN", "AJUDANTE", "JUIZ"] as ParticipantRole[]).includes(
+      sessionMember.role,
+    )
   ) {
     tabs.push({
       id: "staff",

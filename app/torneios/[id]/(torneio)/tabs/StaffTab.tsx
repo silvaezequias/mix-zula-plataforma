@@ -1,6 +1,12 @@
 import { FullTournament, FullTournamentRoleRequest } from "@/types";
 import { Card } from "./SettingsTab";
-import { Check, ClipboardList, Copy, Shield } from "lucide-react";
+import {
+  Check,
+  ClipboardList,
+  Copy,
+  Shield,
+  TextAlignStart,
+} from "lucide-react";
 import { roleColors } from "@/constants/data";
 import { useState, useTransition } from "react";
 import { Button } from "@/components/ui/Button";
@@ -98,54 +104,66 @@ export const StaffTab = ({
         className="h-[75vh] max-h-[80vh] overflow-y-auto"
       >
         <div className="flex flex-col gap-5">
-          {tournamentRoleRequests?.map((p) => (
-            <CardPlayer
-              key={p.id}
-              name={p.owner.name!}
-              nickname={p.owner.player!.nickname!}
-            >
-              <span className="text-white text-xs uppercase font-bold place-self-end self-center">
-                Solicitado:{" "}
-                <span className={roleColors[p.requestedRole]}>
-                  {p.requestedRole}
+          {tournamentRoleRequests && tournamentRoleRequests.length > 0 ? (
+            tournamentRoleRequests?.map((p) => (
+              <CardPlayer
+                key={p.id}
+                name={p.owner.name!}
+                nickname={p.owner.player!.nickname!}
+              >
+                <span className="text-white text-xs uppercase font-bold place-self-end self-center">
+                  Solicitado:{" "}
+                  <span className={roleColors[p.requestedRole]}>
+                    {p.requestedRole}
+                  </span>
                 </span>
-              </span>
 
-              {p.status === "PENDING" ? (
-                <span className="flex gap-2 place-self-center self-center col-span-2 w-full text-end">
-                  <Button
-                    intent="success"
-                    variant="default"
-                    className="w-full"
-                    disabled={isPending}
-                    onClick={() => handleRequest(p.id, true)}
-                  >
-                    Aceitar
-                  </Button>
-                  <Button
-                    intent="danger"
-                    variant="default"
-                    className="w-full"
-                    disabled={isPending}
-                    onClick={() => handleRequest(p.id, false)}
-                  >
-                    Negar
-                  </Button>
-                </span>
-              ) : (
-                <span className="flex gap-2 place-self-center self-center col-span-2 w-full text-end">
-                  <Button
-                    intent={p.status === "ACCEPTED" ? "success" : "danger"}
-                    variant="default"
-                    className="w-full"
-                    disabled
-                  >
-                    {p.status === "ACCEPTED" ? "ACEITO" : "NEGADO"}
-                  </Button>
-                </span>
-              )}
-            </CardPlayer>
-          ))}
+                {p.status === "PENDING" ? (
+                  <span className="flex gap-2 place-self-center self-center col-span-2 w-full text-end">
+                    <Button
+                      intent="success"
+                      variant="default"
+                      className="w-full"
+                      disabled={isPending}
+                      onClick={() => handleRequest(p.id, true)}
+                    >
+                      Aceitar
+                    </Button>
+                    <Button
+                      intent="danger"
+                      variant="default"
+                      className="w-full"
+                      disabled={isPending}
+                      onClick={() => handleRequest(p.id, false)}
+                    >
+                      Negar
+                    </Button>
+                  </span>
+                ) : (
+                  <span className="flex gap-2 place-self-center self-center col-span-2 w-full text-end">
+                    <Button
+                      intent={p.status === "ACCEPTED" ? "success" : "danger"}
+                      variant="default"
+                      className="w-full"
+                      disabled
+                    >
+                      {p.status === "ACCEPTED" ? "ACEITO" : "NEGADO"}
+                    </Button>
+                  </span>
+                )}
+              </CardPlayer>
+            ))
+          ) : (
+            <div className="col-span-2 py-32 text-center border-2 border-dashed border-zinc-900">
+              <TextAlignStart
+                size={48}
+                className="mx-auto text-zinc-900 mb-4"
+              />
+              <p className="text-zinc-700 font-black uppercase italic tracking-[0.4em]">
+                Nenhum solicitação foi encontrada
+              </p>
+            </div>
+          )}
         </div>
       </Card>
     </div>
