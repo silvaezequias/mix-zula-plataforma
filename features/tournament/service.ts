@@ -1,8 +1,17 @@
 import { prisma } from "@/infra/prisma";
 import validation from "@/lib/validation";
-import { ParticipantRole, Prisma, Tournament } from "@prisma/client";
+import {
+  ParticipantRole,
+  ParticipantStatus,
+  Prisma,
+  Tournament,
+} from "@prisma/client";
 import { unstable_cache } from "next/cache";
-import { InternalError } from "nextfastapi/errors";
+import {
+  InternalError,
+  NotFoundError,
+  UnauthorizedError,
+} from "nextfastapi/errors";
 
 export type TournamentProps = Partial<Tournament>;
 
@@ -183,9 +192,43 @@ async function findParticipantByUserId(tournamentId: string, userId: string) {
   return participant;
 }
 
+async function createParticipant(tournamentId: string, userId: string) {
+  const existingTournament = await findById(tournamentId);
+
+  if (!existingTournament) {
+    throw new NotFoundError({
+      message: "Não foi encontrado um torneio com o ID inserido",
+    });
+  }
+
+  if (existingTournament.status !== "OPEN") {
+    throw new UnauthorizedError({
+      message: "Este torneio não está com as inscrições abertas",
+    });
+  }
+
+  if (await findParticipantByUserId(tournamentId, userId)) {
+    throw new UnauthorizedError({
+      message: "Você já está registrado nesse torneio",
+    });
+  }
+
+  const newParticipant = await prisma.participant.create({
+    data: {
+      userId,
+      tournamentId,
+      status: ParticipantStatus.ACTIVE,
+      role: ParticipantRole.PLAYER,
+    },
+  });
+
+  return newParticipant;
+}
+
 export const TournamentService = {
   create,
   list,
   findById,
   findParticipantByUserId,
+  createParticipant,
 };

@@ -1,15 +1,23 @@
 "use server";
 
 import Link from "next/link";
-import { Trophy, Clock, LayoutGrid } from "lucide-react";
+import { Trophy, Clock, LayoutGrid, Plus } from "lucide-react";
 import { TournamentCard } from "./TournamentCard";
 import { Page } from "@/components/Page";
 import { Layout } from "@/components/Layout";
 import { brand } from "@/config/brand";
 import { TournamentService } from "@/features/tournament/service";
+import { BETA_WHITELIST } from "@/constants/data";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { ActionButton } from "@/components/ui/ActionButton";
 
 export default async function TournamentListPage() {
+  const session = await getServerSession(authOptions);
   const tournaments = await TournamentService.list();
+
+  const canCreateTournament =
+    session && BETA_WHITELIST.includes(session.user.discordId);
 
   return (
     <Page>
@@ -17,7 +25,7 @@ export default async function TournamentListPage() {
         <div className="relative h-[40vh] flex items-center justify-center border-b border-zinc-900 overflow-hidden">
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-primary opacity-10 blur-[150px] rounded-full"></div>
 
-          <div className="relative z-10 text-center flex flex-col justify-center items-center space-y-4 animate-in fade-in zoom-in-95 duration-1000">
+          <div className="relative z-10 px-10 text-center flex flex-col justify-center items-center space-y-4 animate-in fade-in zoom-in-95 duration-1000">
             <div className="flex items-center justify-center gap-4 mb-2">
               <div className="h-0.5 w-8 bg-primary"></div>
               <Trophy size={24} className="text-primary" />
@@ -30,6 +38,14 @@ export default async function TournamentListPage() {
               Participe de um torneio e testes suas habilidades, pode levar a
               melhor.
             </p>
+
+            {canCreateTournament && (
+              <Link href="/torneios/criar">
+                <ActionButton className="uppercase font-black mt-5">
+                  <Plus /> Criar campeonato
+                </ActionButton>
+              </Link>
+            )}
           </div>
         </div>
 
@@ -45,7 +61,7 @@ export default async function TournamentListPage() {
             </div>
 
             <div className="text-[10px] font-bold text-zinc-500 uppercase tracking-widest">
-              {tournaments.length} TORNEIOs LOCALIZADOS
+              {tournaments.length} TORNEIOS LOCALIZADOS
             </div>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 animate-in slide-in-from-bottom-4 duration-700">

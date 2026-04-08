@@ -27,7 +27,9 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
     {
       id: "info",
       label: "INFORMAÇÕES",
-      content: <InformationTab tournament={tournament} />,
+      content: (
+        <InformationTab tournament={tournament} sessionMember={sessionMember} />
+      ),
       enabled: !isRandomizing,
     },
   ];

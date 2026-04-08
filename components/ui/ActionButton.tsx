@@ -20,7 +20,7 @@ export const ActionButton = ({
         "group relative cursor-pointer inline-flex items-center justify-center gap-3",
         "w-full sm:w-auto",
         "px-8 py-4",
-        "font-semibold tracking-wide",
+        "tracking-wide",
         "bg-primary text-black",
         "hover:bg-white hover:text-black",
         "transition-all duration-300 ease-out",
@@ -37,7 +37,9 @@ export const ActionButton = ({
         <span className="absolute inset-0 bg-white/20 -translate-x-full group-hover:translate-x-full transition-transform duration-700 skew-x-[-20deg]" />
       </span>
 
-      <span className="relative z-10 flex items-center gap-3">{children}</span>
+      <span className="relative z-10 flex items-center gap-3 font-black">
+        {children}
+      </span>
     </button>
   );
 };

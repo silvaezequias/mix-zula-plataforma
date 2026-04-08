@@ -28,3 +28,19 @@ export async function createTournamentAction(formData: TournamentProps) {
     return newTournament;
   });
 }
+
+export async function createTournamentParticipantAction(tournamentId: string) {
+  return await safeExecute(async () => {
+    const session = await getAuthOrThrow();
+
+    const newParticipant = await TournamentService.createParticipant(
+      tournamentId,
+      session.user.id,
+    );
+
+    revalidatePath("/torneios");
+    revalidateTag("tournaments", "max");
+
+    return newParticipant;
+  });
+}

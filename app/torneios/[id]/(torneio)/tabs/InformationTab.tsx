@@ -1,6 +1,6 @@
 import { ActionButton } from "@/components/ui/ActionButton";
 import { FullTournament } from "@/types";
-import { TournamentStatus } from "@prisma/client";
+import { Participant, TournamentStatus } from "@prisma/client";
 import {
   Ban,
   LogIn,
@@ -18,9 +18,13 @@ import { JSX } from "react";
 
 export type InformationTabProps = {
   tournament: FullTournament;
+  sessionMember: Participant | null;
 };
 
-export const InformationTab = ({ tournament }: InformationTabProps) => {
+export const InformationTab = ({
+  tournament,
+  sessionMember,
+}: InformationTabProps) => {
   const router = useRouter();
   const tournamentId = tournament.id;
 
@@ -74,10 +78,12 @@ export const InformationTab = ({ tournament }: InformationTabProps) => {
     icon: Settings,
   };
 
+  const canJoinInTournament = tournament.status === "OPEN" && !sessionMember;
+
   return (
     <div className="space-y-6 uppercase animate-in fade-in duration-500">
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-2">
-        {tournament.status === "OPEN" && (
+        {canJoinInTournament && (
           <ActionButton className="w-full sm:col-span-2" onClick={handleAction}>
             <LogIn
               size={20}

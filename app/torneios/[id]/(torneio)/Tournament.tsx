@@ -27,18 +27,26 @@ export function TournamentSection({
   return (
     <Page>
       <div className="max-w-480 mx-auto h-screen max-h-screen flex flex-col lg:flex-row">
-        <div className="lg:hidden flex justify-between p-4 bg-[#111]">
-          <Logo />
-          <button onClick={() => setIsMobileMenuOpen((v) => !v)}>
-            {isMobileMenuOpen ? <X /> : <Menu />}
-          </button>
-        </div>
-
         <main className="flex-1 overflow-y-auto h-screen bg-[radial-gradient(circle_at_top_left,#111_0%,#050505_100%)] order-2 lg:order-1">
+          <div className="lg:hidden flex justify-between p-4 bg-[#111]">
+            <Logo />
+            <button onClick={() => setIsMobileMenuOpen((v) => !v)}>
+              {isMobileMenuOpen ? <X /> : <Menu />}
+            </button>
+          </div>
           <div className="hidden lg:flex justify-between h-14 bg-[#111] items-center px-8 top-0 z-40 ">
             <Logo />{" "}
           </div>
           <div className="p-6">
+            <div className="inline-block bg-primary text-black px-4 py-1 text-[10px] font-black mb-4 skew-x-[-15deg]">
+              <span className="inline-block skew-x-15">
+                INFORMAÇÕES DO TORNEIO
+              </span>
+            </div>
+            <h1 className="text-4xl sm:text-5xl font-black italic tracking-tighter leading-none mb-6 uppercase">
+              {tournament.title}
+            </h1>
+
             <TournamentDetailView
               tournament={tournament}
               sessionMember={sessionMember}
