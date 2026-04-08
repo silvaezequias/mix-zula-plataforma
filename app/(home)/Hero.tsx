@@ -3,7 +3,11 @@
 import { Activity, Play, Shield } from "lucide-react";
 import { useRouter } from "next/navigation";
 
-export const Hero = () => {
+export const Hero = ({
+  discordMembersCount,
+}: {
+  discordMembersCount: number;
+}) => {
   const router = useRouter();
 
   return (
@@ -51,8 +55,9 @@ export const Hero = () => {
               ))}
             </div>
             <div className="text-[10px] font-bold text-zinc-500 uppercase">
-              <span className="text-white">+30</span> jogadores online <br />{" "}
-              aguardando sorteio
+              <span className="text-white">+{discordMembersCount}</span>{" "}
+              jogadores ativos
+              <br /> engajando nos torneios
             </div>
           </div>
         </div>

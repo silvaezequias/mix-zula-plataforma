@@ -49,7 +49,7 @@ export default function LoginPage() {
           <Info size={12} />
           <p className="text-[8px] font-bold uppercase tracking-widest text-center leading-relaxed">
             Ao entrar, você concorda com os protocolos de conduta e <br />
-            as regras estabelecidas pelos administradores de MIX ZULA.
+            as regras estabelecidas pelos administradores de ${brand.name}.
           </p>
         </div>
       </main>

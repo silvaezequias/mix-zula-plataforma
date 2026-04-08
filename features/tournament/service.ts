@@ -5,6 +5,7 @@ import {
   ParticipantStatus,
   Prisma,
   Tournament,
+  TournamentStatus,
 } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import {
@@ -184,6 +185,15 @@ async function findById(tournamentId: string) {
   return tournament;
 }
 
+async function findFirstByStatus(status: TournamentStatus) {
+  const foundTournament = await prisma.tournament.findFirst({
+    where: { status: status },
+    include: { _count: true },
+  });
+
+  return foundTournament;
+}
+
 async function findParticipantByUserId(tournamentId: string, userId: string) {
   const participant = await prisma.participant.findUnique({
     where: { tournamentId_userId: { tournamentId, userId } },
@@ -231,4 +241,5 @@ export const TournamentService = {
   findById,
   findParticipantByUserId,
   createParticipant,
+  findFirstByStatus,
 };
