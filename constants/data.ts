@@ -1,4 +1,5 @@
 import { Role } from "@/types";
+import { ParticipantRole } from "@prisma/client";
 
 export const BETA_WHITELIST = [
   "367725991994458115",
@@ -32,3 +33,12 @@ export const GAME_MODES = [
   "Escolta",
   "Eliminação",
 ];
+
+export const roleColors: Record<ParticipantRole, string> = {
+  ADMIN: "text-red-500",
+  MODERADOR: "text-green-500",
+  PLAYER: "text-zinc-300",
+  AJUDANTE: "text-emerald-500",
+  JUIZ: "text-blue-500",
+  STREAMER: "text-pink-500",
+};

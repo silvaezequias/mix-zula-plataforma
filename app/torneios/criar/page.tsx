@@ -12,6 +12,10 @@ export default async function CreateTournamentPage() {
 
   if (!session) redirect(`/login?redirect=/torneios/criar`);
 
+  if (!session.user.isOnboarded) {
+    redirect(`/atualizar-cadastro?redirect=/torneios/criar`);
+  }
+
   if (!BETA_WHITELIST.includes(session?.user.discordId as string))
     redirect(`/torneios`);
 

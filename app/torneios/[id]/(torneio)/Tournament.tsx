@@ -1,9 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import { FullTournament } from "@/types";
+import { FullTournament, FullTournamentRoleRequest } from "@/types";
 import { TournamentDetailView } from "./TournamentDetailView";
-import { Sidebar } from "@/components/layout/Sidebar";
+import { Sidebar } from "@/components/Sidebar";
 import { Page } from "@/components/Page";
 import { Logo } from "@/components/Brand";
 import { Menu, X } from "lucide-react";
@@ -14,10 +14,12 @@ export function TournamentSection({
   session,
   sessionMember,
   tournament,
+  tournamentRoleRequests,
 }: {
   session: Session;
   tournament: FullTournament;
   sessionMember: Participant | null;
+  tournamentRoleRequests: FullTournamentRoleRequest[] | null;
 }) {
   const [staffList] = useState(
     tournament.participants.filter((p) => p.role !== "PLAYER"),
@@ -50,6 +52,7 @@ export function TournamentSection({
             <TournamentDetailView
               tournament={tournament}
               sessionMember={sessionMember}
+              tournamentRoleRequests={tournamentRoleRequests}
               onRandomize={() => {}}
               onManageUser={() => {}}
             />

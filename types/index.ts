@@ -32,6 +32,12 @@ type IncludedTeam = {
   };
 };
 
+export type FullTournamentRoleRequest = Prisma.TournamentRoleRequestGetPayload<{
+  include: {
+    owner: true;
+  };
+}>;
+
 export type FullTournament = Prisma.TournamentGetPayload<{
   include: {
     teams: {

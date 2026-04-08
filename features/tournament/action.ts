@@ -62,3 +62,29 @@ export async function createTournamentRoleRequestAction(
     return newRequest;
   });
 }
+
+export async function handleTournamentRoleRequestAction(
+  requestId: string,
+  accept: boolean,
+) {
+  return await safeExecute(async () => {
+    const session = await getAuthOrThrow();
+
+    const updatedRequest =
+      await TournamentService.handleTournamentRoleRequestStatus(
+        session.user,
+        requestId,
+        accept ? "ACCEPTED" : "DENIED",
+      );
+
+    if (accept) {
+      await TournamentService.createStaffParticipant(
+        updatedRequest.tournamentId,
+        updatedRequest.ownerId,
+        updatedRequest.requestedRole,
+      );
+    }
+
+    return updatedRequest;
+  });
+}

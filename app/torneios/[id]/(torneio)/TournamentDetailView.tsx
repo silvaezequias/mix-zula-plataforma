@@ -1,4 +1,4 @@
-import { FullTournament } from "@/types";
+import { FullTournament, FullTournamentRoleRequest } from "@/types";
 import { GamesTab } from "./tabs/GamesTab";
 import { InformationTab } from "./tabs/InformationTab";
 import { PlayersTab } from "./tabs/PlayersTab";
@@ -6,20 +6,31 @@ import { DrawingTab } from "./tabs/DrawingTab";
 import { Tab, Window } from "@/components/ui/Window";
 import { SettingsTab } from "./tabs/SettingsTab";
 import { TeamsView } from "./tabs/TeamsTab";
-import { Participant, TournamentStatus } from "@prisma/client";
+import { Participant, ParticipantRole, TournamentStatus } from "@prisma/client";
+import { StaffTab } from "./tabs/StaffTab";
+import { useSearchParams } from "next/navigation";
 
 export type Tabs = "info" | "inscritos" | "teams" | "games";
 
 interface DetailProps {
   tournament: FullTournament;
   sessionMember: Participant | null;
+  tournamentRoleRequests: FullTournamentRoleRequest[] | null;
   onRandomize: () => void;
   onManageUser: (p: FullTournament["participants"][number]) => void;
 }
 
 export const TournamentDetailView: React.FC<DetailProps> = (props) => {
-  const { tournament, onRandomize, onManageUser, sessionMember } = props;
+  const {
+    tournament,
+    onRandomize,
+    onManageUser,
+    sessionMember,
+    tournamentRoleRequests,
+  } = props;
 
+  const searchParams = useSearchParams();
+  const tab = searchParams.get("tab") || "info";
   const isStaff = sessionMember && sessionMember?.role !== "PLAYER";
   const isRandomizing = tournament.status === "SETTING_TEAM";
 
@@ -74,7 +85,23 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
     });
   }
 
-  if (isStaff) {
+  if (
+    isStaff &&
+    (["MODERADOR", "ADMIN"] as ParticipantRole[]).includes(sessionMember.role)
+  ) {
+    tabs.push({
+      id: "staff",
+      label: "STAFF",
+      enabled: isStaff && !isRandomizing,
+      content: (
+        <StaffTab
+          tournamentRoleRequests={tournamentRoleRequests}
+          onManageUser={() => {}}
+          tournament={tournament}
+        />
+      ),
+    });
+
     tabs.push({
       id: "settings",
       label: "CONFIGURAÇÕES",
@@ -91,7 +118,7 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
 
   return (
     <div className="space-y-8 animate-in fade-in duration-500 ">
-      <Window tabs={tabs} focusAtTab="info" />
+      <Window tabs={tabs} focusAtTab={tab} />
     </div>
   );
 };

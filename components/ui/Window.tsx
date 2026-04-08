@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
 import clsx from "clsx";
+import { useRouter } from "next/navigation";
 
 export type Tab = {
   id: string;
@@ -13,17 +13,17 @@ export type WindowProps = {
   focusAtTab: string;
 };
 
-export const Window = ({ tabs, focusAtTab }: WindowProps) => {
-  const [activeTab, setActiveTab] = useState<string>(
-    tabs.some((tab) => tab.id === focusAtTab) ? focusAtTab : tabs[0].id,
-  );
+export const Window = ({ tabs, focusAtTab: activeTab }: WindowProps) => {
+  const router = useRouter();
 
-  useEffect(() => {
-    if (tabs.some((tab) => tab.id === focusAtTab)) {
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setActiveTab(focusAtTab);
+  const handleChangeTab = (tabId: string) => {
+    if (tabs.find((t) => t.id)?.enabled) {
+      router.push(`?tab=${tabId}`);
+    } else {
+      const someEnabledTab = tabs.find((t) => t.enabled);
+      if (someEnabledTab) router.push(`?tab=${someEnabledTab.id}`);
     }
-  }, [focusAtTab, tabs]);
+  };
 
   return (
     <div className="lg:col-span-8 space-y-6 w-full h-full">
@@ -35,7 +35,7 @@ export const Window = ({ tabs, focusAtTab }: WindowProps) => {
           return (
             <button
               key={tab.id}
-              onClick={() => isEnabled && setActiveTab(tab.id)}
+              onClick={() => isEnabled && handleChangeTab(tab.id)}
               className={clsx(
                 "transition-all duration-200 border-b-2 whitespace-nowrap",
                 "px-6 py-3 text-xs font-black flex gap-2 items-center uppercase tracking-widest",

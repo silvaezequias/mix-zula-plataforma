@@ -1,3 +1,5 @@
+import { Button } from "@/components/ui/Button";
+import { CardPlayer } from "@/components/ui/CardPlayer";
 import { FullTournament } from "@/types";
 import { Search, Users } from "lucide-react";
 import { useState } from "react";
@@ -7,7 +9,7 @@ type PlayersTabProps = {
   onManageUser: (participant: FullTournament["participants"][number]) => void;
 };
 
-export const PlayersTab = ({ tournament, onManageUser }: PlayersTabProps) => {
+export const PlayersTab = ({ tournament }: PlayersTabProps) => {
   const [searchTerm, setSearchTerm] = useState("");
   const isStaff = true; // TODO: substituir pela verificação real de permissão
 
@@ -35,30 +37,15 @@ export const PlayersTab = ({ tournament, onManageUser }: PlayersTabProps) => {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-h-125 overflow-y-auto pr-2 custom-scrollbar">
         {filteredPlayers.length ? (
           filteredPlayers.map((p) => (
-            <div
+            <CardPlayer
               key={p.id}
-              onClick={() => isStaff && onManageUser(p)}
-              className={`bg-zinc-900/50 border border-zinc-800 p-4 flex items-center justify-between group transition-colors ${isStaff ? "hover:border-primary/50 cursor-pointer" : ""}`}
+              name={p.user.name!}
+              nickname={p.user.player!.nickname!}
             >
-              <div className="flex items-center gap-4">
-                <div className="w-10 h-10 bg-zinc-800 flex items-center justify-center text-primary font-black border border-zinc-700 italic">
-                  {p.user.player?.nickname.charAt(0)}
-                </div>
-                <div>
-                  <p className="text-sm font-black italic text-white uppercase  tracking-tighter">
-                    {p.user.player?.nickname}
-                  </p>
-                  <p className="text-[10px] text-zinc-500 font-bold uppercase tracking-tight italic ">
-                    @{p.user.name}
-                  </p>
-                </div>
-              </div>
-              {isStaff && (
-                <span className="text-[9px] font-bold text-zinc-700 uppercase group-hover:text-primary hidden sm:block italic tracking-widest">
-                  GERENCIAR
-                </span>
-              )}
-            </div>
+              <span className="flex gap-2 place-self-end self-center">
+                <Button>Gerenciar</Button>
+              </span>
+            </CardPlayer>
           ))
         ) : (
           <div className="col-span-2 py-32 text-center border-2 border-dashed border-zinc-900">

@@ -4,7 +4,8 @@ import { ExternalLink, Radio, Shield, Tv, X } from "lucide-react";
 import { PayloadUser } from "@/types/next-auth";
 import { brand } from "@/config/brand";
 import { signOut } from "next-auth/react";
-import { Participant, ParticipantRole } from "@prisma/client";
+import { Participant } from "@prisma/client";
+import { roleColors } from "@/constants/data";
 
 interface SidebarProps {
   staff: FullTournament["participants"][number][];
@@ -26,12 +27,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
   onManageUser,
 }) => {
   const isStaff = sessionMember && sessionMember?.role !== "PLAYER";
-
-  const roleColors: Record<ParticipantRole, string> = {
-    ADMIN: "text-red-500",
-    MODERATOR: "text-emerald-500",
-    PLAYER: "text-zinc-300",
-  };
 
   return (
     <aside
@@ -60,7 +55,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
         <h4 className="text-[10px] font-black text-zinc-500 tracking-[0.2em] mb-6 flex items-center gap-2 italic uppercase">
           <Shield size={12} className="text-primary" /> EQUIPE TÉCNICA
         </h4>
-        <div className="space-y-4 mb-10 overflow-y-auto h-[45%] pr-2">
+        <div className="space-y-4 mb-10 overflow-y-auto pr-2">
           {staff.map((member) => (
             <div
               key={member.id}
@@ -82,7 +77,9 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </div>
           ))}
         </div>
+      </div>
 
+      <div className="p-6 border-t border-zinc-900 bg-[#0a0a0a] mt-auto italic">
         <div className="bg-zinc-900 border border-zinc-800 p-4 relative overflow-hidden group uppercase mb-6 italic">
           <div className="absolute top-0 right-0 p-2 opacity-10 group-hover:opacity-20 transition-opacity">
             <Tv size={40} />
@@ -113,9 +110,6 @@ export const Sidebar: React.FC<SidebarProps> = ({
             </p>
           )}
         </div>
-      </div>
-
-      <div className="p-6 border-t border-zinc-900 bg-[#0a0a0a] mt-auto italic">
         {currentUser ? (
           <div
             className="flex items-center gap-3 mb-4 cursor-pointer group"

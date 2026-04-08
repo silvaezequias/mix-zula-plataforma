@@ -6,6 +6,8 @@ import Link from "next/link";
 import { TournamentSection } from "./Tournament";
 import { AlertTriangle } from "lucide-react";
 import { TournamentService } from "@/features/tournament/service";
+import { ParticipantRole } from "@prisma/client";
+import { FullTournamentRoleRequest } from "@/types";
 
 export default async function TournamentPage(props: {
   params: Promise<{ id: string }>;
@@ -15,6 +17,10 @@ export default async function TournamentPage(props: {
 
   if (!session) {
     redirect(`/login?redirect=/torneios/${params.id}`);
+  }
+
+  if (!session.user.isOnboarded) {
+    redirect(`/atualizar-cadastro?redirect=/torneios/${params.id}`);
   }
 
   const tournament = await TournamentService.findById(params.id);
@@ -66,11 +72,27 @@ export default async function TournamentPage(props: {
     );
   }
 
+  let tournamentRoleRequests: FullTournamentRoleRequest[] | null = null;
+
+  if (currentMember) {
+    if (
+      (["MODERADOR", "ADMIN"] as ParticipantRole[]).includes(currentMember.role)
+    ) {
+      tournamentRoleRequests =
+        (await TournamentService.findManyTournamentRoleRequest(
+          tournament.id,
+        )) as FullTournamentRoleRequest[];
+    }
+  }
+
   return (
-    <TournamentSection
-      session={session}
-      tournament={tournament}
-      sessionMember={currentMember}
-    />
+    <>
+      <TournamentSection
+        session={session}
+        tournament={tournament}
+        sessionMember={currentMember}
+        tournamentRoleRequests={tournamentRoleRequests}
+      />
+    </>
   );
 }

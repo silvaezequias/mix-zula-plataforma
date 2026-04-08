@@ -1,5 +1,6 @@
 import { prisma } from "@/infra/prisma";
 import validation from "@/lib/validation";
+import { PayloadUser } from "@/types/next-auth";
 import {
   ParticipantRole,
   ParticipantStatus,
@@ -203,6 +204,43 @@ async function findParticipantByUserId(tournamentId: string, userId: string) {
   return participant;
 }
 
+async function createStaffParticipant(
+  tournamentId: string,
+  userId: string,
+  role: ParticipantRole,
+) {
+  const existingTournament = await findById(tournamentId);
+
+  if (!existingTournament) {
+    throw new NotFoundError({
+      message: "Não foi encontrado um torneio com o ID inserido",
+    });
+  }
+
+  const existingParticipant = await findParticipantByUserId(
+    tournamentId,
+    userId,
+  );
+
+  if (existingParticipant) {
+    return await prisma.participant.update({
+      where: { id: existingParticipant.id },
+      data: { role },
+    });
+  }
+
+  const newParticipant = await prisma.participant.create({
+    data: {
+      userId,
+      tournamentId,
+      status: ParticipantStatus.ACTIVE,
+      role: role,
+    },
+  });
+
+  return newParticipant;
+}
+
 async function createParticipant(tournamentId: string, userId: string) {
   const existingTournament = await findById(tournamentId);
 
@@ -236,12 +274,51 @@ async function createParticipant(tournamentId: string, userId: string) {
   return newParticipant;
 }
 
+async function updateParticipantRole(
+  participantId: string,
+  role: ParticipantRole,
+) {
+  const updatedParticipant = await prisma.participant.update({
+    where: { id: participantId },
+    data: { role },
+  });
+
+  return updatedParticipant;
+}
+
 async function findTournamentRoleRequest(tournamentId: string, userId: string) {
   const request = await prisma.tournamentRoleRequest.findUnique({
     where: { ownerId_tournamentId: { ownerId: userId, tournamentId } },
   });
 
   return request;
+}
+
+async function findTournamentRoleRequestById(requestId: string) {
+  const request = await prisma.tournamentRoleRequest.findUnique({
+    where: { id: requestId },
+    include: { tournament: true },
+  });
+
+  return request;
+}
+
+async function findManyTournamentRoleRequest(tournamentId: string) {
+  const requests = await prisma.tournamentRoleRequest.findMany({
+    where: { tournamentId },
+    select: {
+      owner: true,
+      id: true,
+      status: true,
+      createdAt: true,
+      requestedRole: true,
+      updatedAt: true,
+    },
+    orderBy: { updatedAt: "desc" },
+    take: 30,
+  });
+
+  return requests;
 }
 
 async function createTournamentRoleRequest(
@@ -289,13 +366,46 @@ async function createTournamentRoleRequest(
   return request;
 }
 
+async function handleTournamentRoleRequestStatus(
+  sessionUser: PayloadUser,
+  requestId: string,
+  status: RequestStatus,
+) {
+  const existingRequest = await findTournamentRoleRequestById(requestId);
+
+  if (!existingRequest) {
+    throw new NotFoundError({
+      message: "Nenhuma solicitação com esse ID foi encotrada",
+    });
+  }
+
+  if (existingRequest.tournament.ownerId !== sessionUser.id) {
+    throw new UnauthorizedError({
+      message:
+        "Você precisa ser o dono do torneio para aceitar ou negar solicitações de cargo",
+    });
+  }
+
+  const updatedRequest = await prisma.tournamentRoleRequest.update({
+    where: { id: existingRequest.id },
+    data: { status },
+  });
+
+  return updatedRequest;
+}
+
 export const TournamentService = {
   create,
   list,
   findById,
   findParticipantByUserId,
   findTournamentRoleRequest,
+  findTournamentRoleRequestById,
+  findManyTournamentRoleRequest,
+  handleTournamentRoleRequestStatus,
+  updateParticipantRole,
   createParticipant,
   findFirstByStatus,
   createTournamentRoleRequest,
+  createStaffParticipant,
 };

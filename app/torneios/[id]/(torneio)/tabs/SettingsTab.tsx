@@ -53,7 +53,7 @@ export const SettingsTab = (props: SettingsTabProps) => {
 
           <div className="pt-4 border-t border-zinc-800">
             <label className="text-[9px] font-bold text-zinc-500 uppercase block mb-3 italic">
-              Link de Recrutamento Direto
+              Link de Convite
             </label>
             <div className="flex gap-2">
               <div className="flex-1 bg-zinc-900 border border-zinc-800 p-3 text-[10px] text-zinc-500 truncate font-mono italic">
@@ -66,9 +66,8 @@ export const SettingsTab = (props: SettingsTabProps) => {
                 {copied ? <Check size={18} /> : <Copy size={18} />}
               </button>
             </div>
-            <p className="text-[8px] text-zinc-700 mt-2 italic font-bold">
-              Nota: Apenas agentes autorizados pela Staff devem receber este
-              link.
+            <p className="text-[8px] text-zinc-700 mt-2 font-semibold">
+              Compartilhe esse link para adicionar membros ao torneio
             </p>
           </div>
         </div>
@@ -141,7 +140,7 @@ export const SettingsTab = (props: SettingsTabProps) => {
         title="Resumo Técnico"
         className="col-span-1 lg:col-span-2 xl:col-span-3"
       >
-        <div className="space-y-4 text-[10px] font-bold border-b border-zinc-800 pb-6 mb-6">
+        <div className="space-y-4 text-[10px] font-bold border-b border-zinc-800">
           <div className="flex justify-between uppercase">
             <span className="text-zinc-500">INSCRITOS</span>
             <span>
@@ -172,7 +171,7 @@ export const SettingsTab = (props: SettingsTabProps) => {
   );
 };
 
-const Card = ({
+export const Card = ({
   title,
   children,
   icon: Icon,
@@ -189,7 +188,9 @@ const Card = ({
     >
       <div className="flex items-center gap-3 text-primary">
         <Icon size={20} />
-        <h3 className="text-xl font-bold italic tracking-tighter">{title}</h3>
+        <h3 className="text-xl font-bold italic tracking-tighter uppercase">
+          {title}
+        </h3>
       </div>
       {children}
     </div>
