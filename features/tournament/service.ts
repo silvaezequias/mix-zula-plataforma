@@ -4,6 +4,7 @@ import {
   ParticipantRole,
   ParticipantStatus,
   Prisma,
+  RequestStatus,
   Tournament,
   TournamentStatus,
 } from "@prisma/client";
@@ -235,11 +236,66 @@ async function createParticipant(tournamentId: string, userId: string) {
   return newParticipant;
 }
 
+async function findTournamentRoleRequest(tournamentId: string, userId: string) {
+  const request = await prisma.tournamentRoleRequest.findUnique({
+    where: { ownerId_tournamentId: { ownerId: userId, tournamentId } },
+  });
+
+  return request;
+}
+
+async function createTournamentRoleRequest(
+  tournamentId: string,
+  userId: string,
+  requestedRole: ParticipantRole,
+) {
+  const existingTournament = await findById(tournamentId);
+
+  if (!existingTournament) {
+    throw new NotFoundError({
+      message: "Não foi encontrado um torneio com o ID inserido",
+    });
+  }
+
+  if (userId === existingTournament.ownerId) {
+    throw new UnauthorizedError({
+      message:
+        "Você não pode solicitar cargo no seu próprio torneio. Você já é admin, seu animal.",
+    });
+  }
+
+  const existingRequest = await findTournamentRoleRequest(tournamentId, userId);
+
+  if (existingRequest && existingRequest.status !== "DENIED") {
+    throw new UnauthorizedError({
+      message: "Você já tem uma solicitação pendente ou aceita",
+    });
+  }
+
+  const data = {
+    tournamentId,
+    requestedRole,
+    ownerId: userId,
+    status: RequestStatus.PENDING,
+  };
+
+  const request = existingRequest
+    ? await prisma.tournamentRoleRequest.update({
+        where: { id: existingRequest.id },
+        data,
+      })
+    : await prisma.tournamentRoleRequest.create({ data });
+
+  return request;
+}
+
 export const TournamentService = {
   create,
   list,
   findById,
   findParticipantByUserId,
+  findTournamentRoleRequest,
   createParticipant,
   findFirstByStatus,
+  createTournamentRoleRequest,
 };

@@ -41,10 +41,11 @@ model User {
   player       Player?
   generalStats Stat[]
 
-  accounts     Account[]
-  sessions     Session[]
-  tournaments  Tournament[]
-  participants Participant[]
+  accounts               Account[]
+  sessions               Session[]
+  tournaments            Tournament[]
+  participants           Participant[]
+  requestTournamentRoles TournamentRoleRequest[]
 }
 
 model Account {
@@ -186,8 +187,11 @@ enum ParticipantStatus {
 
 enum ParticipantRole {
   PLAYER
-  MODERATOR
   ADMIN
+  MODERADOR
+  JUIZ
+  STREAMER
+  AJUDANTE
 }
 
 model Tournament {
@@ -230,10 +234,32 @@ model Tournament {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  participants Participant[]
-  matches      Match[]
-  teams        Team[]
-  rounds       Round[]
+  participants          Participant[]
+  matches               Match[]
+  teams                 Team[]
+  rounds                Round[]
+  tournamentRoleRequest TournamentRoleRequest[]
+}
+
+model TournamentRoleRequest {
+  id String @id @default(auto()) @map("_id") @db.ObjectId
+
+  requestedRole ParticipantRole
+  status        RequestStatus   @default(PENDING)
+
+  owner   User   @relation(fields: [ownerId], references: [id])
+  ownerId String @db.ObjectId
+
+  tournament   Tournament @relation(fields: [tournamentId], references: [id])
+  tournamentId String     @db.ObjectId
+
+  @@unique([ownerId, tournamentId])
+}
+
+enum RequestStatus {
+  PENDING
+  ACCEPTED
+  DENIED
 }
 
 enum TournamentStatus {

@@ -6,6 +6,7 @@ import { safeExecute } from "@/lib/safeExecute";
 import { BETA_WHITELIST } from "@/constants/data";
 import { UnauthorizedError } from "nextfastapi/errors";
 import { revalidatePath, revalidateTag } from "next/cache";
+import { ParticipantRole } from "@prisma/client";
 
 export async function createTournamentAction(formData: TournamentProps) {
   return await safeExecute(async () => {
@@ -42,5 +43,22 @@ export async function createTournamentParticipantAction(tournamentId: string) {
     revalidateTag("tournaments", "max");
 
     return newParticipant;
+  });
+}
+
+export async function createTournamentRoleRequestAction(
+  tournamentId: string,
+  role: ParticipantRole,
+) {
+  return await safeExecute(async () => {
+    const session = await getAuthOrThrow();
+
+    const newRequest = await TournamentService.createTournamentRoleRequest(
+      tournamentId,
+      session.user.id,
+      role,
+    );
+
+    return newRequest;
   });
 }
