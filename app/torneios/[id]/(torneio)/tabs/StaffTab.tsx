@@ -23,6 +23,7 @@ type StaffTabProps = {
 
 export const StaffTab = ({
   tournament,
+  onManageUser,
   tournamentRoleRequests,
 }: StaffTabProps) => {
   const filteredStaff = tournament.participants.filter(
@@ -91,7 +92,9 @@ export const StaffTab = ({
                 Cargo: <span className={roleColors[p.role]}>{p.role}</span>
               </span>
               <span className="flex gap-2 place-self-center self-center col-span-2 w-full">
-                <Button className="w-full">Gerenciar</Button>
+                <Button onClick={() => onManageUser(p)} className="w-full">
+                  Gerenciar
+                </Button>
               </span>
             </CardPlayer>
           ))}

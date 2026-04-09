@@ -132,7 +132,7 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
       content: (
         <StaffTab
           tournamentRoleRequests={tournamentRoleRequests}
-          onManageUser={() => {}}
+          onManageUser={handleSelectUser}
           tournament={tournament}
         />
       ),
