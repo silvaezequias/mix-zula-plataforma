@@ -106,13 +106,13 @@ export const UserTab = ({
             </div>
             <button
               onClick={() => setSelectedUser(undefined)}
-              className="text-zinc-600 hover:text-white flex items-center gap-2 text-[10px] font-black uppercase italic transition-colors"
+              className="text-zinc-600 hover:text-white flex items-center gap-2 text-[10px] font-black uppercase italic transition-colors p-3"
             >
-              <X size={16} /> Fechar Painel
+              <X size={32} />
             </button>
           </div>
 
-          <div className="p-10 space-y-12 grid grid-cols-1 xl:grid-cols-2 place-items-center gap-10 border">
+          <div className="p-5 space-y-12 grid grid-cols-1 xl:grid-cols-2 place-items-center gap-10 border">
             <div className="space-y-6 w-full ">
               <div className="flex items-center gap-3">
                 <div className="w-1 h-4 bg-primary"></div>
@@ -274,8 +274,8 @@ const PunishmentSection = ({
   });
 
   return (
-    <div className="space-y-6 px-10 w-full">
-      <div className="grid grid-cols-1 gap-4 pb-10">
+    <div className="space-y-6 w-full">
+      <div className="grid grid-cols-1 gap-4 pb-10 w-full">
         <ActionButton
           onClick={handleKickoffClick}
           intent={confirmKickoff ? "danger" : "default"}
