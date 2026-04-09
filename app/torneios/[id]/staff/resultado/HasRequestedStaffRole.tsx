@@ -14,14 +14,14 @@ export function HasRequestedStaffRole({
     <div className="text-center h-[80vh] w-full flex flex-col items-center justify-center space-y-10 animate-in zoom-in-95 duration-500">
       <div className="flex items-center justify-center gap-4 mb-4">
         <div className="h-px w-12 bg-zinc-800"></div>
-        <div className="bg-[#FFB300] p-2 transform -rotate-12 shadow-[0_0_20px_rgba(255,179,0,0.2)]">
+        <div className="bg-primary p-2 transform -rotate-12 shadow-[0_0_20px_rgba(255,179,0,0.2)]">
           <Lock size={20} className="text-black" />
         </div>
         <div className="h-px w-12 bg-zinc-800"></div>
       </div>
       <h1 className="text-4xl sm:text-5xl font-black italic tracking-tighter leading-none uppercase">
         CARGO SOLICITADO:{" "}
-        <span className="text-[#FFB300]">{requestedRole.requestedRole}</span>
+        <span className="text-primary">{requestedRole.requestedRole}</span>
       </h1>
 
       <div className="relative inline-block">
@@ -84,13 +84,13 @@ export function HasRequestedStaffRole({
         className={`grid grid-cols-1 ${requestedRole.status === "DENIED" ? "md:grid-cols-2" : ""}`}
       >
         <Link href={`/torneios/${tournament.id}`}>
-          <button className="px-12 py-5 border-2 border-zinc-800 text-zinc-500 font-black text-xs tracking-widest hover:border-[#FFB300] hover:text-[#FFB300] transition-all uppercase italic">
+          <button className="px-12 py-5 border-2 border-zinc-800 text-zinc-500 font-black text-xs tracking-widest hover:border-primary hover:text-primary transition-all uppercase italic">
             Visualizar Torneio
           </button>
         </Link>
         {requestedRole.status === "DENIED" && (
           <Link href={`/torneios/${tournament.id}/staff?afterDenied=tryagain`}>
-            <button className="px-12 py-5 border-2 border-zinc-800 text-zinc-500 font-black text-xs tracking-widest hover:border-2 hover:border-[#FFB300] hover:text-[#FFB300] transition-all uppercase italic">
+            <button className="px-12 py-5 border-2 border-zinc-800 text-zinc-500 font-black text-xs tracking-widest hover:border-2 hover:border-primary hover:text-primary transition-all uppercase italic">
               Nova solicitação
             </button>
           </Link>

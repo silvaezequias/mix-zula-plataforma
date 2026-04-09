@@ -21,9 +21,7 @@ export function TournamentSection({
   sessionMember: Participant | null;
   tournamentRoleRequests: FullTournamentRoleRequest[] | null;
 }) {
-  const [staffList] = useState(
-    tournament.participants.filter((p) => p.role !== "PLAYER"),
-  );
+  const staffList = tournament.participants.filter((p) => p.role !== "PLAYER");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   return (
@@ -54,7 +52,6 @@ export function TournamentSection({
               sessionMember={sessionMember}
               tournamentRoleRequests={tournamentRoleRequests}
               onRandomize={() => {}}
-              onManageUser={() => {}}
             />
           </div>
         </main>

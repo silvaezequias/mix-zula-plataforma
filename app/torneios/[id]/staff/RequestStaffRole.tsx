@@ -52,13 +52,13 @@ export const RequestStaffRole = ({
       <header className="mb-20 text-center space-y-6">
         <div className="flex items-center justify-center gap-4 mb-4">
           <div className="h-px w-12 bg-zinc-800"></div>
-          <div className="bg-[#FFB300] p-2 transform -rotate-12 shadow-[0_0_20px_rgba(255,179,0,0.2)]">
+          <div className="bg-primary p-2 transform -rotate-12 shadow-[0_0_20px_rgba(255,179,0,0.2)]">
             <Lock size={20} className="text-black" />
           </div>
           <div className="h-px w-12 bg-zinc-800"></div>
         </div>
         <h1 className="text-5xl sm:text-7xl font-black italic tracking-tighter leading-none uppercase">
-          RECRUTAMENTO <span className="text-[#FFB300]">STAFF</span>
+          RECRUTAMENTO <span className="text-primary">STAFF</span>
         </h1>
 
         <p className="text-zinc-500 font-bold max-w-2xl mx-auto text-sm leading-relaxed uppercase">
@@ -70,7 +70,7 @@ export const RequestStaffRole = ({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
         <div className="lg:col-span-7 space-y-4">
           <h3 className="text-[10px] font-black text-zinc-500 tracking-[0.4em] mb-6 flex items-center gap-3">
-            <Zap size={14} className="text-[#FFB300]" /> SELECIONE A SUA
+            <Zap size={14} className="text-primary" /> SELECIONE A SUA
             ESPECIALIDADE
           </h3>
 
@@ -81,7 +81,7 @@ export const RequestStaffRole = ({
                 onClick={() => setSelectedRole(role.id)}
                 className={`text-left p-6 border-2 transition-all group relative overflow-hidden ${
                   selectedRole === role.id
-                    ? "bg-[#111] border-[#FFB300] shadow-[0_0_30px_rgba(255,179,0,0.1)] scale-[1.02]"
+                    ? "bg-[#111] border-primary shadow-[0_0_30px_rgba(255,179,0,0.1)] scale-[1.02]"
                     : "bg-zinc-900/40 border-zinc-800 hover:border-zinc-700"
                 }`}
               >
@@ -98,7 +98,7 @@ export const RequestStaffRole = ({
                 </p>
 
                 {selectedRole === role.id && (
-                  <div className="absolute top-2 right-2 text-[#FFB300]">
+                  <div className="absolute top-2 right-2 text-primary">
                     <CheckCircle2 size={16} />
                   </div>
                 )}
@@ -106,8 +106,8 @@ export const RequestStaffRole = ({
             ))}
           </div>
 
-          <div className="mt-12 p-8 bg-[#111] border-l-4 border-[#FFB300] space-y-4 shadow-xl">
-            <div className="flex items-center gap-3 text-[#FFB300]">
+          <div className="mt-12 p-8 bg-[#111] border-l-4 border-primary space-y-4 shadow-xl">
+            <div className="flex items-center gap-3 text-primary">
               <Info size={18} />
               <h4 className="text-xs font-black uppercase tracking-widest">
                 Protocolo de Solicitação
@@ -124,7 +124,7 @@ export const RequestStaffRole = ({
 
         <div className="lg:col-span-5 sticky top-32">
           <div className="bg-[#111] border border-zinc-800 p-8 sm:p-10 shadow-2xl relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-1 bg-[#FFB300]"></div>
+            <div className="absolute top-0 right-0 w-32 h-1 bg-primary"></div>
 
             <h3 className="text-xl font-black italic tracking-tighter uppercase mb-8">
               Confirmar Alistamento
@@ -148,7 +148,7 @@ export const RequestStaffRole = ({
                   Cargo Solicitado
                 </label>
                 <div
-                  className={`w-full bg-[#050505] border border-zinc-800 p-4 text-xs font-black italic uppercase ${selectedRole ? "text-[#FFB300]" : "text-zinc-700"}`}
+                  className={`w-full bg-[#050505] border border-zinc-800 p-4 text-xs font-black italic uppercase ${selectedRole ? "text-primary" : "text-zinc-700"}`}
                 >
                   {selectedRole ? selectedRole : "NENHUMA SELECIONADA"}
                 </div>
@@ -169,7 +169,7 @@ export const RequestStaffRole = ({
                   ${
                     !selectedRole || isPending
                       ? "bg-zinc-800 text-zinc-600 cursor-not-allowed"
-                      : "bg-[#FFB300] text-black hover:brightness-110 shadow-[0_10px_30px_rgba(255,179,0,0.15)] active:scale-[0.95]"
+                      : "bg-primary text-black hover:brightness-110 shadow-[0_10px_30px_rgba(255,179,0,0.15)] active:scale-[0.95]"
                   }`}
                 >
                   {isPending ? (

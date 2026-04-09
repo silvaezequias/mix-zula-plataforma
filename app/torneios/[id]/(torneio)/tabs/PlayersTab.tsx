@@ -6,12 +6,16 @@ import { useState } from "react";
 
 type PlayersTabProps = {
   tournament: FullTournament;
+  isStaff: boolean;
   onManageUser: (participant: FullTournament["participants"][number]) => void;
 };
 
-export const PlayersTab = ({ tournament }: PlayersTabProps) => {
+export const PlayersTab = ({
+  tournament,
+  onManageUser,
+  isStaff,
+}: PlayersTabProps) => {
   const [searchTerm, setSearchTerm] = useState("");
-  const isStaff = true; // TODO: substituir pela verificação real de permissão
 
   const filteredPlayers = tournament.participants.filter((p) =>
     p.user.player?.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
@@ -43,7 +47,7 @@ export const PlayersTab = ({ tournament }: PlayersTabProps) => {
               nickname={p.user.player!.nickname!}
             >
               <span className="flex gap-2 place-self-end self-center">
-                <Button>Gerenciar</Button>
+                <Button onClick={() => onManageUser(p)}>Gerenciar</Button>
               </span>
             </CardPlayer>
           ))

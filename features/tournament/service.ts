@@ -1,3 +1,4 @@
+import { STAFF_ROLES } from "@/constants/data";
 import { prisma } from "@/infra/prisma";
 import validation from "@/lib/validation";
 import { PayloadUser } from "@/types/next-auth";
@@ -162,7 +163,11 @@ async function findById(tournamentId: string) {
             include: {
               participant: {
                 select: {
-                  user: true,
+                  user: {
+                    select: {
+                      discordId: true,
+                    },
+                  },
                 },
               },
             },
@@ -202,6 +207,60 @@ async function findParticipantByUserId(tournamentId: string, userId: string) {
   });
 
   return participant;
+}
+
+async function removeStaffParticipantById(
+  sessionUser: PayloadUser,
+  participantId: string,
+) {
+  const existingParticipant = await prisma.participant.findUnique({
+    where: { id: participantId },
+  });
+
+  if (!existingParticipant) {
+    throw new NotFoundError({
+      message: "Não foi encontrado nenhum participante com esse ID",
+    });
+  }
+
+  const sessionMember = await TournamentService.findParticipantByUserId(
+    existingParticipant.tournamentId,
+    sessionUser.id,
+  );
+
+  if (!sessionMember) {
+    throw new UnauthorizedError({
+      message: "Você nem devia estar fazendo isso",
+    });
+  }
+
+  const participantRole = STAFF_ROLES.find(
+    (r) => r.id === existingParticipant.role,
+  );
+  const memberRole = STAFF_ROLES.find((r) => r.id === sessionMember.role);
+
+  if (memberRole && participantRole) {
+    if (memberRole!.level < 8) {
+      throw new UnauthorizedError({
+        message: "Você não tem permissão pra realizar essa operação",
+      });
+    }
+
+    if (participantRole.level >= memberRole.level) {
+      throw new UnauthorizedError({
+        message:
+          "Não tem como você remover a participação desse usuário no torneio",
+      });
+    }
+  } else if (!memberRole) {
+    throw new UnauthorizedError({
+      message: "Você está tentando fazer o que?",
+    });
+  }
+
+  await prisma.participant.delete({ where: { id: existingParticipant.id } });
+
+  return null;
 }
 
 async function createStaffParticipant(
@@ -379,10 +438,19 @@ async function handleTournamentRoleRequestStatus(
     });
   }
 
-  if (existingRequest.tournament.ownerId !== sessionUser.id) {
+  const sessionParticipant = await prisma.participant.findUnique({
+    where: {
+      tournamentId_userId: {
+        tournamentId: existingRequest.tournamentId,
+        userId: sessionUser.id,
+      },
+    },
+  });
+
+  if (sessionParticipant?.role !== "ADMIN") {
     throw new UnauthorizedError({
       message:
-        "Você precisa ser o dono do torneio para aceitar ou negar solicitações de cargo",
+        "Você precisa ser o administrador para aceitar ou negar solicitações de cargos",
     });
   }
 
@@ -408,4 +476,5 @@ export const TournamentService = {
   findFirstByStatus,
   createTournamentRoleRequest,
   createStaffParticipant,
+  removeStaffParticipantById,
 };
