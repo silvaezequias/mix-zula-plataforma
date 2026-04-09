@@ -47,7 +47,9 @@ export const PlayersTab = ({
               nickname={p.user.player!.nickname!}
             >
               <span className="flex gap-2 place-self-end self-center">
-                <Button onClick={() => onManageUser(p)}>Gerenciar</Button>
+                {isStaff && (
+                  <Button onClick={() => onManageUser(p)}>Gerenciar</Button>
+                )}
               </span>
             </CardPlayer>
           ))

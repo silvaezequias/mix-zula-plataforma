@@ -42,39 +42,39 @@ export const InformationTab = ({
   > = {
     LIVE: {
       label: "EM ANDAMENTO",
-      className: "bg-indigo-600",
+      className: "border-indigo-600",
       icon: Radio,
     },
     READY: {
       label: "PREPARANDO PARA INÍCIO",
-      className: "bg-emerald-600",
+      className: "border-emerald-600",
       icon: Radio,
     },
     OPEN: {
       label: "INCRIÇÕES ABERTAS",
-      className: "bg-green-600",
+      className: "border-green-600",
       icon: UserRoundPlus,
     },
     SETTING_TEAM: {
       label: "DEFININDO EQUIPES",
-      className: "bg-yellow-600",
+      className: "border-yellow-600",
       icon: Shuffle,
     },
     FINISHED: {
       label: "FINALIZADO",
-      className: "bg-red-600",
+      className: "border-red-600",
       icon: Medal,
     },
     CLOSED: {
       label: "FECHADO",
-      className: "bg-red-800",
+      className: "border-red-800",
       icon: Ban,
     },
   } as const;
 
   const status = statusMap[tournament.status] || {
     label: "STATUS DESCONHECIDO",
-    className: "bg-gray-600",
+    className: "border-gray-600",
     icon: Settings,
   };
 
@@ -82,7 +82,7 @@ export const InformationTab = ({
 
   return (
     <div className="space-y-6 uppercase animate-in fade-in duration-500">
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 px-2">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 px-2">
         {canJoinInTournament && (
           <ActionButton className="w-full sm:col-span-2" onClick={handleAction}>
             <LogIn
@@ -94,19 +94,15 @@ export const InformationTab = ({
             </span>
           </ActionButton>
         )}
-
-        {status && (
-          <span
-            className={`${status.className} text-white w-full sm:col-span-1 px-6 py-2 font-black text-sm uppercase flex items-center justify-center gap-2 italic tracking-widest`}
-          >
-            <status.icon size={16} className="animate-pulse" />
-            {status.label}
-          </span>
-        )}
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="bg-[#111] p-6 border-l-2 border-primary">
-          <Medal className="text-primary mb-4" size={24} />
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div className={`bg-[#111] p-6 border-l-3 ${status.className}`}>
+          <status.icon className="text-zinc-500 mb-4" size={24} />
+          <p className="text-[10px] text-zinc-500 font-black">STATUS</p>
+          <p className="text-xl font-black italic text-white">{status.label}</p>
+        </div>
+        <div className="bg-[#111] p-6 border-l-2 border-zinc-700">
+          <Medal className="text-zinc-500 mb-4" size={24} />
           <p className="text-[10px] text-zinc-500 font-black">PREMIAÇÃO</p>
           <p className="text-xl font-black italic text-white">
             {tournament.prize}

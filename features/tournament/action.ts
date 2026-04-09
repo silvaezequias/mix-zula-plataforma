@@ -70,6 +70,64 @@ export async function handleTournamentRoleRequestAction(
   return await safeExecute(async () => {
     const session = await getAuthOrThrow();
 
+    const existingRequest =
+      await TournamentService.findTournamentRoleRequestById(requestId);
+
+    if (!existingRequest) {
+      throw new NotFoundError({
+        message: "Nenhuma solicitação com esse ID foi encontrada",
+      });
+    }
+
+    if (session.user.id === existingRequest.ownerId) {
+      throw new UnauthorizedError({
+        message:
+          "Isso é estranho e nem deveria acontecer. Você não pode gerenciar sua própria solicitação.",
+      });
+    }
+
+    const sessionMember = await TournamentService.findParticipantByUserId(
+      existingRequest.tournamentId,
+      session.user.id,
+    );
+
+    if (!sessionMember) {
+      throw new UnauthorizedError({
+        message: "Você nem devia estar fazendo isso",
+      });
+    }
+
+    const memberRole = STAFF_ROLES.find((r) => r.id === sessionMember.role);
+    const targetRole = STAFF_ROLES.find(
+      (r) => r.id === existingRequest.requestedRole,
+    );
+
+    if (targetRole && memberRole) {
+      if (existingRequest.tournament.ownerId !== sessionMember.userId) {
+        if (memberRole!.level < 8) {
+          throw new UnauthorizedError({
+            message:
+              "Você não tem permissão para gerenciar solicitações deste cargo",
+          });
+        }
+
+        if (targetRole.level >= memberRole.level) {
+          throw new UnauthorizedError({
+            message:
+              "Você não tem permissão para gerenciar solicitações deste cargo",
+          });
+        }
+      }
+    } else if (!memberRole) {
+      throw new UnauthorizedError({
+        message: "Você está tentando fazer o que?",
+      });
+    } else if (!targetRole) {
+      throw new UnauthorizedError({
+        message: "Que cargo é esse? Isso não existe no sistema, amigo.",
+      });
+    }
+
     const updatedRequest =
       await TournamentService.handleTournamentRoleRequestStatus(
         session.user,
@@ -107,6 +165,12 @@ export async function changeParticipantRole(
       });
     }
 
+    if (session.user.id === existingParticipant.userId) {
+      throw new UnauthorizedError({
+        message: "Você não pode mudar de cargo por conta própria",
+      });
+    }
+
     const sessionMember = await TournamentService.findParticipantByUserId(
       tournamentId,
       session.user.id,
@@ -124,24 +188,37 @@ export async function changeParticipantRole(
     const memberRole = STAFF_ROLES.find((r) => r.id === sessionMember.role);
     const targetRole = STAFF_ROLES.find((r) => r.id === role);
 
+    const currentTournament = await TournamentService.findById(
+      existingParticipant.tournamentId,
+    );
+
+    if (existingParticipant?.userId === currentTournament?.ownerId) {
+      throw new UnauthorizedError({
+        message:
+          "Você sabe que não tem como mudar o cargo do dono do torneio né?",
+      });
+    }
+
     if (targetRole && memberRole && participantRole) {
-      if (memberRole!.level < 8) {
-        throw new UnauthorizedError({
-          message: "Você não tem permissão para fazer alterações de cargos",
-        });
-      }
+      if (currentTournament?.ownerId !== sessionMember.userId) {
+        if (memberRole!.level < 8) {
+          throw new UnauthorizedError({
+            message: "Você não tem permissão para fazer alterações de cargos",
+          });
+        }
 
-      if (participantRole.level >= memberRole.level) {
-        throw new UnauthorizedError({
-          message:
-            "Não tem como você mudar o cargo de alguem igual a você ou acima",
-        });
-      }
+        if (participantRole.level >= memberRole.level) {
+          throw new UnauthorizedError({
+            message:
+              "Não tem como você mudar o cargo de alguem igual a você ou acima",
+          });
+        }
 
-      if (targetRole.level >= memberRole.level) {
-        throw new UnauthorizedError({
-          message: "Esse cargo você não tem permissão de alterar",
-        });
+        if (targetRole.level >= memberRole.level) {
+          throw new UnauthorizedError({
+            message: "Esse cargo você não tem permissão de alterar",
+          });
+        }
       }
     } else if (!memberRole) {
       throw new UnauthorizedError({
@@ -166,6 +243,32 @@ export async function changeParticipantRole(
 export async function removeParticipant(participantId: string) {
   return await safeExecute(async () => {
     const session = await getAuthOrThrow();
+    const existingParticipant =
+      await TournamentService.findParticipantById(participantId);
+
+    if (!existingParticipant) {
+      throw new NotFoundError({
+        message: "Nenhum usuário encontrado com o ID inserido",
+      });
+    }
+
+    if (existingParticipant.userId === session.user.id) {
+      throw new UnauthorizedError({
+        message:
+          "POR QUÊ DIABOS VOCÊ ESTÁ TENTANDO SE EXPULSAR? TÁ QUERENDO QUEBRAR O SISTEMA É?",
+      });
+    }
+
+    const tournament = await TournamentService.findById(
+      existingParticipant.tournamentId,
+    );
+
+    if (tournament?.ownerId === existingParticipant.userId) {
+      throw new UnauthorizedError({
+        message:
+          "Pronto! Agora o dono do torneio vai ficar sabendo que você tentou expulsar ele... Brincadeira",
+      });
+    }
 
     const participant = await TournamentService.removeStaffParticipantById(
       session.user,

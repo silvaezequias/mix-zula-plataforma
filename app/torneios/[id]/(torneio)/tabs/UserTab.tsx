@@ -2,7 +2,8 @@ import { STAFF_ROLES } from "@/constants/data";
 import {
   Ban,
   Check,
-  MessageSquareOff,
+  ChevronRight,
+  Loader2,
   ShieldAlert,
   UserCheck,
   UserMinus,
@@ -10,14 +11,14 @@ import {
 } from "lucide-react";
 import { StaffRole } from "../../staff/StaffArea";
 import { FullTournament } from "@/types";
-import { useState, useTransition } from "react";
+import { useRef, useState, useTransition } from "react";
 import {
   changeParticipantRole,
   removeParticipant,
 } from "@/features/tournament/action";
 import { toast } from "react-toastify";
-import { ParticipantRole } from "@prisma/client";
 import { useRouter } from "next/navigation";
+import { ActionButton } from "@/components/ui/ActionButton";
 
 export const UserTab = ({
   tournament,
@@ -36,18 +37,23 @@ export const UserTab = ({
     STAFF_ROLES.find((r) => r.id === selectedUser.role),
   );
 
-  const handleRoleChange = (roleId: ParticipantRole) => {
-    if (!selectedUser) return;
+  const handleRoleChange = () => {
+    if (!selectedUser || !selectedRole) return;
 
     startTransition(async () => {
       const response = await changeParticipantRole(
         tournament.id,
         selectedUser.user.id,
-        roleId,
+        selectedRole.id,
       );
 
-      if (!response.success) toast.error(response.error);
-      else router.refresh();
+      if (!response.success) {
+        toast.error(response.error);
+        setSelectedRole(STAFF_ROLES.find((r) => r.id === selectedUser.role));
+      } else {
+        router.refresh();
+        selectedUser.role = selectedRole.id;
+      }
     });
   };
 
@@ -56,10 +62,17 @@ export const UserTab = ({
 
     startTransition(async () => {
       const response = await removeParticipant(selectedUser.id);
-      if (!response.success) toast.error(response.error);
-      else router.refresh();
+
+      if (!response.success) {
+        toast.error(response.error);
+      } else {
+        router.refresh();
+        setSelectedUser(undefined);
+      }
     });
   };
+
+  const cantUpdateRole = selectedUser?.role === selectedRole?.id;
 
   return (
     <div className="space-y-4 animate-in fade-in duration-300 gap-8">
@@ -116,17 +129,35 @@ export const UserTab = ({
                     key={role.id}
                     role={role}
                     selectedRole={selectedRole}
+                    isUserRole={role.id === selectedUser.role}
                     handleRoleChange={() => {
-                      if (!isPending) {
-                        handleRoleChange(role.id);
-                        setSelectedRole(role);
-                      }
+                      if (!isPending) setSelectedRole(role);
                     }}
                   />
                 ))}
+                <ActionButton
+                  disabled={isPending || cantUpdateRole}
+                  onClick={handleRoleChange}
+                  className="uppercase col-span-2 sm:col-span-3"
+                >
+                  {isPending ? (
+                    <Loader2 className="animate-spin" />
+                  ) : cantUpdateRole ? (
+                    <span className="flex gap-2 items-center">
+                      Mude o cargo desse usuário
+                    </span>
+                  ) : (
+                    <span className="flex gap-2 items-center">
+                      Atualizar <ChevronRight />
+                    </span>
+                  )}
+                </ActionButton>
               </div>
             </div>
-            <PunishmentSection handleKickoff={handleKickoff} />
+            <PunishmentSection
+              handleKickoff={handleKickoff}
+              isLoading={isPending}
+            />
           </div>
 
           <div className="bg-zinc-900/50 p-6 flex items-center gap-3 border-t border-zinc-800 italic">
@@ -144,10 +175,12 @@ export const UserTab = ({
 
 const RoleSection = ({
   role,
+  isUserRole,
   selectedRole,
   handleRoleChange,
 }: {
   role: StaffRole;
+  isUserRole: boolean;
   selectedRole?: StaffRole;
   handleRoleChange: (role: StaffRole) => void;
 }) => {
@@ -156,10 +189,11 @@ const RoleSection = ({
   return (
     <button
       onClick={() => handleRoleChange(role)}
-      className={`aspect-square border-2 transition-all group relative ${
+      className={`aspect-square border-2 transition-all cursor-pointer group relative ${
         isActive
           ? "bg-primary border-primary text-black"
-          : "bg-zinc-900/50 border-zinc-800 hover:border-zinc-700 text-zinc-400"
+          : "bg-zinc-900/50 hover:border-zinc-700 text-zinc-400 " +
+            (isUserRole ? "border-2 border-primary" : "border-zinc-800")
       }`}
     >
       <span
@@ -180,37 +214,101 @@ const RoleSection = ({
 };
 
 const PunishmentSection = ({
+  isLoading,
   handleKickoff,
 }: {
+  isLoading: boolean;
   handleKickoff: () => void;
 }) => {
+  const [confirmKickoff, setConfirmKickoff] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(3);
+
+  const kickoffTimeoutRef = useRef<null | NodeJS.Timeout>(null);
+  const kickoffIntervalRef = useRef<null | NodeJS.Timeout>(null);
+
+  const resetState = () => {
+    setConfirmKickoff(false);
+    setTimeLeft(3);
+
+    if (kickoffTimeoutRef.current) {
+      clearTimeout(kickoffTimeoutRef.current);
+      kickoffTimeoutRef.current = null;
+    }
+
+    if (kickoffIntervalRef.current) {
+      clearInterval(kickoffIntervalRef.current);
+      kickoffIntervalRef.current = null;
+    }
+  };
+
+  const startCountdown = () => {
+    setConfirmKickoff(true);
+    setTimeLeft(3);
+
+    kickoffIntervalRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev <= 1) {
+          resetState();
+          return 3;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    kickoffTimeoutRef.current = setTimeout(() => {
+      resetState();
+    }, 3000);
+  };
+
+  const handleKickoffClick = () => {
+    if (!confirmKickoff) {
+      startCountdown();
+    } else {
+      resetState();
+      handleKickoff();
+    }
+  };
+
+  useState(() => {
+    return () => resetState();
+  });
+
   return (
     <div className="space-y-6 px-10 w-full">
-      <div className="grid grid-cols-1  gap-4 pb-10">
-        <button
-          onClick={handleKickoff}
-          className="flex items-center justify-center gap-3 p-5 bg-orange-950/10 border border-orange-900/30 text-orange-500 hover:bg-orange-600 hover:text-white transition-all text-[10px] font-black italic uppercase group"
+      <div className="grid grid-cols-1 gap-4 pb-10">
+        <ActionButton
+          onClick={handleKickoffClick}
+          intent={confirmKickoff ? "danger" : "default"}
+          variant={isLoading ? "ghost" : confirmKickoff ? "outline" : "solid"}
         >
-          <UserMinus
-            size={18}
-            className="group-hover:scale-110 transition-transform"
-          />{" "}
-          EXPULSAR DO TORNEIO
-        </button>
-        <button className="flex items-center justify-center gap-3 p-5 bg-red-950/10 border border-red-900/30 text-red-500 hover:bg-red-600 hover:text-white transition-all text-[10px] font-black italic uppercase group">
+          {isLoading ? (
+            <span className="flex gap-2 items-center justify-center">
+              <Loader2 size={18} className="animate-spin" />
+              PROCESSANDO...
+            </span>
+          ) : confirmKickoff ? (
+            <span className="flex gap-2 items-center justify-center">
+              <Check size={18} />
+              CONFIRMAR EXPULSÃO EM ({timeLeft}s)
+            </span>
+          ) : (
+            <span className="flex gap-2 items-center justify-center">
+              <UserMinus
+                size={18}
+                className="group-hover:scale-110 transition-transform"
+              />
+              EXPULSAR DO TORNEIO
+            </span>
+          )}
+        </ActionButton>
+
+        <ActionButton disabled>
           <Ban
             size={18}
             className="group-hover:scale-110 transition-transform"
-          />{" "}
-          BANIMENTO DO TORNEIO
-        </button>
-        <button className="flex items-center justify-center gap-3 p-5 bg-zinc-950 border border-zinc-800 text-zinc-500 hover:bg-zinc-800 hover:text-white transition-all text-[10px] font-black italic uppercase group">
-          <MessageSquareOff
-            size={18}
-            className="text-zinc-700 group-hover:text-zinc-300"
-          />{" "}
-          SILENCIAR AGENTE
-        </button>
+          />
+          BANIR USUÁRIO
+        </ActionButton>
       </div>
     </div>
   );

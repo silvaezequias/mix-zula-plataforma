@@ -209,6 +209,14 @@ async function findParticipantByUserId(tournamentId: string, userId: string) {
   return participant;
 }
 
+async function findParticipantById(participantId: string) {
+  const participant = await prisma.participant.findUnique({
+    where: { id: participantId },
+  });
+
+  return participant;
+}
+
 async function removeStaffParticipantById(
   sessionUser: PayloadUser,
   participantId: string,
@@ -434,7 +442,7 @@ async function handleTournamentRoleRequestStatus(
 
   if (!existingRequest) {
     throw new NotFoundError({
-      message: "Nenhuma solicitação com esse ID foi encotrada",
+      message: "Nenhuma solicitação com esse ID foi encontrada",
     });
   }
 
@@ -466,6 +474,7 @@ export const TournamentService = {
   create,
   list,
   findById,
+  findParticipantById,
   findParticipantByUserId,
   findTournamentRoleRequest,
   findTournamentRoleRequestById,
