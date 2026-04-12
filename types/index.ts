@@ -45,6 +45,8 @@ export type FullTournament = Prisma.TournamentGetPayload<{
         members: {
           include: {
             participant: {
+              status: true;
+              role: true;
               select: {
                 user: true;
               };
@@ -65,6 +67,7 @@ export type FullTournament = Prisma.TournamentGetPayload<{
         user: true;
         role: true;
         id: true;
+        status: true;
       };
     };
   };

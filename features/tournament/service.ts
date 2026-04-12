@@ -163,6 +163,8 @@ async function findById(tournamentId: string) {
             include: {
               participant: {
                 select: {
+                  status: true,
+                  role: true,
                   user: {
                     select: {
                       discordId: true,
@@ -353,6 +355,18 @@ async function updateParticipantRole(
   return updatedParticipant;
 }
 
+async function updateParticipantStatus(
+  participantId: string,
+  status: ParticipantStatus,
+) {
+  const updatedParticipant = await prisma.participant.update({
+    where: { id: participantId },
+    data: { status },
+  });
+
+  return updatedParticipant;
+}
+
 async function findTournamentRoleRequest(tournamentId: string, userId: string) {
   const request = await prisma.tournamentRoleRequest.findUnique({
     where: { ownerId_tournamentId: { ownerId: userId, tournamentId } },
@@ -481,6 +495,7 @@ export const TournamentService = {
   findManyTournamentRoleRequest,
   handleTournamentRoleRequestStatus,
   updateParticipantRole,
+  updateParticipantStatus,
   createParticipant,
   findFirstByStatus,
   createTournamentRoleRequest,

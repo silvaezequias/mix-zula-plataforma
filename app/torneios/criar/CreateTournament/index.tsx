@@ -15,7 +15,7 @@ import { AboutTournament } from "./AboutTournamentSection";
 import { PresenceConfirmation } from "./PresenceConfirmationSection";
 import { BroadcastSection } from "./BroadcastSection";
 import { ParametersSection } from "./ParametersSection";
-import { PresetButton } from "./components";
+import { PresetButton } from "../../../../components/ui/components";
 import {
   EndType,
   Format,

@@ -1,5 +1,5 @@
 import { Info, Medal } from "lucide-react";
-import { ConfigField } from "./components";
+import { ConfigField } from "../../../../components/ui/components";
 
 export const AboutTournament = ({
   title,

@@ -1,6 +1,9 @@
 import { Globe, Radio, Tv } from "lucide-react";
 import { BROADCAST_PLATFORMS } from "@/constants/data";
-import { ConfigDropdown, ConfigField } from "./components";
+import {
+  ConfigDropdown,
+  ConfigField,
+} from "../../../../components/ui/components";
 import { BroadcastPlatform } from "@prisma/client";
 
 export const BroadcastSection = ({

@@ -1,315 +1,280 @@
-import { STAFF_ROLES } from "@/constants/data";
-import {
-  Ban,
-  Check,
-  ChevronRight,
-  Loader2,
-  ShieldAlert,
-  UserCheck,
-  UserMinus,
-  X,
-} from "lucide-react";
-import { StaffRole } from "../../staff/StaffArea";
+import { PARTICIPANT_STATUS, STAFF_ROLES } from "@/constants/data";
+import { UserCheck, UserCog, X } from "lucide-react";
 import { FullTournament } from "@/types";
-import { useRef, useState, useTransition } from "react";
-import {
-  changeParticipantRole,
-  removeParticipant,
-} from "@/features/tournament/action";
-import { toast } from "react-toastify";
-import { useRouter } from "next/navigation";
+import { Dispatch, SetStateAction, useState } from "react";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { Card } from "./SettingsTab";
+import { useCountdown } from "@/hooks/useCooldown";
+import { LoadingAction, useUserActions } from "@/hooks/useUserActions";
+import { ConfigDropdown } from "@/components/ui/components";
+import { $Enums, ParticipantRole, ParticipantStatus } from "@prisma/client";
+
+type Participant = FullTournament["participants"][number];
+type SetSelectedUser = (user: Participant | undefined) => void;
 
 export const UserTab = ({
   tournament,
   selectedUser,
   setSelectedUser,
 }: {
-  setSelectedUser: (
-    user: FullTournament["participants"][number] | undefined,
-  ) => void;
-  selectedUser: FullTournament["participants"][number];
+  setSelectedUser: SetSelectedUser;
+  selectedUser: Participant;
   tournament: FullTournament;
 }) => {
-  const router = useRouter();
-  const [isPending, startTransition] = useTransition();
-  const [selectedRole, setSelectedRole] = useState<StaffRole | undefined>(
-    STAFF_ROLES.find((r) => r.id === selectedUser.role),
+  const [selectedRoleId, setSelectedRoleId] = useState<ParticipantRole>(
+    selectedUser.role,
   );
 
-  const handleRoleChange = () => {
-    if (!selectedUser || !selectedRole) return;
+  const [selectedStatusId, setSelectedStatusId] = useState<ParticipantStatus>(
+    selectedUser.status,
+  );
 
-    startTransition(async () => {
-      const response = await changeParticipantRole(
-        tournament.id,
-        selectedUser.user.id,
-        selectedRole.id,
-      );
-
-      if (!response.success) {
-        toast.error(response.error);
-        setSelectedRole(STAFF_ROLES.find((r) => r.id === selectedUser.role));
-      } else {
-        router.refresh();
-        selectedUser.role = selectedRole.id;
-      }
-    });
-  };
-
-  const handleKickoff = () => {
-    if (!selectedUser) return;
-
-    startTransition(async () => {
-      const response = await removeParticipant(selectedUser.id);
-
-      if (!response.success) {
-        toast.error(response.error);
-      } else {
-        router.refresh();
-        setSelectedUser(undefined);
-      }
-    });
-  };
-
-  const cantUpdateRole = selectedUser?.role === selectedRole?.id;
+  const { updateRole, updateStatus, kickoff, isLoading, loadingAction } =
+    useUserActions(tournament.id, () => setSelectedUser(undefined));
 
   return (
-    <div className="space-y-4 animate-in fade-in duration-300 gap-8">
-      <div className="animate-in fade-in duration-500 space-y-6 w-full">
-        <div className="bg-[#111] border-2 border-zinc-800 overflow-hidden shadow-2xl w-full">
-          <div className="bg-zinc-900 p-8 border-b border-zinc-800 relative flex items-center justify-between">
-            <div className="flex items-center gap-6 ">
-              <div className="w-24 h-24 hidden md:flex bg-primary text-black text-4xl font-black italic items-center justify-center border-4 border-zinc-800 shadow-2xl relative group">
-                {selectedUser.user.name?.charAt(0)}
-                <div className="absolute -bottom-2 -right-2 bg-green-500 p-1.5 border-2 border-zinc-800">
-                  <UserCheck size={14} className="text-white" />
-                </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="flex items-baseline gap-3">
-                  <span className="text-3xl font-black italic text-white tracking-tighter uppercase">
-                    {selectedUser.user.player?.nickname}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2 mt-2">
-                  <span className="text-primary text-sm font-black italic tracking-[0.3em] uppercase">
-                    {selectedUser.user.name}
-                  </span>
-                  <div
-                    className={`px-2 py-0.5 border text-[8px] font-black italic tracking-widest uppercase ${selectedUser.role !== "PLAYER" ? "bg-primary text-black border-primary" : "bg-zinc-800 text-zinc-500 border-zinc-700"}`}
-                  >
-                    {selectedUser.role}
-                  </div>
-                </div>
-              </div>
-            </div>
-            <button
-              onClick={() => setSelectedUser(undefined)}
-              className="text-zinc-600 hover:text-white flex items-center gap-2 text-[10px] font-black uppercase italic transition-colors p-3"
-            >
-              <X size={32} />
-            </button>
-          </div>
+    <div className="space-y-8">
+      <TabHeader
+        selectedUser={selectedUser}
+        onClose={() => setSelectedUser(undefined)}
+      />
 
-          <div className="p-5 space-y-12 grid grid-cols-1 xl:grid-cols-2 place-items-center gap-10 border">
-            <div className="space-y-6 w-full ">
-              <div className="flex items-center gap-3">
-                <div className="w-1 h-4 bg-primary"></div>
-                <h4 className="text-[10px] font-black text-white tracking-[0.4em] uppercase italic">
-                  Sistema de Cargos
-                </h4>
-              </div>
+      <div className="columns-1 xl:columns-2 gap-8 space-y-8">
+        <Card
+          title="Controle de Usuário"
+          icon={UserCog}
+          className="break-inside-avoid mb-8"
+        >
+          <div className="grid grid-cols-2 gap-4">
+            <RoleSection
+              isLoading={isLoading}
+              loadingAction={loadingAction}
+              selectedRoleId={selectedRoleId}
+              selectedUser={selectedUser}
+              setSelectedRoleId={setSelectedRoleId}
+              updateRole={updateRole}
+            />
 
-              <div
-                className={`grid grid-cols-2 sm:grid-cols-3 gap-4 ${isPending ? "opacity-70" : ""}`}
-              >
-                {STAFF_ROLES.map((role) => (
-                  <RoleSection
-                    key={role.id}
-                    role={role}
-                    selectedRole={selectedRole}
-                    isUserRole={role.id === selectedUser.role}
-                    handleRoleChange={() => {
-                      if (!isPending) setSelectedRole(role);
-                    }}
-                  />
-                ))}
-                <ActionButton
-                  disabled={isPending || cantUpdateRole}
-                  onClick={handleRoleChange}
-                  className="uppercase col-span-2 sm:col-span-3"
-                >
-                  {isPending ? (
-                    <Loader2 className="animate-spin" />
-                  ) : cantUpdateRole ? (
-                    <span className="flex gap-2 items-center">
-                      Mude o cargo desse usuário
-                    </span>
-                  ) : (
-                    <span className="flex gap-2 items-center">
-                      Atualizar <ChevronRight />
-                    </span>
-                  )}
-                </ActionButton>
-              </div>
-            </div>
-            <PunishmentSection
-              handleKickoff={handleKickoff}
-              isLoading={isPending}
+            <StatusSection
+              isLoading={isLoading}
+              loadingAction={loadingAction}
+              selectedStatusId={selectedStatusId}
+              selectedUser={selectedUser}
+              setSelectedStatusId={setSelectedStatusId}
+              updateStatus={updateStatus}
+            />
+
+            <KickSection
+              disabled={isLoading}
+              loading={loadingAction === "kick"}
+              onKick={() => kickoff(selectedUser.id)}
             />
           </div>
-
-          <div className="bg-zinc-900/50 p-6 flex items-center gap-3 border-t border-zinc-800 italic">
-            <ShieldAlert size={16} className="text-zinc-600" />
-            <p className="text-[9px] text-zinc-600 font-bold uppercase tracking-widest">
-              CUIDADO: ALTERAÇÕES DE CARGO AFETAM IMEDIATAMENTE AS PERMISSÕES DE
-              ACESSO NA PLATAFORMA.
-            </p>
-          </div>
-        </div>
+        </Card>
       </div>
     </div>
   );
 };
+
+interface RoleSectionProps {
+  selectedRoleId: ParticipantRole;
+  selectedUser: Participant;
+  isLoading: boolean;
+  loadingAction: LoadingAction;
+  setSelectedRoleId: Dispatch<SetStateAction<$Enums.ParticipantRole>>;
+  updateRole: (userId: string, roleId: ParticipantRole) => void;
+}
 
 const RoleSection = ({
-  role,
-  isUserRole,
-  selectedRole,
-  handleRoleChange,
-}: {
-  role: StaffRole;
-  isUserRole: boolean;
-  selectedRole?: StaffRole;
-  handleRoleChange: (role: StaffRole) => void;
-}) => {
-  const isActive = selectedRole && selectedRole.id === role.id;
+  selectedRoleId,
+  selectedUser,
+  setSelectedRoleId,
+  isLoading,
+  loadingAction,
+  updateRole,
+}: RoleSectionProps) => {
+  const { time, active, start, reset } = useCountdown(3);
+
+  const isCurrent = selectedUser.role === selectedRoleId;
+  const cantUpdate = isCurrent || isLoading;
+
+  const handleUpdate = () => {
+    if (!active) return start();
+
+    reset();
+    if (selectedRoleId && !cantUpdate) {
+      updateRole(selectedUser.user.id, selectedRoleId);
+    }
+  };
 
   return (
-    <button
-      onClick={() => handleRoleChange(role)}
-      className={`aspect-square border-2 transition-all cursor-pointer group relative ${
-        isActive
-          ? "bg-primary border-primary text-black"
-          : "bg-zinc-900/50 hover:border-zinc-700 text-zinc-400 " +
-            (isUserRole ? "border-2 border-primary" : "border-zinc-800")
-      }`}
-    >
-      <span
-        className={`flex flex-col items-center justify-center gap-4 ${isActive ? "text-black" : role.color}`}
-      >
-        {role.icon}
-        <span className="text-sm md:text-md font-black italic tracking-tighter uppercase">
-          {role.title}
-        </span>
-        {isActive && (
-          <div className="absolute top-2 right-2">
-            <Check className="text-black size-5" strokeWidth={3} />
-          </div>
+    <div className="flex flex-col gap-4">
+      <ConfigDropdown
+        options={STAFF_ROLES.map((r) => r.id)}
+        labels={STAFF_ROLES.map(
+          (r) => `${r.id}${selectedUser.role === r.id ? " (Atual)" : ""}`,
         )}
-      </span>
-    </button>
+        value={selectedRoleId || selectedUser.role}
+        label="Definição de Cargo"
+        name="Cargos"
+        onChange={(e) => setSelectedRoleId(e.target.value as ParticipantRole)}
+      />
+
+      <ActionButton
+        className="uppercase"
+        disabled={cantUpdate}
+        onClick={handleUpdate}
+        intent={active ? "success" : "default"}
+      >
+        {loadingAction === "role"
+          ? "Processando..."
+          : active
+            ? `Confirmar atualização em (${time}s)`
+            : "Atualizar Cargo"}
+      </ActionButton>
+    </div>
   );
 };
 
-const PunishmentSection = ({
-  isLoading,
-  handleKickoff,
-}: {
+interface StatusSectionProps {
   isLoading: boolean;
-  handleKickoff: () => void;
-}) => {
-  const [confirmKickoff, setConfirmKickoff] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(3);
+  selectedStatusId: ParticipantStatus;
+  selectedUser: Participant;
+  loadingAction: LoadingAction;
+  setSelectedStatusId: Dispatch<SetStateAction<$Enums.ParticipantStatus>>;
+  updateStatus: (userId: string, statusId: ParticipantStatus) => void;
+}
 
-  const kickoffTimeoutRef = useRef<null | NodeJS.Timeout>(null);
-  const kickoffIntervalRef = useRef<null | NodeJS.Timeout>(null);
+const StatusSection = ({
+  selectedStatusId,
+  selectedUser,
+  isLoading,
+  loadingAction,
+  setSelectedStatusId,
+  updateStatus,
+}: StatusSectionProps) => {
+  const { time, active, start, reset } = useCountdown(3);
 
-  const resetState = () => {
-    setConfirmKickoff(false);
-    setTimeLeft(3);
+  const isCurrent = selectedUser.status === selectedStatusId;
+  const cantUpdate = isCurrent || isLoading;
 
-    if (kickoffTimeoutRef.current) {
-      clearTimeout(kickoffTimeoutRef.current);
-      kickoffTimeoutRef.current = null;
-    }
+  const handleUpdate = () => {
+    if (!active) return start();
 
-    if (kickoffIntervalRef.current) {
-      clearInterval(kickoffIntervalRef.current);
-      kickoffIntervalRef.current = null;
-    }
-  };
-
-  const startCountdown = () => {
-    setConfirmKickoff(true);
-    setTimeLeft(3);
-
-    kickoffIntervalRef.current = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev <= 1) {
-          resetState();
-          return 3;
-        }
-        return prev - 1;
-      });
-    }, 1000);
-
-    kickoffTimeoutRef.current = setTimeout(() => {
-      resetState();
-    }, 3000);
-  };
-
-  const handleKickoffClick = () => {
-    if (!confirmKickoff) {
-      startCountdown();
-    } else {
-      resetState();
-      handleKickoff();
+    reset();
+    if (selectedStatusId && !cantUpdate) {
+      updateStatus(selectedUser.user.id, selectedStatusId);
     }
   };
-
-  useState(() => {
-    return () => resetState();
-  });
 
   return (
-    <div className="space-y-6 w-full">
-      <div className="grid grid-cols-1 gap-4 pb-10 w-full">
-        <ActionButton
-          onClick={handleKickoffClick}
-          intent={confirmKickoff ? "danger" : "default"}
-          variant={isLoading ? "ghost" : confirmKickoff ? "outline" : "solid"}
-        >
-          {isLoading ? (
-            <span className="flex gap-2 items-center justify-center">
-              <Loader2 size={18} className="animate-spin" />
-              PROCESSANDO...
-            </span>
-          ) : confirmKickoff ? (
-            <span className="flex gap-2 items-center justify-center">
-              <Check size={18} />
-              CONFIRMAR EXPULSÃO EM ({timeLeft}s)
-            </span>
-          ) : (
-            <span className="flex gap-2 items-center justify-center">
-              <UserMinus
-                size={18}
-                className="group-hover:scale-110 transition-transform"
-              />
-              EXPULSAR DO TORNEIO
-            </span>
-          )}
-        </ActionButton>
+    <div className="flex flex-col gap-4">
+      <ConfigDropdown
+        options={PARTICIPANT_STATUS.map((r) => r.id)}
+        labels={PARTICIPANT_STATUS.map(
+          (r) => `${r.title}${selectedUser.status === r.id ? " (Atual)" : ""}`,
+        )}
+        value={selectedStatusId || selectedUser.status}
+        label="Definição de Cargo"
+        name="Cargos"
+        onChange={(e) =>
+          setSelectedStatusId(e.target.value as ParticipantStatus)
+        }
+      />
 
-        <ActionButton disabled>
-          <Ban
-            size={18}
-            className="group-hover:scale-110 transition-transform"
-          />
-          BANIR USUÁRIO
-        </ActionButton>
+      <ActionButton
+        className="uppercase"
+        disabled={cantUpdate}
+        onClick={handleUpdate}
+        intent={active ? "success" : "default"}
+      >
+        {loadingAction === "status"
+          ? "Processando..."
+          : active
+            ? `Confirmar atualização em (${time}s)`
+            : "Atualizar Status"}
+      </ActionButton>
+    </div>
+  );
+};
+
+interface TabHeaderProps {
+  selectedUser: Participant;
+  onClose: () => void;
+}
+
+const TabHeader = ({ selectedUser, onClose }: TabHeaderProps) => {
+  const role = STAFF_ROLES.find((r) => r.id === selectedUser.role)!;
+
+  return (
+    <div className="bg-zinc-900 p-6 md:p-8 border-b border-zinc-800 flex items-center justify-between gap-6">
+      <div className="flex items-center gap-6 flex-1">
+        <div className="w-20 h-20 hidden md:flex bg-primary text-black text-3xl font-black italic items-center justify-center border-4 border-zinc-800 shadow-2xl relative">
+          {selectedUser.user.name?.charAt(0)}
+
+          <div className="absolute -bottom-2 -right-2 bg-green-500 p-1.5 border-2 border-zinc-800">
+            <UserCheck size={14} className="text-white" />
+          </div>
+        </div>
+
+        <div className="flex flex-col justify-center">
+          <div className="flex items-center gap-4 flex-wrap">
+            <span className="text-2xl md:text-3xl font-black italic text-white tracking-tighter uppercase">
+              {selectedUser.user.player?.nickname}
+            </span>
+
+            <span
+              className={`px-2 py-0.5 text-sm font-black italic tracking-widest uppercase ${role.color}`}
+            >
+              {role.title}
+            </span>
+          </div>
+          <span className="text-primary text-xs md:text-sm font-black italic tracking-[0.3em] uppercase mt-1">
+            {selectedUser.user.name}
+          </span>
+        </div>
+      </div>
+
+      <div className="flex items-center gap-3">
+        <button
+          onClick={onClose}
+          className="text-zinc-600 hover:text-white transition-colors p-2"
+        >
+          <X size={28} />
+        </button>
       </div>
     </div>
   );
 };
+
+interface KickSectionProps {
+  loading: boolean;
+  disabled: boolean;
+  onKick: () => void;
+}
+
+function KickSection({ loading, onKick, disabled }: KickSectionProps) {
+  const { time, active, start, reset } = useCountdown(3);
+
+  const handleClick = () => {
+    if (!active) return start();
+
+    reset();
+    onKick();
+  };
+
+  return (
+    <ActionButton
+      onClick={handleClick}
+      disabled={disabled}
+      className="uppercase"
+      intent={active ? "danger" : "default"}
+    >
+      {loading
+        ? "Processando..."
+        : active
+          ? `Confirmar explulsão em (${time}s)`
+          : "Expulsar do Torneio"}
+    </ActionButton>
+  );
+}

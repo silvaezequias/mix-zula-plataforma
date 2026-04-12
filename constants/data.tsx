@@ -1,6 +1,9 @@
-import { StaffRole } from "@/app/torneios/[id]/staff/StaffArea";
+import {
+  ParticipantStatusObject,
+  StaffRole,
+} from "@/app/torneios/[id]/staff/StaffArea";
 import { Role } from "@/types";
-import { ParticipantRole } from "@prisma/client";
+import { ParticipantRole, ParticipantStatus } from "@prisma/client";
 import { Radio, Shield, ShieldUser, Target, User, Users } from "lucide-react";
 
 export const BETA_WHITELIST = [
@@ -72,6 +75,44 @@ export const STAFF_ROLES: StaffRole[] = [
   },
 ];
 
+export const PARTICIPANT_STATUS: ParticipantStatusObject[] = [
+  {
+    id: "ACTIVE",
+    title: "Ativo",
+    description: "Jogador disponível para jogar",
+    color: "text-green-500",
+    bg: "bg-green-500/10",
+  },
+  {
+    id: "ELIMINATED",
+    title: "Eliminado",
+    description: "Jogador eliminado e não pode jogar",
+    color: "text-red-500",
+    bg: "bg-red-500/10",
+  },
+  {
+    id: "REPLACED",
+    title: "Substituído",
+    description: "Jogador foi substituído e não pode jogar",
+    color: "text-zinc-400",
+    bg: "bg-zinc-400/10",
+  },
+  {
+    id: "RESERVED",
+    title: "Reserva",
+    description: "Jogador está na reserva e ainda não pode jogar",
+    color: "text-yellow-500",
+    bg: "bg-yellow-500/10",
+  },
+  {
+    id: "SPECTATOR",
+    title: "Espectador",
+    description: "Jogador não pode jogar pois está apenas como espectador",
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+  },
+];
+
 export const AVAILABLE_ROLES: { label: string; value: Role; color: string }[] =
   [
     { label: "ADMINISTRADOR", value: "ADMIN", color: "text-red-500" },
@@ -104,5 +145,31 @@ export const roleColors: Record<ParticipantRole, string> = {
   PLAYER: "text-zinc-300",
   AJUDANTE: "text-emerald-500",
   JUIZ: "text-blue-500",
-  STREAMER: "text-pink-500",
+  STREAMER: "text-purple-500",
+};
+
+export const participantStatusMap: Record<
+  ParticipantStatus,
+  { label: string; color: string }
+> = {
+  [ParticipantStatus.ACTIVE]: {
+    label: "Ativo",
+    color: "text-green-500",
+  },
+  [ParticipantStatus.ELIMINATED]: {
+    label: "Eliminado",
+    color: "text-red-500",
+  },
+  [ParticipantStatus.RESERVED]: {
+    label: "Reserva",
+    color: "text-yellow-500",
+  },
+  [ParticipantStatus.REPLACED]: {
+    label: "Substituído",
+    color: "text-zinc-400",
+  },
+  [ParticipantStatus.SPECTATOR]: {
+    label: "Espectador",
+    color: "text-blue-500",
+  },
 };

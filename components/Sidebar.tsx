@@ -14,7 +14,7 @@ interface SidebarProps {
   sessionMember: Participant | null;
   isOpen: boolean;
   onClose: () => void;
-  onManageUser: (p: PayloadUser) => void;
+  onManageUser: (p: FullTournament["participants"][number]) => void;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -59,7 +59,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           {staff.map((member) => (
             <div
               key={member.id}
-              onClick={() => isStaff}
+              onClick={() => isStaff && onManageUser(member)}
               className={`bg-zinc-900/30 border-l-2 border-zinc-800 p-3 hover:bg-zinc-900 transition-colors ${
                 isStaff ? "cursor-pointer group" : ""
               }`}
@@ -111,10 +111,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           )}
         </div>
         {currentUser ? (
-          <div
-            className="flex items-center gap-3 mb-4 cursor-pointer group"
-            onClick={() => isStaff && onManageUser(currentUser)}
-          >
+          <div className="flex items-center gap-3 mb-4 cursor-pointer group">
             <div className="w-8 h-8 bg-primary flex items-center justify-center text-black font-black text-xs uppercase italic group-hover:scale-110 transition-transform">
               {currentUser.name!.charAt(0)}
             </div>

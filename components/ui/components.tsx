@@ -88,6 +88,7 @@ type ConfigDropdownProps<T extends string = string> = {
   name: string;
   value: T;
   options: readonly T[];
+  labels?: readonly T[];
   onChange: (e: ChangeEvent<HTMLSelectElement>) => void;
   icon?: ReactNode;
 };
@@ -97,6 +98,7 @@ export const ConfigDropdown = ({
   name,
   value,
   options,
+  labels,
   onChange,
   icon,
 }: ConfigDropdownProps) => (
@@ -111,9 +113,9 @@ export const ConfigDropdown = ({
         onChange={onChange}
         className="w-full bg-zinc-900 border border-zinc-800 p-3 text-xs font-black italic text-white outline-none appearance-none focus:border-primary cursor-pointer"
       >
-        {options.map((opt: string) => (
+        {options.map((opt: string, index) => (
           <option key={opt} value={opt}>
-            {opt.toUpperCase()}
+            {labels?.[index].toUpperCase() || opt.toUpperCase()}
           </option>
         ))}
       </select>
@@ -127,7 +129,7 @@ export const ConfigDropdown = ({
 
 type ConfigNumberInputProps = {
   label: string;
-  value: number; // 0 representa infinito
+  value: number;
   onChange: (value: number) => void;
   icon?: ReactNode;
 };

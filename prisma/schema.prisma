@@ -204,6 +204,7 @@ enum ParticipantStatus {
   ELIMINATED
   RESERVED
   REPLACED
+  SPECTATOR
 }
 
 enum ParticipantRole {

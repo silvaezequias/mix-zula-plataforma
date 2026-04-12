@@ -29,7 +29,7 @@ export const CardPlayer = ({
         className,
       )}
     >
-      <div className="flex items-center gap-4 place-self-start">
+      <div className="flex items-center gap-4 place-self-start self-center">
         <div className="hidden md:flex w-10 h-10 bg-zinc-800 items-center justify-center uppercase text-primary font-black border border-zinc-700 italic rounded-md">
           {initial}
         </div>

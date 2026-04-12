@@ -3,10 +3,14 @@
 import { getAuthOrThrow } from "@/lib/authorization/accessControl";
 import { TournamentService, TournamentProps } from "./service";
 import { safeExecute } from "@/lib/safeExecute";
-import { BETA_WHITELIST, STAFF_ROLES } from "@/constants/data";
+import {
+  BETA_WHITELIST,
+  PARTICIPANT_STATUS,
+  STAFF_ROLES,
+} from "@/constants/data";
 import { NotFoundError, UnauthorizedError } from "nextfastapi/errors";
 import { revalidatePath, revalidateTag } from "next/cache";
-import { ParticipantRole } from "@prisma/client";
+import { ParticipantRole, ParticipantStatus } from "@prisma/client";
 
 export async function createTournamentAction(formData: TournamentProps) {
   return await safeExecute(async () => {
@@ -201,7 +205,7 @@ export async function changeParticipantRole(
 
     if (targetRole && memberRole && participantRole) {
       if (currentTournament?.ownerId !== sessionMember.userId) {
-        if (memberRole!.level < 8) {
+        if (memberRole!.level < 9) {
           throw new UnauthorizedError({
             message: "Você não tem permissão para fazer alterações de cargos",
           });
@@ -234,6 +238,64 @@ export async function changeParticipantRole(
       tournamentId,
       userId,
       role,
+    );
+
+    return participant;
+  });
+}
+
+export async function changeParticipantStatus(
+  tournamentId: string,
+  userId: string,
+  status: ParticipantStatus,
+) {
+  return await safeExecute(async () => {
+    const session = await getAuthOrThrow();
+
+    const existingParticipant = await TournamentService.findParticipantByUserId(
+      tournamentId,
+      userId,
+    );
+
+    if (!existingParticipant) {
+      throw new NotFoundError({
+        message: "Nenhum usuário encontrado com o ID inserido",
+      });
+    }
+
+    const sessionMember = await TournamentService.findParticipantByUserId(
+      tournamentId,
+      session.user.id,
+    );
+
+    if (!sessionMember) {
+      throw new UnauthorizedError({
+        message: "Você nem devia estar fazendo isso",
+      });
+    }
+
+    const memberRole = STAFF_ROLES.find((r) => r.id === sessionMember.role);
+    const targetStatus = PARTICIPANT_STATUS.find((r) => r.id === status);
+
+    if (targetStatus && memberRole) {
+      if (memberRole.level < 9) {
+        throw new UnauthorizedError({
+          message: "Você não tem permissão para fazer alterações status",
+        });
+      }
+    } else if (!memberRole) {
+      throw new UnauthorizedError({
+        message: "Você está tentando fazer o que?",
+      });
+    } else if (!targetStatus) {
+      throw new UnauthorizedError({
+        message: "Que status é esse? Isso não existe no sistema, amigo.",
+      });
+    }
+
+    const participant = await TournamentService.updateParticipantStatus(
+      existingParticipant.id,
+      targetStatus.id,
     );
 
     return participant;

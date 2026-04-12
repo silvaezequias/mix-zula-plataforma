@@ -15,7 +15,7 @@ import {
   ConfigNumberInput,
   ConfigSwitch,
   SectionHeader,
-} from "./components";
+} from "../../../../components/ui/components";
 import {
   GameMode,
   StatsType,

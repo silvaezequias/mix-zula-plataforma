@@ -9,6 +9,7 @@ import { Logo } from "@/components/Brand";
 import { Menu, X } from "lucide-react";
 import { Session } from "next-auth";
 import { Participant } from "@prisma/client";
+import { useSearchParams } from "next/navigation";
 
 export function TournamentSection({
   session,
@@ -21,8 +22,31 @@ export function TournamentSection({
   sessionMember: Participant | null;
   tournamentRoleRequests: FullTournamentRoleRequest[] | null;
 }) {
+  const searchParams = useSearchParams();
+
   const staffList = tournament.participants.filter((p) => p.role !== "PLAYER");
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+
+  const [selectedUserId, setSelectedUserId] = useState<string | undefined>();
+  const selectedUser = tournament.participants.find(
+    (p) => p.id === selectedUserId,
+  );
+
+  const [currentTab, setCurrentTab] = useState(
+    searchParams.get("tab") || "info",
+  );
+
+  const handleSelectUser = (
+    user: FullTournament["participants"][number] | undefined,
+  ) => {
+    if (user) {
+      setSelectedUserId(user.id);
+      setCurrentTab("user");
+    } else {
+      setSelectedUserId(undefined);
+      setCurrentTab("participants");
+    }
+  };
 
   return (
     <Page>
@@ -52,6 +76,10 @@ export function TournamentSection({
               sessionMember={sessionMember}
               tournamentRoleRequests={tournamentRoleRequests}
               onRandomize={() => {}}
+              currentTab={currentTab}
+              setCurrentTab={setCurrentTab}
+              selectedUser={selectedUser}
+              handleSelectUser={handleSelectUser}
             />
           </div>
         </main>
@@ -63,7 +91,7 @@ export function TournamentSection({
           sessionMember={sessionMember}
           isOpen={isMobileMenuOpen}
           onClose={() => setIsMobileMenuOpen(false)}
-          onManageUser={() => {}}
+          onManageUser={handleSelectUser}
         />
       </div>
     </Page>

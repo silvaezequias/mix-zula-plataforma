@@ -30,7 +30,6 @@ export async function Header({
       <Container className="flex items-center justify-between py-6">
         <Logo />
 
-        {/* CLIENT COMPONENT só para active route */}
         <div className="hidden md:flex items-center gap-8">
           <Navigation routes={routes} />
         </div>

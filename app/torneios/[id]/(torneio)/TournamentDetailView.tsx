@@ -8,8 +8,7 @@ import { SettingsTab } from "./tabs/SettingsTab";
 import { TeamsView } from "./tabs/TeamsTab";
 import { Participant, ParticipantRole, TournamentStatus } from "@prisma/client";
 import { StaffTab } from "./tabs/StaffTab";
-import { useSearchParams } from "next/navigation";
-import { useState } from "react";
+import { Dispatch, SetStateAction } from "react";
 import { UserTab } from "./tabs/UserTab";
 
 export type Tabs = "info" | "inscritos" | "teams" | "games";
@@ -18,36 +17,29 @@ interface DetailProps {
   tournament: FullTournament;
   sessionMember: Participant | null;
   tournamentRoleRequests: FullTournamentRoleRequest[] | null;
+  selectedUser: FullTournament["participants"][number] | undefined;
+  currentTab: string;
   onRandomize: () => void;
+  handleSelectUser: (
+    user: FullTournament["participants"][number] | undefined,
+  ) => void;
+  setCurrentTab: Dispatch<SetStateAction<string>>;
 }
 
 export const TournamentDetailView: React.FC<DetailProps> = (props) => {
-  const { tournament, onRandomize, sessionMember, tournamentRoleRequests } =
-    props;
+  const {
+    tournament,
+    onRandomize,
+    sessionMember,
+    tournamentRoleRequests,
+    selectedUser,
+    handleSelectUser,
+    currentTab,
+    setCurrentTab,
+  } = props;
 
-  const [selectedUser, setSelectedUser] = useState<
-    FullTournament["participants"][number] | undefined
-  >();
-
-  const searchParams = useSearchParams();
   const isStaff = sessionMember && sessionMember?.role !== "PLAYER";
   const isRandomizing = tournament.status === "SETTING_TEAM";
-
-  const [currentTab, setCurrentTab] = useState(
-    searchParams.get("tab") || "info",
-  );
-
-  const handleSelectUser = (
-    user: FullTournament["participants"][number] | undefined,
-  ) => {
-    if (user) {
-      setSelectedUser(user);
-      setCurrentTab("user");
-    } else {
-      setSelectedUser(undefined);
-      setCurrentTab("participants");
-    }
-  };
 
   const tabs: Tab[] = [
     {
@@ -67,6 +59,7 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
       enabled: !!selectedUser,
       content: (
         <UserTab
+          key={selectedUser.id}
           setSelectedUser={handleSelectUser}
           selectedUser={selectedUser}
           tournament={tournament}

@@ -1,5 +1,8 @@
 import { UserCheck } from "lucide-react";
-import { ConfigField, ConfigSwitch } from "./components";
+import {
+  ConfigField,
+  ConfigSwitch,
+} from "../../../../components/ui/components";
 
 export const PresenceConfirmation = ({
   confirmationSystem,
