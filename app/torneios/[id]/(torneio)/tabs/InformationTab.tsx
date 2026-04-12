@@ -179,7 +179,7 @@ export const InformationTab = ({
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-primary">04.</span>
+            <span className="text-primary">04</span>
             <span>
               TROCA DE LADOS PERMITIDA:{" "}
               <span className="font-black text-white">
@@ -188,7 +188,7 @@ export const InformationTab = ({
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-primary">04.</span>
+            <span className="text-primary">05</span>
             <span>
               TOTAL DE TIMES:{" "}
               <span className="font-black text-white">
@@ -197,7 +197,7 @@ export const InformationTab = ({
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-primary">04.</span>
+            <span className="text-primary">06</span>
             <span>
               JOGADORES POR TIME:{" "}
               <span className="font-black text-white">
