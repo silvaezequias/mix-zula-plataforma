@@ -8,7 +8,7 @@ import { SettingsTab } from "./tabs/SettingsTab";
 import { TeamsView } from "./tabs/TeamsTab";
 import { Participant, ParticipantRole, TournamentStatus } from "@prisma/client";
 import { StaffTab } from "./tabs/StaffTab";
-import { Dispatch, SetStateAction } from "react";
+import { Dispatch, SetStateAction, useRef, useState } from "react";
 import { UserTab } from "./tabs/UserTab";
 
 export type Tabs = "info" | "inscritos" | "teams" | "games";
@@ -19,7 +19,6 @@ interface DetailProps {
   tournamentRoleRequests: FullTournamentRoleRequest[] | null;
   selectedUser: FullTournament["participants"][number] | undefined;
   currentTab: string;
-  onRandomize: () => void;
   handleSelectUser: (
     user: FullTournament["participants"][number] | undefined,
   ) => void;
@@ -29,7 +28,6 @@ interface DetailProps {
 export const TournamentDetailView: React.FC<DetailProps> = (props) => {
   const {
     tournament,
-    onRandomize,
     sessionMember,
     tournamentRoleRequests,
     selectedUser,
@@ -39,7 +37,27 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
   } = props;
 
   const isStaff = sessionMember && sessionMember?.role !== "PLAYER";
-  const isRandomizing = tournament.status === "SETTING_TEAM";
+  const [isRandomizing, setIsRandomizing] = useState(false);
+  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const handleRandomize = () => {
+    if (
+      (
+        ["FINISHED", "LIVE", "READY", "SETTING_TEAM"] as TournamentStatus[]
+      ).includes(tournament.status)
+    ) {
+      setIsRandomizing(true);
+      setCurrentTab("teams");
+
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+
+      timeoutRef.current = setTimeout(() => {
+        setIsRandomizing(false);
+      }, 2000);
+    }
+  };
 
   const tabs: Tab[] = [
     {
@@ -84,9 +102,9 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
   }
 
   if (
-    (["FINISHED", "LIVE", "READY"] as TournamentStatus[]).includes(
-      tournament.status,
-    )
+    (
+      ["FINISHED", "LIVE", "READY", "SETTING_TEAM"] as TournamentStatus[]
+    ).includes(tournament.status)
   ) {
     tabs.push({
       id: "teams",
@@ -138,7 +156,7 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
       content: (
         <SettingsTab
           isRandomizing={isRandomizing}
-          onRandomize={onRandomize}
+          handleRandomize={handleRandomize}
           tournament={tournament}
         />
       ),

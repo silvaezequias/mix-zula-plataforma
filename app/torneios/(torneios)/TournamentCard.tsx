@@ -1,7 +1,13 @@
-import { Tournament, TournamentStatus } from "@prisma/client";
+import { numberOrInfinity } from "@/lib/formatter";
+import { TournamentAtList } from "@/types";
+import { TournamentStatus } from "@prisma/client";
 import { ChevronRight, Medal, Target, Trophy, Users } from "lucide-react";
 
-export const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
+export const TournamentCard = ({
+  tournament,
+}: {
+  tournament: TournamentAtList;
+}) => {
   const getStatusConfig = (status: TournamentStatus) => {
     switch (status) {
       case "OPEN":
@@ -26,7 +32,7 @@ export const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
 
       case "READY":
         return {
-          label: "INICÍADO",
+          label: "PREPARANDO PARA INICIAR",
           color: "text-emerald-500",
           border: "border-emerald-500/50",
         };
@@ -46,10 +52,11 @@ export const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
   };
 
   const config = getStatusConfig(tournament.status);
+  const participantsLength = tournament._count.participants;
 
   return (
     <div
-      className={`group aspect-4/2 relative bg-[#111] border-l-4 ${config.border} p-6 sm:p-8 hover:bg-zinc-900 transition-all cursor-pointer overflow-hidden shadow-xl`}
+      className={`group relative bg-[#111] border-l-4 ${config.border} p-6 sm:p-8 hover:bg-zinc-900 transition-all cursor-pointer overflow-hidden shadow-xl`}
     >
       <div className="absolute top-0 right-0 w-32 h-32 bg-primary opacity-[0.02] transform rotate-45 translate-x-16 -translate-y-16 group-hover:opacity-[0.05] transition-opacity"></div>
 
@@ -80,13 +87,14 @@ export const TournamentCard = ({ tournament }: { tournament: Tournament }) => {
         <div className="grid grid-cols-2 gap-4 mb-8">
           <div className="flex items-center gap-2">
             <Users size={14} className="text-zinc-600" />
-            <span className="text-[10px] font-bold text-zinc-400 uppercase">
-              0/{tournament.maxRegistrations}
+            <span className="text-sm font-bold text-zinc-400 uppercase">
+              {participantsLength}/
+              {numberOrInfinity(tournament.maxRegistrations)}
             </span>
           </div>
           <div className="flex items-center gap-2">
             <Target size={14} className="text-zinc-600" />
-            <span className="text-[10px] font-bold text-zinc-400 uppercase">
+            <span className="text-sm font-bold text-zinc-400 uppercase">
               {tournament.gameMode}
             </span>
           </div>

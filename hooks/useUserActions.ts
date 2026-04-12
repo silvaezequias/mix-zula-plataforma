@@ -33,6 +33,7 @@ export function useUserActions(
     runAction("role", async () => {
       const res = await changeParticipantRole(tournamentId, userId, roleId);
       if (!res.success) throw new Error(res.error);
+      toast.info("Cargo atualizado com sucesso");
     });
   };
 
@@ -40,6 +41,7 @@ export function useUserActions(
     runAction("status", async () => {
       const res = await changeParticipantStatus(tournamentId, userId, statusId);
       if (!res.success) throw new Error(res.error);
+      toast.info("Status atualizado com sucesso");
     });
   };
 
@@ -47,6 +49,7 @@ export function useUserActions(
     runAction("kick", async () => {
       const res = await removeParticipant(participantId);
       if (!res.success) throw new Error(res.error);
+      toast.info("Usuário foi expulso do torneio");
       onUserRemoved();
     });
   };

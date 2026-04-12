@@ -11,10 +11,13 @@ import { BETA_WHITELIST } from "@/constants/data";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { ActionButton } from "@/components/ui/ActionButton";
+import { TournamentAtList } from "@/types";
 
 export default async function TournamentListPage() {
   const session = await getServerSession(authOptions);
-  const tournaments = (await TournamentService.list()).sort((a, b) => {
+  const tournaments = (
+    await TournamentService.list({ _count: { select: { participants: true } } })
+  ).sort((a, b) => {
     return Number(b.status === "OPEN") - Number(a.status === "OPEN");
   });
 
@@ -69,7 +72,7 @@ export default async function TournamentListPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 animate-in slide-in-from-bottom-4 duration-700">
             {tournaments.map((tournament) => (
               <Link key={tournament.id} href={`/torneios/${tournament.id}`}>
-                <TournamentCard tournament={tournament} />
+                <TournamentCard tournament={tournament as TournamentAtList} />
               </Link>
             ))}
           </div>

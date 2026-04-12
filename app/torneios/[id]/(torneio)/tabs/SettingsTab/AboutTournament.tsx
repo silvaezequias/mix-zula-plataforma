@@ -13,6 +13,7 @@ export const AboutTournament = ({
   prize: string;
   handleChange: HandleTournamentChange;
 }) => {
+
   return (
     <Card
       icon={Sliders}
@@ -30,7 +31,7 @@ export const AboutTournament = ({
           value={description}
           onChange={(v) => handleChange("description", v.target.value)}
           textarea
-          rows={3}
+          rows={5}
         />
         <ConfigInput
           label="Premiação"

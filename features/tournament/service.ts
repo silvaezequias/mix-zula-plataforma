@@ -113,14 +113,101 @@ async function create(ownerId: string, data: TournamentProps) {
   return createdTournament;
 }
 
-function list(select?: Prisma.TournamentSelect, cursor?: { id: string }) {
+async function update(tournamentId: string, data: TournamentProps) {
+  const validData = validation.tournament(
+    {
+      title: false,
+      description: false,
+      prize: false,
+
+      status: false,
+
+      startDate: false,
+      endType: false,
+      endDate: false,
+
+      format: false,
+      gameMode: false,
+      statsType: false,
+      teamManagement: false,
+
+      swapTeam: false,
+      matchesPerMatch: false,
+
+      totalTeams: false,
+      playersPerTeam: false,
+      maxPlayers: false,
+      maxRegistrations: false,
+
+      confirmationSystem: false,
+      confirmationTime: false,
+
+      hasSubstitutes: false,
+      substitutesLimit: false,
+
+      broadcastPlatform: false,
+      broadcastUrl: false,
+    },
+    data,
+  );
+
+  let updatedTournament;
+
+  try {
+    updatedTournament = await prisma.tournament.update({
+      where: { id: tournamentId },
+      data: {
+        title: validData.title!,
+        description: validData.description!,
+        prize: validData.prize!,
+
+        status: validData.status!,
+
+        startDate: validData.startDate!,
+        endType: validData.endType!,
+        endDate: validData.endDate,
+
+        format: validData.format,
+        gameMode: validData.gameMode,
+        statsType: validData.statsType,
+        teamManagement: validData.teamManagement,
+
+        swapTeam: validData.swapTeam,
+        matchesPerMatch: validData.matchesPerMatch,
+
+        totalTeams: validData.totalTeams!,
+        playersPerTeam: validData.playersPerTeam!,
+        maxPlayers: validData.maxPlayers!,
+        maxRegistrations: validData.maxRegistrations!,
+
+        confirmationSystem: validData.confirmationSystem,
+        confirmationTime: validData.confirmationTime,
+
+        hasSubstitutes: validData.hasSubstitutes!,
+        substitutesLimit: validData.substitutesLimit!,
+
+        broadcastPlatform: validData.broadcastPlatform,
+        broadcastUrl: validData.broadcastUrl,
+      },
+    });
+  } catch (err) {
+    console.log(err);
+    throw new InternalError({
+      message: "Houve um erro interno. Tente novamente mais tarde",
+    });
+  }
+
+  return updatedTournament;
+}
+
+function list(include?: Prisma.TournamentInclude, cursor?: { id: string }) {
   if (!cursor) {
     return unstable_cache(
       async () => {
         return prisma.tournament.findMany({
           take: 10,
           orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-          select: select,
+          include: include,
         });
       },
       ["tournaments-initial"],
@@ -133,7 +220,7 @@ function list(select?: Prisma.TournamentSelect, cursor?: { id: string }) {
     skip: 1,
     cursor: { id: cursor.id },
     orderBy: [{ createdAt: "desc" }, { id: "desc" }],
-    select: select,
+    include: include,
   });
 }
 
@@ -486,6 +573,7 @@ async function handleTournamentRoleRequestStatus(
 
 export const TournamentService = {
   create,
+  update,
   list,
   findById,
   findParticipantById,

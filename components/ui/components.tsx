@@ -38,7 +38,7 @@ export const ConfigInput = ({
       <input
         type={type}
         className="w-full bg-zinc-900 border border-zinc-800 p-3 text-white italic outline-none focus:border-primary text-sm font-bold"
-        value={value}
+        value={value || ""}
         onChange={(e) => onChange(e.target.value)}
       />
     </div>

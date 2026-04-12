@@ -1,4 +1,4 @@
-import { MatchStatus, Prisma } from "@prisma/client";
+import { MatchStatus, Prisma, Tournament } from "@prisma/client";
 import { PayloadUser } from "./next-auth";
 
 export type Role =
@@ -37,6 +37,13 @@ export type FullTournamentRoleRequest = Prisma.TournamentRoleRequestGetPayload<{
     owner: true;
   };
 }>;
+
+export type TournamentAtList = Prisma.TournamentGetPayload<{
+  include: {
+    _count: { select: { participants: true } };
+  };
+}> &
+  Tournament;
 
 export type FullTournament = Prisma.TournamentGetPayload<{
   include: {

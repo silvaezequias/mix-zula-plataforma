@@ -3,7 +3,12 @@ import {
   StaffRole,
 } from "@/app/torneios/[id]/staff/StaffArea";
 import { Role } from "@/types";
-import { ParticipantRole, ParticipantStatus } from "@prisma/client";
+import {
+  GameMode,
+  ParticipantRole,
+  ParticipantStatus,
+  TournamentStatus,
+} from "@prisma/client";
 import { Radio, Shield, ShieldUser, Target, User, Users } from "lucide-react";
 
 export const BETA_WHITELIST = [
@@ -124,19 +129,34 @@ export const AVAILABLE_ROLES: { label: string; value: Role; color: string }[] =
   ];
 
 export const BROADCAST_PLATFORMS = [
-  "YouTube",
-  "Twitch",
-  "Kick",
-  "TikTok",
-  "Outro",
+  "YOUTUBE",
+  "TWITCH",
+  "KICK",
+  "TIKTOK",
+  "OUTRO",
 ];
 
-export const GAME_MODES = [
-  "Sabotagem",
-  "Mata-Mata em Equipe",
-  "Procurado",
-  "Escolta",
-  "Eliminação",
+export const GAME_MODES: { id: GameMode; label: string }[] = [
+  {
+    id: "SABOTAGEM",
+    label: "Sabotagem",
+  },
+  {
+    id: "MATA_MATA",
+    label: "Mata-Mata em Equipe",
+  },
+  {
+    id: "ELIMINAÇÃO",
+    label: "Eliminação",
+  },
+  {
+    id: "ESCOLTA",
+    label: "Escolta",
+  },
+  {
+    id: "PROCURADO",
+    label: "Procurado",
+  },
 ];
 
 export const roleColors: Record<ParticipantRole, string> = {
@@ -147,6 +167,18 @@ export const roleColors: Record<ParticipantRole, string> = {
   JUIZ: "text-blue-500",
   STREAMER: "text-purple-500",
 };
+
+export const tournamentStatus: {
+  id: TournamentStatus;
+  label: string;
+}[] = [
+  { id: TournamentStatus.CLOSED, label: "Fechado" },
+  { id: TournamentStatus.OPEN, label: "Inscrições Abertas" },
+  { id: TournamentStatus.SETTING_TEAM, label: "Definindo Times" },
+  { id: TournamentStatus.READY, label: "Pronto para Iniciar" },
+  { id: TournamentStatus.LIVE, label: "Em Andamento" },
+  { id: TournamentStatus.FINISHED, label: "Finalizado" },
+];
 
 export const participantStatusMap: Record<
   ParticipantStatus,

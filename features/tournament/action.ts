@@ -34,6 +34,44 @@ export async function createTournamentAction(formData: TournamentProps) {
   });
 }
 
+export async function updateTournament(
+  tournamentId: string,
+  data: TournamentProps,
+) {
+  return await safeExecute(async () => {
+    const session = await getAuthOrThrow();
+
+    const sessionMember = await TournamentService.findParticipantByUserId(
+      tournamentId,
+      session.user.id,
+    );
+
+    if (!sessionMember) {
+      throw new UnauthorizedError({
+        message: "Você não pode fazer isso. Você nem é membro desse torneio",
+      });
+    }
+
+    const sessionMemberRole = STAFF_ROLES.find(
+      (r) => r.id === sessionMember.role,
+    );
+
+    if (!sessionMemberRole || sessionMemberRole?.level < 9) {
+      throw new UnauthorizedError({
+        message:
+          "Infelizmente você não tem permissão pra atualizar informações do torneio",
+      });
+    }
+
+    const newTournament = await TournamentService.update(tournamentId, data);
+
+    revalidatePath("/torneios");
+    revalidateTag("tournaments", "max");
+
+    return newTournament;
+  });
+}
+
 export async function createTournamentParticipantAction(tournamentId: string) {
   return await safeExecute(async () => {
     const session = await getAuthOrThrow();
@@ -298,6 +336,9 @@ export async function changeParticipantStatus(
       targetStatus.id,
     );
 
+    revalidatePath("/torneios");
+    revalidateTag("tournaments", "max");
+
     return participant;
   });
 }
@@ -336,6 +377,9 @@ export async function removeParticipant(participantId: string) {
       session.user,
       participantId,
     );
+
+    revalidatePath("/torneios");
+    revalidateTag("tournaments", "max");
 
     return participant;
   });

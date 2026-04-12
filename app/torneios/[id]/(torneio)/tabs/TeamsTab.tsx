@@ -67,7 +67,7 @@ export const TeamsView = ({ tournament }: { tournament: FullTournament }) => {
         <div className="col-span-2 py-32 text-center border-2 border-dashed border-zinc-900">
           <Users size={48} className="mx-auto text-zinc-900 mb-4" />
           <p className="text-zinc-700 font-black uppercase italic tracking-[0.4em]">
-            As equipas ainda não foram sorteadas pela Staff.
+            As equipas ainda não foram sorteadas.
           </p>
         </div>
       )}

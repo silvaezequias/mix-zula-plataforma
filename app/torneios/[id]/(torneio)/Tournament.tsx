@@ -75,7 +75,6 @@ export function TournamentSection({
               tournament={tournament}
               sessionMember={sessionMember}
               tournamentRoleRequests={tournamentRoleRequests}
-              onRandomize={() => {}}
               currentTab={currentTab}
               setCurrentTab={setCurrentTab}
               selectedUser={selectedUser}

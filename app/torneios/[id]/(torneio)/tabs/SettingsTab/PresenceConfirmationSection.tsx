@@ -28,7 +28,7 @@ export const PresenceConfirmation = ({
           />
           {confirmationSystem && (
             <ConfigField
-              label="Tempo de Check-in (Minutos)"
+              label="Tempo de Check-in (Min)"
               name="confirmationTime"
               type="number"
               value={confirmationTime}
@@ -46,7 +46,7 @@ export const PresenceConfirmation = ({
           />
           {hasSubstitutes && (
             <ConfigField
-              label="Máximo de Suplentes"
+              label="Máximo de Substitutos"
               name="substitutesLimit"
               type="number"
               value={substitutesLimit}

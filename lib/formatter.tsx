@@ -10,3 +10,11 @@ export function parseDate(dateString: string) {
   const [year, month, day] = dateString.split("-").map(Number);
   return new Date(year, month - 1, day);
 }
+
+export function numberOrInfinity(number: number) {
+  if (number === 0)
+    return (
+      <span className="rotate-90 inline-block not-italic align-middle">8</span>
+    );
+  return number;
+}

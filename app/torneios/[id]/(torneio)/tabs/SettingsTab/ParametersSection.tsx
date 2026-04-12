@@ -38,7 +38,7 @@ export const ParametersSection = (props: ParametersSectionProps) => {
     <Card
       icon={Sliders}
       title="Parâmetros de Torneio"
-      className="lg:col-span-5 space-y-8"
+      className="lg:col-span-2 space-y-8"
     >
       <div className="space-y-6">
         <TeamManagementSelect
@@ -104,7 +104,8 @@ const MatchSettings = ({
       label="Modo"
       name="gameMode"
       value={gameMode ?? GameMode.SABOTAGEM}
-      options={GAME_MODES}
+      options={GAME_MODES.map((gm) => gm.id)}
+      labels={GAME_MODES.map((gm) => gm.label)}
       onChange={(v) => handleChange("gameMode", v.target.value as GameMode)}
       icon={<Target size={12} />}
     />
@@ -180,9 +181,10 @@ const MatchCounter = ({ value, handleChange }: MatchCounterProps) => (
       Partidas por Match
     </span>
 
-    <div className="flex items-center gap-3">
+    <div className="flex items-center gap-4">
       <button
         type="button"
+        disabled
         onClick={() =>
           handleChange("matchesPerMatch", Math.max(1, value || 0 - 2))
         }
@@ -191,9 +193,10 @@ const MatchCounter = ({ value, handleChange }: MatchCounterProps) => (
         <Minus size={14} />
       </button>
 
-      <span className="w-8 text-center font-black text-primary">MO{value}</span>
+      <span className="text-center font-black text-primary">MO{value}</span>
 
       <button
+        disabled
         type="button"
         onClick={() => handleChange("matchesPerMatch", value || 0 + 1)}
         className="w-8 h-8 bg-zinc-900 border border-zinc-800 flex items-center justify-center hover:text-primary"

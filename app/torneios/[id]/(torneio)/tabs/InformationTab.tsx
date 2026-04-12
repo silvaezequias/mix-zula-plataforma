@@ -1,4 +1,5 @@
 import { ActionButton } from "@/components/ui/ActionButton";
+import { numberOrInfinity } from "@/lib/formatter";
 import { FullTournament } from "@/types";
 import { Participant, TournamentStatus } from "@prisma/client";
 import {
@@ -28,8 +29,6 @@ export const InformationTab = ({
   sessionMember,
 }: InformationTabProps) => {
   const router = useRouter();
-  const tournamentId = tournament.id;
-
   const [copied, setCopied] = useState(false);
 
   const handleCopyLink = () => {
@@ -40,7 +39,7 @@ export const InformationTab = ({
   };
 
   const handleAction = () => {
-    router.push(`/torneios/${tournamentId}/participar`);
+    router.push(`/torneios/${tournament.id}/participar`);
   };
 
   const statusMap: Record<
@@ -90,6 +89,9 @@ export const InformationTab = ({
   };
 
   const canJoinInTournament = tournament.status === "OPEN" && !sessionMember;
+  const participantsLength = tournament.participants.filter(
+    (p) => p.status === "ACTIVE",
+  ).length;
 
   return (
     <div className="space-y-6 uppercase animate-in fade-in duration-500">
@@ -149,7 +151,7 @@ export const InformationTab = ({
           <Users className="text-zinc-500 mb-4" size={24} />
           <p className="text-[10px] text-zinc-500 font-black">INSCRITOS</p>
           <p className="text-xl font-black italic text-white">
-            {tournament.participants.length}/{tournament.maxPlayers}
+            {participantsLength}/{numberOrInfinity(tournament.maxRegistrations)}
           </p>
         </div>
       </div>
@@ -160,19 +162,19 @@ export const InformationTab = ({
         </h4>
         <ul className="space-y-4 text-[11px] font-bold text-zinc-400">
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-primary">01.</span> NICK EM JOGO DEVE SER
+            <span className="text-primary">01</span> NICK EM JOGO DEVE SER
             IDENTICO AO CADASTRADO.
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-primary">02.</span>
+            <span className="text-primary">02</span>
             USO DE SOFTWARE EXTERNO RESULTARÁ EM BANIMENTO.
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
-            <span className="text-primary">03.</span>
+            <span className="text-primary">03</span>
             <span>
-              ROUNDS POR LADO:{" "}
+              Melhor de:{" "}
               <span className="font-black text-white">
-                {10} {/* tournament.rounds /** */}.
+                {tournament.matchesPerMatch}
               </span>
             </span>
           </li>
@@ -183,7 +185,6 @@ export const InformationTab = ({
               <span className="font-black text-white">
                 {tournament.swapTeam ? "SIM" : "NÃO"}
               </span>
-              .
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
@@ -193,7 +194,6 @@ export const InformationTab = ({
               <span className="font-black text-white">
                 {tournament.totalTeams}
               </span>
-              .
             </span>
           </li>
           <li className="flex gap-4 border-b border-zinc-900 pb-3">
@@ -203,7 +203,6 @@ export const InformationTab = ({
               <span className="font-black text-white">
                 {tournament.playersPerTeam}
               </span>
-              .
             </span>
           </li>
         </ul>

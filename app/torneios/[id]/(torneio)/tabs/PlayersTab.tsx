@@ -56,7 +56,6 @@ export const PlayersTab = ({
             >
               {isStaff && (
                 <span className="text-white text-xs uppercase font-bold place-self-center self-center">
-                  Satus:{" "}
                   <span className={participantStatusMap[p.status].color}>
                     {participantStatusMap[p.status].label}
                   </span>
@@ -65,7 +64,7 @@ export const PlayersTab = ({
 
               {isStaff && (
                 <span className="text-white text-xs uppercase font-bold place-self-end self-center">
-                  Cargo: <span className={roleColors[p.role]}>{p.role}</span>
+                  <span className={roleColors[p.role]}>{p.role}</span>
                 </span>
               )}
 
