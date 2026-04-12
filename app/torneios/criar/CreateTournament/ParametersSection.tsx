@@ -123,7 +123,8 @@ const MatchSettings = ({
       label="Modo"
       name="gameMode"
       value={gameMode ?? GameMode.SABOTAGEM}
-      options={GAME_MODES}
+      options={GAME_MODES.map((gm) => gm.id)}
+      labels={GAME_MODES.map((gm) => gm.label)}
       onChange={handleChange}
       icon={<Target size={12} />}
     />
