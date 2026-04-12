@@ -5,8 +5,8 @@ import Container from "../ui/Container";
 import { Logo } from "../Brand";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import { User } from "lucide-react";
 import { Navigation } from "./Navigation";
+import { UserMenu } from "./UserMenu";
 
 export async function Header({
   additionalElement,
@@ -35,16 +35,7 @@ export async function Header({
         </div>
 
         {isAuthenticated ? (
-          <div className="font-semibold text-primary uppercase">
-            <span className="md:hidden bg-primary text-primary-foreground font-black rounded-full aspect-square flex justify-center items-center h-10 px-2">
-              {session.user.name}
-            </span>
-
-            <span className="hidden md:flex items-center gap-2">
-              <User size={15} />
-              {session.user.name}
-            </span>
-          </div>
+          <UserMenu session={session} />
         ) : (
           <Link
             href="/login"
