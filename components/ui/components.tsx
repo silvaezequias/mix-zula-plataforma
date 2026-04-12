@@ -19,6 +19,32 @@ export const SectionHeader = ({
   </div>
 );
 
+export const ConfigInput = ({
+  label,
+  type = "text",
+  value,
+  onChange,
+}: {
+  label: string;
+  type?: string;
+  value: string | number;
+  onChange: (value: string) => void;
+}) => {
+  return (
+    <div className="space-y-1">
+      <label className="text-[9px] font-bold text-zinc-500 uppercase italic">
+        {label}
+      </label>
+      <input
+        type={type}
+        className="w-full bg-zinc-900 border border-zinc-800 p-3 text-white italic outline-none focus:border-primary text-sm font-bold"
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+      />
+    </div>
+  );
+};
+
 type PresetButtonProps = {
   active: boolean;
   onClick: () => void;
@@ -72,12 +98,12 @@ export const ConfigField = ({
     {textarea ? (
       <textarea
         {...(props as TextareaHTMLAttributes<HTMLTextAreaElement>)}
-        className="w-full bg-[#050505] border border-zinc-800 p-4 text-sm font-black italic text-white outline-none focus:border-primary transition-all resize-none"
+        className="w-full bg-zinc-900 border border-zinc-800 text-white p-4 text-sm font-black italic outline-none focus:border-primary transition-all resize-none"
       />
     ) : (
       <input
         {...(props as InputHTMLAttributes<HTMLInputElement>)}
-        className="w-full bg-[#050505] border border-zinc-800 p-4 text-sm font-black italic text-white outline-none focus:border-primary transition-all"
+        className="w-full bg-zinc-900 border border-zinc-800 p-4 text-sm font-black italic text-white outline-none focus:border-primary transition-all"
       />
     )}
   </div>
@@ -111,7 +137,7 @@ export const ConfigDropdown = ({
         name={name}
         value={value}
         onChange={onChange}
-        className="w-full bg-zinc-900 border border-zinc-800 p-3 text-xs font-black italic text-white outline-none appearance-none focus:border-primary cursor-pointer"
+        className="w-full bg-zinc-900 border border-zinc-800 p-3.5 text-xs font-black italic text-white outline-none appearance-none focus:border-primary cursor-pointer"
       >
         {options.map((opt: string, index) => (
           <option key={opt} value={opt}>
@@ -159,7 +185,7 @@ export const ConfigNumberInput = ({
             type="number"
             value={value}
             onChange={(e) => onChange(parseInt(e.target.value) || 0)}
-            className="w-16 bg-black border border-zinc-800 p-1 text-center text-xs font-black text-white outline-none focus:border-primary"
+            className="w-16 bg-zinc-900 border border-zinc-800 p-1 text-center text-xs font-black text-white outline-none focus:border-primary"
           />
         )}
         <button

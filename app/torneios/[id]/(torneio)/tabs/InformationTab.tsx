@@ -3,6 +3,8 @@ import { FullTournament } from "@/types";
 import { Participant, TournamentStatus } from "@prisma/client";
 import {
   Ban,
+  Check,
+  Copy,
   LogIn,
   Medal,
   Radio,
@@ -14,7 +16,7 @@ import {
 } from "lucide-react";
 
 import { useRouter } from "next/navigation";
-import { JSX } from "react";
+import { JSX, useState } from "react";
 
 export type InformationTabProps = {
   tournament: FullTournament;
@@ -27,6 +29,15 @@ export const InformationTab = ({
 }: InformationTabProps) => {
   const router = useRouter();
   const tournamentId = tournament.id;
+
+  const [copied, setCopied] = useState(false);
+
+  const handleCopyLink = () => {
+    const link = `${window.location.origin}/torneios/${tournament.id}/participar`;
+    navigator.clipboard.writeText(link);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleAction = () => {
     router.push(`/torneios/${tournamentId}/participar`);
@@ -95,6 +106,25 @@ export const InformationTab = ({
           </ActionButton>
         )}
       </div>
+      <div className="pt-4 border-t border-zinc-800">
+        <label className="text-[9px] font-bold text-zinc-500 uppercase block mb-3 italic">
+          Link de Convite
+        </label>
+        <div className="flex gap-2">
+          <div className="flex-1 bg-zinc-900 border border-zinc-800 p-3 text-[10px] text-zinc-500 truncate font-mono italic lowercase">
+            {window.location.origin}/torneios/{tournament.id}/participar
+          </div>
+          <button
+            onClick={handleCopyLink}
+            className={`px-6 transition-all flex items-center justify-center ${copied ? "bg-green-600 text-white" : "bg-zinc-800 text-primary hover:bg-zinc-700"}`}
+          >
+            {copied ? <Check size={18} /> : <Copy size={18} />}
+          </button>
+        </div>
+        <p className="text-[8px] text-zinc-700 mt-2 font-semibold">
+          Compartilhe esse link para convidar jogadores para o torneio
+        </p>
+      </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         <div className={`bg-[#111] p-6 border-l-3 ${status.className}`}>
           <status.icon className="text-zinc-500 mb-4" size={24} />
@@ -123,6 +153,7 @@ export const InformationTab = ({
           </p>
         </div>
       </div>
+
       <div className="bg-[#111] border border-zinc-800 p-8">
         <h4 className="text-xs font-black text-primary mb-6 italic tracking-widest">
           REGRAS DO TORNEIO
