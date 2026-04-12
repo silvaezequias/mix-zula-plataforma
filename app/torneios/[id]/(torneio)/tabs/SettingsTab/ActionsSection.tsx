@@ -4,6 +4,7 @@ import { TournamentStatus } from "@prisma/client";
 import { ActionButton } from "@/components/ui/ActionButton";
 import { ConfigDropdown } from "@/components/ui/components";
 import { tournamentStatus } from "@/constants/data";
+import { useCountdown } from "@/hooks/useCooldown";
 
 export const ActionsSection = ({
   status,
@@ -16,6 +17,14 @@ export const ActionsSection = ({
   handleRandomize: () => void;
   handleChange: HandleTournamentChange;
 }) => {
+  const randomizeTeamCooldown = useCountdown(5);
+
+  const handleRandomizeClick = () => {
+    if (!randomizeTeamCooldown.active) return randomizeTeamCooldown.start();
+    randomizeTeamCooldown.reset();
+    handleRandomize();
+  };
+
   return (
     <Card title="Ações" icon={Power} className="col-span-1">
       <div className="space-y-4 flex-1 flex flex-col justify-between">
@@ -38,12 +47,26 @@ export const ActionsSection = ({
 
           {(tournamentCurrentStatus === "SETTING_TEAM" ||
             tournamentCurrentStatus === "READY") && (
-            <ActionButton onClick={() => handleRandomize()}>
+            <ActionButton
+              onClick={handleRandomizeClick}
+              className="uppercase"
+              intent={
+                randomizeTeamCooldown.active
+                  ? tournamentCurrentStatus === "READY"
+                    ? "danger"
+                    : "success"
+                  : "default"
+              }
+            >
               <Shuffle
                 size={18}
-                className="group-hover:scale-125 transition-transform"
+                className="group-hover:scale-125 transition-transform "
               />
-              {status === "READY" ? "RE-SORTEAR EQUIPES" : "SORTEAR EQUIPES"}
+              {randomizeTeamCooldown.active
+                ? `Confirmar  ${tournamentCurrentStatus === "READY" ? "re-sorteio" : "sorteio"} em (${randomizeTeamCooldown.time}s)`
+                : tournamentCurrentStatus === "READY"
+                  ? "RE-SORTEAR EQUIPES"
+                  : "SORTEAR EQUIPES"}
             </ActionButton>
           )}
         </div>

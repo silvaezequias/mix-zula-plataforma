@@ -254,6 +254,8 @@ async function findById(tournamentId: string) {
                   role: true,
                   user: {
                     select: {
+                      name: true,
+                      player: true,
                       discordId: true,
                     },
                   },

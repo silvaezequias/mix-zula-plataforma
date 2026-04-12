@@ -122,7 +122,7 @@ model TeamMember {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  team        Team        @relation(fields: [teamId], references: [id])
+  team        Team        @relation(fields: [teamId], references: [id], onDelete: Cascade)
   participant Participant @relation(fields: [participantId], references: [id])
 }
 
@@ -188,7 +188,7 @@ model Participant {
   status    ParticipantStatus
   confirmed Boolean           @default(false)
 
-  tournament Tournament @relation(fields: [tournamentId], references: [id])
+  tournament Tournament @relation(fields: [tournamentId], references: [id], onDelete: Cascade)
   user       User       @relation(fields: [userId], references: [id])
 
   teamMembers TeamMember[]

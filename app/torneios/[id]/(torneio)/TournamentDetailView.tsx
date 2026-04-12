@@ -1,3 +1,5 @@
+"use client";
+
 import { FullTournament, FullTournamentRoleRequest } from "@/types";
 import { GamesTab } from "./tabs/GamesTab";
 import { InformationTab } from "./tabs/InformationTab";
@@ -8,8 +10,11 @@ import { SettingsTab } from "./tabs/SettingsTab";
 import { TeamsView } from "./tabs/TeamsTab";
 import { Participant, ParticipantRole, TournamentStatus } from "@prisma/client";
 import { StaffTab } from "./tabs/StaffTab";
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useTransition } from "react";
 import { UserTab } from "./tabs/UserTab";
+import { createRandomTeamsAction } from "@/features/team/action";
+import { toast } from "react-toastify";
+import { useRouter } from "next/navigation";
 
 export type Tabs = "info" | "inscritos" | "teams" | "games";
 
@@ -37,8 +42,8 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
   } = props;
 
   const isStaff = sessionMember && sessionMember?.role !== "PLAYER";
-  const [isRandomizing, setIsRandomizing] = useState(false);
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  const [isRandomizing, startTransition] = useTransition();
+  const router = useRouter();
 
   const handleRandomize = () => {
     if (
@@ -46,16 +51,12 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
         ["FINISHED", "LIVE", "READY", "SETTING_TEAM"] as TournamentStatus[]
       ).includes(tournament.status)
     ) {
-      setIsRandomizing(true);
       setCurrentTab("teams");
-
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-
-      timeoutRef.current = setTimeout(() => {
-        setIsRandomizing(false);
-      }, 2000);
+      startTransition(async () => {
+        const result = await createRandomTeamsAction(tournament.id);
+        if (!result.success) toast.error(result.error);
+        router.refresh();
+      });
     }
   };
 
