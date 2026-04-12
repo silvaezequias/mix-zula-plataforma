@@ -32,7 +32,7 @@ export const STAFF_ROLES: StaffRole[] = [
     id: "MODERADOR",
     title: "Moderador",
     description:
-      "Responsável pela ordem geral, Discord e cumprimento das condutas éticas dos agentes.",
+      "Responsável pela ordem geral, Discord e cumprimento das condutas éticas dos jogadores.",
     icon: <Shield size={24} />,
     color: "text-green-500",
     bg: "bg-green-500/10",

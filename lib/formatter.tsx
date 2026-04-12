@@ -11,10 +11,17 @@ export function parseDate(dateString: string) {
   return new Date(year, month - 1, day);
 }
 
-export function numberOrInfinity(number: number) {
-  if (number === 0)
-    return (
-      <span className="rotate-90 inline-block not-italic align-middle">8</span>
-    );
+export function numberOrInfinity(number: number, dotted: boolean = false) {
+  if (number === 0) {
+    if (dotted) {
+      return <span className="not-italic text-xs align-middle">...</span>;
+    } else
+      return (
+        <span className="rotate-90 inline-block not-italic align-middle">
+          8
+        </span>
+      );
+  }
+
   return number;
 }

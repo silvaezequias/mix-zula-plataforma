@@ -16,7 +16,7 @@ export const CallToAction = () => {
           <span className="text-primary">PRÓXIMO NÍVEL?</span>
         </h3>
         <p className="text-zinc-500 text-xs sm:text-sm font-bold uppercase tracking-widest max-w-lg mx-auto leading-loose">
-          Não perca tempo. Os melhores agentes já estão em campo. <br />
+          Não perca tempo. Os melhores jogadores já estão em campo. <br />
           Garanta sua vaga na próxima operação.
         </p>
         <button

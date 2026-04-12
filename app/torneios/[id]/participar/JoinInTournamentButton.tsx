@@ -4,6 +4,7 @@ import { ActionButton } from "@/components/ui/ActionButton";
 import { createTournamentParticipantAction } from "@/features/tournament/action";
 import { Loader2 } from "lucide-react";
 import { useTransition } from "react";
+import { toast } from "react-toastify";
 
 export function JoinInTournamentButton({
   canJoinInTournament,
@@ -18,7 +19,9 @@ export function JoinInTournamentButton({
 
   function handleTryToJoinTournament() {
     startTransition(async () => {
-      await createTournamentParticipantAction(tournamentId);
+      const result = await createTournamentParticipantAction(tournamentId);
+
+      if (!result.success) toast.error(result.error);
     });
   }
 

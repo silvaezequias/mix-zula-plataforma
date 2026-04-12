@@ -15,6 +15,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { TournamentService } from "@/features/tournament/service";
 import { JoinInTournamentButton } from "./JoinInTournamentButton";
+import { numberOrInfinity } from "@/lib/formatter";
 
 export default async function RegistrationPage(props: {
   params: Promise<{ id: string }>;
@@ -70,6 +71,53 @@ export default async function RegistrationPage(props: {
           </h2>
           <p className="text-zinc-500 text-xs uppercase tracking-widest">
             VOCê NÃO TEM PERMISSÃO DE ACESSAR ESSE TORNEIO
+          </p>
+          <Link href="/torneios">
+            <button className="text-primary hover:text-white transition-colors underline text-xs font-bold mt-4 uppercase">
+              Voltar à lista
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (
+    (tournament.status === "LIVE" ||
+      tournament.status === "READY" ||
+      tournament.status === "SETTING_TEAM") &&
+    !sessionMember
+  ) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 text-white uppercase italic">
+        <div className="text-center space-y-4">
+          <AlertTriangle size={48} className="text-primary mx-auto" />
+          <h2 className="text-2xl font-black italic tracking-tighter">
+            ESTE TORNEIO ESTÁ EM ANDAMENTO
+          </h2>
+          <p className="text-zinc-500 text-xs uppercase tracking-widest">
+            VOCê NÃO PODE MAIS ENTRAR
+          </p>
+          <Link href="/torneios">
+            <button className="text-primary hover:text-white transition-colors underline text-xs font-bold mt-4 uppercase">
+              Voltar à lista
+            </button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  if (tournament.status === "FINISHED" && !sessionMember) {
+    return (
+      <div className="min-h-screen bg-[#050505] flex items-center justify-center p-6 text-white uppercase italic">
+        <div className="text-center space-y-4">
+          <AlertTriangle size={48} className="text-primary mx-auto" />
+          <h2 className="text-2xl font-black italic tracking-tighter">
+            ESTE TORNEIO JÁ FOI FINALIZADO
+          </h2>
+          <p className="text-zinc-500 text-xs uppercase tracking-widest">
+            NÃO É POSSÍVEL INSCREVER-SE NELE
           </p>
           <Link href="/torneios">
             <button className="text-primary hover:text-white transition-colors underline text-xs font-bold mt-4 uppercase">
@@ -147,24 +195,6 @@ export default async function RegistrationPage(props: {
               <p className="text-zinc-500 text-sm leading-relaxed font-semibold normal-case italic border-l-2 border-zinc-800 pl-6">
                 {tournament.description}
               </p>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {[
-                  `Máximo de Agentes: ${maxPlayers}`,
-                  `Rounds por Lado: ${tournament.matchesPerMatch}`,
-                  `Troca de Lados: ${tournament.swapTeam ? "Habilitado" : "Desabilitado"}`,
-                  `${tournament.status === "OPEN" ? "Inscrições Abertas" : "Fechado"}`,
-                ].map((text, i) => (
-                  <div
-                    key={i}
-                    className="flex items-center gap-3 bg-black/40 p-3 border border-zinc-900"
-                  >
-                    <div className="w-1.5 h-1.5 bg-primary transform rotate-45"></div>
-                    <span className="text-[10px] text-zinc-300 font-black uppercase">
-                      {text}
-                    </span>
-                  </div>
-                ))}
-              </div>
             </section>
           </div>
 
@@ -213,9 +243,10 @@ export default async function RegistrationPage(props: {
                         Ocupação
                       </p>
                       <h3
-                        className={`text-2xl font-black italic tracking-tighter ${isFull ? "text-red-500" : "text-primary"}`}
+                        className={`text-2xl font-black italic  ${isFull ? "text-red-500" : "text-primary"}`}
                       >
-                        {currentPlayersCount}/{maxPlayers}
+                        {currentPlayersCount}/
+                        {numberOrInfinity(tournament.maxRegistrations, true)}
                       </h3>
                     </div>
                   </div>
@@ -225,7 +256,7 @@ export default async function RegistrationPage(props: {
                       <div
                         className={`h-full transition-all duration-1000 ease-out ${isFull ? "bg-red-600" : "bg-primary shadow-[0_0_10px_rgba(255,179,0,0.5)]"}`}
                         style={{
-                          width: `${(currentPlayersCount / maxPlayers) * 100}%`,
+                          width: `${(currentPlayersCount / (tournament.maxRegistrations || 1000)) * 100}%`,
                         }}
                       ></div>
                     </div>
