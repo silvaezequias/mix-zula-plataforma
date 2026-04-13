@@ -16,10 +16,20 @@ export const authOptions: AuthOptions = {
   ],
 
   session: { strategy: "jwt" },
+  events: {
+    async signIn({ user, account }) {
+      if (user.email && account?.provider === "discord") {
+        await prisma.user.update({
+          where: { email: user.email },
+          data: { discordId: account.providerAccountId },
+        });
+      }
+    },
+  },
   callbacks: {
     async jwt({ token, user, account }) {
       if (user) {
-        if (user && account?.provider === "discord") {
+        if (account?.provider === "discord") {
           token.discordId = account.providerAccountId;
         }
 
@@ -47,6 +57,7 @@ export const authOptions: AuthOptions = {
         session.user.birthDate = token.birthDate ?? null;
         session.user.discordId = token.discordId ?? null;
       }
+
       return session;
     },
   },

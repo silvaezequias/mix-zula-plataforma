@@ -2,6 +2,10 @@ import { FullTournament } from "@/types";
 
 type Participant = FullTournament["participants"][number];
 
+export const normalizeLimit = (value: number): number => {
+  return value === 0 ? Infinity : value;
+};
+
 export const getOrderLabel = (index: number): string => {
   let result = "";
 
@@ -23,11 +27,16 @@ export const getTeamCount = (
   maxPlayersPerTeam: number,
   forceSpread = false,
 ) => {
+  if (totalPlayers === 0) return 0;
+
+  const teamsLimit =
+    maxTeams === 0 ? Math.ceil(totalPlayers / maxPlayersPerTeam) : maxTeams;
+
   if (forceSpread) {
-    return Math.min(maxTeams, totalPlayers);
+    return Math.min(teamsLimit, totalPlayers);
   }
 
-  return Math.min(maxTeams, Math.ceil(totalPlayers / maxPlayersPerTeam));
+  return teamsLimit;
 };
 
 export const shuffle = <T>(array: T[]): T[] => {
@@ -42,22 +51,34 @@ export const distributePlayers = (
 ) => {
   const shuffled = shuffle(players);
 
+  const totalPerTeam = Math.min(8, normalizeLimit(maxPlayersPerTeam));
+
   const teamCount = getTeamCount(
     players.length,
     maxTeams,
-    maxPlayersPerTeam,
+    totalPerTeam,
     forceSpread,
   );
 
+  if (teamCount === 0) {
+    return { teams: [], leftovers: shuffled };
+  }
+
   const teams: Participant[][] = Array.from({ length: teamCount }, () => []);
+
+  const leftovers: Participant[] = [];
 
   let teamIndex = 0;
 
   for (const player of shuffled) {
-    teams[teamIndex].push(player);
+    if (teams[teamIndex].length < totalPerTeam) {
+      teams[teamIndex].push(player);
+    } else {
+      leftovers.push(player);
+    }
 
     teamIndex = (teamIndex + 1) % teamCount;
   }
 
-  return teams;
+  return { teams, leftovers };
 };

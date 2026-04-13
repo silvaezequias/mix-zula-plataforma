@@ -171,37 +171,102 @@ export const roleColors: Record<ParticipantRole, string> = {
 export const tournamentStatus: {
   id: TournamentStatus;
   label: string;
+  color: number;
 }[] = [
-  { id: TournamentStatus.CLOSED, label: "Fechado" },
-  { id: TournamentStatus.OPEN, label: "Inscrições Abertas" },
-  { id: TournamentStatus.SETTING_TEAM, label: "Definindo Times" },
-  { id: TournamentStatus.READY, label: "Pronto para Iniciar" },
-  { id: TournamentStatus.LIVE, label: "Em Andamento" },
-  { id: TournamentStatus.FINISHED, label: "Finalizado" },
+  {
+    id: TournamentStatus.CLOSED,
+    label: "Fechado",
+    color: 0x6b7280, // gray-500
+  },
+  {
+    id: TournamentStatus.OPEN,
+    label: "Inscrições Abertas",
+    color: 0x22c55e, // green-500
+  },
+  {
+    id: TournamentStatus.SETTING_TEAM,
+    label: "Definindo Times",
+    color: 0xeab308, // yellow-500
+  },
+  {
+    id: TournamentStatus.READY,
+    label: "Pronto para Iniciar",
+    color: 0x3b82f6, // blue-500
+  },
+  {
+    id: TournamentStatus.LIVE,
+    label: "Em Andamento",
+    color: 0xef4444, // red-500
+  },
+  {
+    id: TournamentStatus.FINISHED,
+    label: "Finalizado",
+    color: 0x8b5cf6, // violet-500
+  },
 ];
+
+export const tournamentStatusMap: Record<
+  TournamentStatus,
+  { label: string; color: number }
+> = {
+  [TournamentStatus.LIVE]: {
+    label: "Em Andamento",
+    color: 0x4f46e5, // indigo-600
+  },
+  [TournamentStatus.READY]: {
+    label: "Preparando para Início",
+    color: 0x059669, // emerald-600
+  },
+  [TournamentStatus.OPEN]: {
+    label: "Inscrições Abertas",
+    color: 0x16a34a, // green-600
+  },
+  [TournamentStatus.SETTING_TEAM]: {
+    label: "Definindo Times",
+    color: 0xca8a04, // yellow-600
+  },
+  [TournamentStatus.FINISHED]: {
+    label: "Finalizado",
+    color: 0xdc2626, // red-600
+  },
+  [TournamentStatus.CLOSED]: {
+    label: "Fechado",
+    color: 0x991b1b, // red-800
+  },
+};
 
 export const participantStatusMap: Record<
   ParticipantStatus,
-  { label: string; color: string }
+  { label: string; color: string; hex: string; discordColor: number }
 > = {
   [ParticipantStatus.ACTIVE]: {
     label: "Ativo",
     color: "text-green-500",
+    hex: "#22c55e",
+    discordColor: 0x22c55e,
   },
   [ParticipantStatus.ELIMINATED]: {
     label: "Eliminado",
     color: "text-red-500",
+    hex: "#ef4444",
+    discordColor: 0xef4444,
   },
   [ParticipantStatus.RESERVED]: {
     label: "Reserva",
     color: "text-yellow-500",
+    hex: "#eab308",
+    discordColor: 0xeab308,
   },
   [ParticipantStatus.REPLACED]: {
     label: "Substituído",
     color: "text-zinc-400",
+    hex: "#a1a1aa",
+    discordColor: 0xa1a1aa,
   },
   [ParticipantStatus.SPECTATOR]: {
     label: "Espectador",
     color: "text-blue-500",
+    hex: "#3b82f6",
+    discordColor: 0x3b82f6,
   },
 };

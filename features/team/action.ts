@@ -40,14 +40,18 @@ export async function createRandomTeamsAction(tournamentId: string) {
       });
     }
 
-    const teams = distributePlayers(
+    const { teams, leftovers } = distributePlayers(
       tournament.participants.filter((p) => p.status === "ACTIVE"),
       tournament.totalTeams,
-      tournament.maxPlayers,
+      tournament.playersPerTeam,
       true,
     );
 
     await TeamService.deleteAllOfTournament(tournament.id);
+
+    for (const [, player] of leftovers.entries()) {
+      await TournamentService.updateParticipantStatus(player.id, "RESERVED");
+    }
 
     for (const [index, team] of teams.entries()) {
       await TeamService.create(tournamentId, team, index + 1);

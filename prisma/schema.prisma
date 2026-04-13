@@ -216,10 +216,19 @@ enum ParticipantRole {
   AJUDANTE
 }
 
+type Webhook {
+  listTeams   String?
+  currentGame String?
+  invite      String?
+  winner      String?
+}
+
 model Tournament {
   id      String @id @default(auto()) @map("_id") @db.ObjectId
   owner   User   @relation(fields: [ownerId], references: [id])
   ownerId String @db.ObjectId
+
+  webhook Webhook?
 
   preset      String? @default("custom")
   title       String

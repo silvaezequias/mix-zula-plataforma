@@ -55,7 +55,15 @@ export type FullTournament = Prisma.TournamentGetPayload<{
               status: true;
               role: true;
               select: {
-                user: true;
+                user: {
+                  select: {
+                    accounts: {
+                      select: {
+                        providerAccountId: true;
+                      };
+                    };
+                  };
+                };
               };
             };
           };

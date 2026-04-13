@@ -257,6 +257,11 @@ async function findById(tournamentId: string) {
                       name: true,
                       player: true,
                       discordId: true,
+                      accounts: {
+                        select: {
+                          providerAccountId: true,
+                        },
+                      },
                     },
                   },
                 },

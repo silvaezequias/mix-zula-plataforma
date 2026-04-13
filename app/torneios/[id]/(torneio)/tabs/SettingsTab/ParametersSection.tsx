@@ -81,19 +81,13 @@ const MatchSettings = ({
   handleChange,
   handleToggle,
 }: MatchSettingsProps) => (
-  <div className="space-y-4 pt-4 border-t border-zinc-900">
-    <div className="flex items-center justify-between">
-      <span className="text-[9px] font-black text-zinc-500 uppercase italic">
-        Jogadores por time
-      </span>
-      <input
-        type="number"
-        name="playersPerTeam"
-        className="w-16 bg-zinc-900 border border-zinc-800 p-2 text-center text-xs font-black italic text-white outline-none focus:border-primary"
-        value={playersPerTeam}
-        onChange={(v) => handleChange("playersPerTeam", +v.target.value)}
-      />
-    </div>
+  <div className="space-y-4 border-zinc-900">
+    <ConfigNumberInput
+      label="Jogadores por Time"
+      value={playersPerTeam || 0}
+      onChange={(v: number) => handleChange("playersPerTeam", v)}
+      icon={<Users size={14} />}
+    />
     <MatchCounter value={matchesPerMatch} handleChange={handleChange} />
     <ConfigSwitch
       label="TROCA DE LADOS"
@@ -229,7 +223,7 @@ const LimitsGroup = ({
     />
 
     <ConfigNumberInput
-      label="Máximo de Jogadores em Campo"
+      label="Máximo de Jogadores"
       value={maxPlayers || 0}
       onChange={(v: number) => handleChange("maxPlayers", v)}
       icon={<Users size={14} />}
