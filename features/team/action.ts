@@ -2,7 +2,11 @@
 
 import { getAuthOrThrow } from "@/lib/authorization/accessControl";
 import { safeExecute } from "@/lib/safeExecute";
-import { NotFoundError, UnauthorizedError } from "nextfastapi/errors";
+import {
+  BadRequestError,
+  NotFoundError,
+  UnauthorizedError,
+} from "nextfastapi/errors";
 import { TournamentService } from "../tournament/service";
 import { STAFF_ROLES } from "@/constants/data";
 import { distributePlayers } from "@/lib/teamManagement";
@@ -40,8 +44,19 @@ export async function createRandomTeamsAction(tournamentId: string) {
       });
     }
 
+    const players = tournament.participants.filter(
+      (p) => p.status === "ACTIVE",
+    );
+
+    if (players.length < 4) {
+      throw new BadRequestError({
+        message:
+          "O torneio precisa ter pelo menos 4 jogadores para poder sortear times.",
+      });
+    }
+
     const { teams, leftovers } = distributePlayers(
-      tournament.participants.filter((p) => p.status === "ACTIVE"),
+      players,
       tournament.totalTeams,
       tournament.playersPerTeam,
       true,

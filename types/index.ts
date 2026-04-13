@@ -57,6 +57,9 @@ export type FullTournament = Prisma.TournamentGetPayload<{
               select: {
                 user: {
                   select: {
+                    name: true;
+                    player: true;
+                    discordId: true;
                     accounts: {
                       select: {
                         providerAccountId: true;
