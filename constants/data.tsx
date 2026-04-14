@@ -55,8 +55,8 @@ export const MOCK_WEBHOOKS: {
       content: "@everyone",
       embeds: [
         {
-          title: "{tournament_name}",
-          description: "{tournament_description}",
+          description:
+            "# [CLIQUE PARA SE INSCREVER]({tournament_url})\n### {tournament_name}\n{tournament_description}",
           url: "{tournament_url}",
           color: 0xffb300,
           timestamp: true,

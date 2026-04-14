@@ -23,4 +23,5 @@ export const PREVIEW_DATA = {
   "{loop_items}": "TIME 1",
   "{item_value}": "1. @Jogador_1\n2. @Jogador_2",
   "{reserve_players}": "1. @Reserva_1\n2. @Reserva_2",
+  "{tournament_url}": "https://exemplo.torneio-zula.com",
 };
