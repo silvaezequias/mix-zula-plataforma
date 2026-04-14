@@ -28,7 +28,8 @@
     "**/*.tsx",
     ".next/types/**/*.ts",
     ".next/dev/types/**/*.ts",
-    "**/*.mts"
+    "**/*.mts",
+    "app/api/tournament/showcase/thumbnail/route.tsz"
   ],
   "exclude": ["node_modules"]
 }

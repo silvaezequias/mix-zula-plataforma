@@ -15,3 +15,7 @@ export function groupInPairs<T>(array: T[]): T[][] {
 
   return result;
 }
+
+export function isValidObjectId(id: string) {
+  return /^[a-fA-F0-9]{24}$/.test(id);
+}

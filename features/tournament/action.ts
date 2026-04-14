@@ -9,7 +9,6 @@ import {
   STAFF_ROLES,
 } from "@/constants/data";
 import { NotFoundError, UnauthorizedError } from "nextfastapi/errors";
-import { revalidatePath, revalidateTag } from "next/cache";
 import { ParticipantRole, ParticipantStatus } from "@prisma/client";
 
 export async function createTournamentAction(formData: TournamentProps) {
@@ -27,8 +26,7 @@ export async function createTournamentAction(formData: TournamentProps) {
       formData,
     );
 
-    revalidatePath("/torneios");
-    revalidateTag("tournaments", "max");
+    await TournamentService.revalidateCache();
 
     return newTournament;
   });
@@ -65,9 +63,7 @@ export async function updateTournament(
 
     const newTournament = await TournamentService.update(tournamentId, data);
 
-    revalidatePath("/torneios");
-    revalidateTag("tournaments", "max");
-
+    await TournamentService.revalidateCache(tournamentId);
     return newTournament;
   });
 }
@@ -81,9 +77,7 @@ export async function createTournamentParticipantAction(tournamentId: string) {
       session.user.id,
     );
 
-    revalidatePath("/torneios");
-    revalidateTag("tournaments", "max");
-
+    await TournamentService.revalidateCache(tournamentId);
     return newParticipant;
   });
 }
@@ -336,9 +330,7 @@ export async function changeParticipantStatus(
       targetStatus.id,
     );
 
-    revalidatePath("/torneios");
-    revalidateTag("tournaments", "max");
-
+    await TournamentService.revalidateCache(tournamentId);
     return participant;
   });
 }
@@ -378,9 +370,7 @@ export async function removeParticipant(participantId: string) {
       participantId,
     );
 
-    revalidatePath("/torneios");
-    revalidateTag("tournaments", "max");
-
+    await TournamentService.revalidateCache(existingParticipant.tournamentId);
     return participant;
   });
 }

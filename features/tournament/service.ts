@@ -10,7 +10,7 @@ import {
   Tournament,
   TournamentStatus,
 } from "@prisma/client";
-import { unstable_cache } from "next/cache";
+import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import {
   InternalError,
   NotFoundError,
@@ -286,6 +286,28 @@ async function findById(tournamentId: string) {
   });
 
   return tournament;
+}
+
+export function findByIdForImage(tournamentId: string) {
+  return unstable_cache(
+    async () => {
+      return prisma.tournament.findUnique({
+        where: { id: tournamentId },
+        include: {
+          _count: {
+            select: {
+              participants: true,
+            },
+          },
+        },
+      });
+    },
+    [`tournament-image-${tournamentId}`],
+    {
+      tags: [`tournament-${tournamentId}`, `tournament-image-${tournamentId}`],
+      revalidate: 300,
+    },
+  )();
 }
 
 async function findFirstByStatus(status: TournamentStatus) {
@@ -578,6 +600,13 @@ async function handleTournamentRoleRequestStatus(
   return updatedRequest;
 }
 
+async function revalidateCache(tournamentId?: string) {
+  revalidatePath("/torneios");
+  revalidateTag("tournaments", "max");
+
+  if (tournamentId) revalidateTag(`tournament-${tournamentId}`, "max");
+}
+
 export const TournamentService = {
   create,
   update,
@@ -593,7 +622,9 @@ export const TournamentService = {
   updateParticipantStatus,
   createParticipant,
   findFirstByStatus,
+  findByIdForImage,
   createTournamentRoleRequest,
   createStaffParticipant,
   removeStaffParticipantById,
+  revalidateCache,
 };

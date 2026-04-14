@@ -56,17 +56,17 @@ export const MOCK_WEBHOOKS: {
       embeds: [
         {
           description:
-            "# [CLIQUE PARA SE INSCREVER]({tournament_url})\n### {tournament_name}\n{tournament_description}",
-          url: "{tournament_url}",
+            "# [CLIQUE PARA SE INSCREVER]({tournament_url}/participar)\n### {tournament_name}\n{tournament_description}",
+          url: "{tournament_url}/participar",
           color: 0xffb300,
           timestamp: true,
           author: {
             name: `CONVITE PARA ${brand.name.toUpperCase()}`,
-            url: "{tournament_url}",
+            url: "{tournament_url}/participar",
           },
           footer: { text: `${brand.slogan} ` },
           image: {
-            url: "https://shared.fastly.steamstatic.com/store_item_assets/steam/apps/747610/capsule_616x353.jpg",
+            url: "{tournament_url}/api/tournament/showcase/thumbnail?id={tournament_id}?format=.png",
           },
           fields: [
             {

@@ -98,11 +98,10 @@ async function invite(tournamentId: string) {
     (["ACTIVE", "RESERVED"] as ParticipantStatus[]).includes(p.status),
   );
   const tournamentSlots = `${parcitipants.length}/${numberOrInfinity(tournament.maxRegistrations, false, true)}`;
-  const tournamentUrl = await getCurrentUrl(
-    `torneios/${tournament.id}/participar`,
-  );
+  const tournamentUrl = await getCurrentUrl(`torneios/${tournament.id}`);
 
   const dataObject = {
+    "{tournament_id}": tournament.id,
     "{tournament_name}": tournament.title,
     "{tournament_description}": tournament.description,
     "{tournament_prize}": tournament.prize,
@@ -126,7 +125,7 @@ async function invite(tournamentId: string) {
     ],
   };
 
-  hook.send({
+  await hook.send({
     ...buildWebhookPayload(webhook.config, dataObject),
     components: [redirectButton],
   });
