@@ -11,9 +11,14 @@ export function parseDate(dateString: string) {
   return new Date(year, month - 1, day);
 }
 
-export function numberOrInfinity(number: number, dotted: boolean = false) {
+export function numberOrInfinity(
+  number: number,
+  dotted: boolean = false,
+  onlyText = false,
+) {
   if (number === 0) {
-    if (dotted) {
+    if (onlyText) return "∞";
+    else if (dotted) {
       return <span className="not-italic text-xs align-middle">...</span>;
     } else
       return (

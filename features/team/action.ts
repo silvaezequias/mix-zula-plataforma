@@ -48,10 +48,10 @@ export async function createRandomTeamsAction(tournamentId: string) {
       (p) => p.status === "ACTIVE",
     );
 
-    if (players.length < 4) {
+    if (players.length < 2) {
       throw new BadRequestError({
         message:
-          "O torneio precisa ter pelo menos 4 jogadores para poder sortear times.",
+          "O torneio precisa ter pelo menos 2 jogadores para poder sortear times.",
       });
     }
 

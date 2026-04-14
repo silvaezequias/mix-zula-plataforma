@@ -15,6 +15,7 @@ import { UserTab } from "./tabs/UserTab";
 import { createRandomTeamsAction } from "@/features/team/action";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
+import { WebhookTab } from "./tabs/WebhookTab";
 
 export type Tabs = "info" | "inscritos" | "teams" | "games";
 
@@ -148,6 +149,13 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
           tournament={tournament}
         />
       ),
+    });
+
+    tabs.push({
+      id: "webhooks",
+      label: "DISCORD WEBHOOKS",
+      enabled: isStaff && !isRandomizing,
+      content: <WebhookTab tournamentId={tournament.id} />,
     });
 
     tabs.push({

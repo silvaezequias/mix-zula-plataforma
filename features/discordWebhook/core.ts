@@ -1,23 +1,21 @@
-import fetch from "node-fetch";
-
-type EmbedField = {
+export type EmbedField = {
   name: string;
   value: string;
   inline?: boolean;
 };
 
-type EmbedAuthor = {
+export type EmbedAuthor = {
   name: string;
   url?: string;
   icon_url?: string;
 };
 
-type EmbedFooter = {
+export type EmbedFooter = {
   text: string;
   icon_url?: string;
 };
 
-type EmbedImage = {
+export type EmbedImage = {
   url: string;
 };
 
@@ -103,28 +101,56 @@ export class EmbedBuilder {
   }
 }
 
+export type MessageComponent = {
+  type: number;
+  components: ButtonComponent[];
+};
+
+export type ButtonComponent = {
+  type: number;
+  style: number;
+  label: string;
+  emoji?: { name: string; id?: string };
+  custom_id?: string;
+  url?: string;
+  disabled?: boolean;
+};
+
+export type WebhookOptions = {
+  content?: string;
+  username?: string;
+  avatarURL?: string;
+  embeds?: EmbedBuilder[];
+};
+
+export type EmbedOptions = {
+  content?: string;
+  username?: string;
+  avatarURL?: string;
+  embeds?: DiscordEmbed[];
+};
+
 export class WebhookClient {
   constructor(private url: string) {}
 
-  async send(options: {
-    content?: string;
-    username?: string;
-    avatarURL?: string;
-    embeds?: EmbedBuilder[];
-  }) {
+  async send(options: WebhookOptions & { components?: MessageComponent[] }) {
     const body = {
       content: options.content,
       username: options.username,
       avatar_url: options.avatarURL,
       embeds: options.embeds?.map((e) => e.toJSON()),
+      components: options.components,
     };
 
-    await fetch(this.url, {
+    const response = await fetch(this.url, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify(body),
     });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("Erro do Discord:", errorData);
+    }
   }
 }
