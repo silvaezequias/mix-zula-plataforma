@@ -1,5 +1,9 @@
 import { brand } from "@/config/brand";
-import { tournamentStatusMap } from "@/constants/data";
+import {
+  ParticipantStatusMap,
+  participantStatusMap,
+  STAFF_ROLES,
+} from "@/constants/data";
 import { TournamentService } from "@/features/tournament/service";
 import { getFontData } from "@/lib/fonts";
 import { isValidObjectId } from "@/lib/utils";
@@ -11,32 +15,30 @@ const fontData = await getFontData();
 export async function GET(req: NextRequest) {
   try {
     const { searchParams } = new URL(req.url);
-    const tournamentId = searchParams.get("id");
+    const participantId = searchParams.get("participantId");
 
-    if (!tournamentId || !isValidObjectId(tournamentId)) {
+    if (!participantId || !isValidObjectId(participantId)) {
       return NotFoundResponse(
-        "Não foi possível reconhecer identificação do torneio",
+        "Não foi possível reconhecer identificação do participante",
       );
     }
 
-    const existingTournament =
-      await TournamentService.findByIdForImage(tournamentId);
+    const existingParticipant =
+      await TournamentService.findParticipantById(participantId);
 
-    if (!existingTournament) {
+    if (!existingParticipant) {
       return NotFoundResponse(
         "Não existe nenhum torneio com essa identificação",
       );
     }
 
-    const title = existingTournament.title;
-    const prize = existingTournament.prize;
-    const status = tournamentStatusMap[existingTournament.status];
-
     return new ImageResponse(
-      TournamentCardImage({
-        title,
-        prize,
-        status: status.label,
+      PlayerRegisteredCardImage({
+        id: existingParticipant.user.name!,
+        playerNick: existingParticipant.user.player!.nickname!,
+        tournamentName: existingParticipant.tournament.title,
+        status: participantStatusMap[existingParticipant.status],
+        role: STAFF_ROLES.find((r) => r.id === existingParticipant.role)?.title,
       }),
       { fonts: fontData, width: 1200, height: 630 },
     );
@@ -98,6 +100,9 @@ const NotFoundResponse = async (message?: string) => {
         </div>
         <h1
           style={{
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
             fontSize: "80px",
             fontWeight: 950,
             margin: 0,
@@ -106,7 +111,7 @@ const NotFoundResponse = async (message?: string) => {
             color: "white",
           }}
         >
-          TORNEIO
+          PARTICIPANTE
           <span style={{ color: "#ff4444", marginLeft: "15px" }}>
             NÃO LOCALIZADO
           </span>
@@ -141,17 +146,21 @@ const NotFoundResponse = async (message?: string) => {
   );
 };
 
-interface TournamentImageProps {
-  title: string;
-  prize: string;
-  status: string;
+interface PlayerRegisteredImageProps {
+  tournamentName: string;
+  playerNick: string;
+  id?: string;
+  role?: string;
+  status?: ParticipantStatusMap[keyof ParticipantStatusMap];
 }
 
-export const TournamentCardImage = ({
-  title,
-  prize,
-  status,
-}: TournamentImageProps) => {
+export const PlayerRegisteredCardImage = ({
+  tournamentName,
+  playerNick,
+  id = "US@ER_UND3F1NEPD",
+  role = "Jogador",
+  status = participantStatusMap["ACTIVE"],
+}: PlayerRegisteredImageProps) => {
   return (
     <div
       style={{
@@ -161,7 +170,7 @@ export const TournamentCardImage = ({
         flexDirection: "column",
         backgroundColor: "#050505",
         backgroundImage:
-          "radial-gradient(circle at 20% 20%, #111111 0%, #050505 100%)",
+          "radial-gradient(circle at 100% 100%, #151515 0%, #050505 100%)",
         fontFamily: "sans-serif",
         color: "#ffffff",
         padding: "60px",
@@ -184,144 +193,136 @@ export const TournamentCardImage = ({
             height: "100%",
             backgroundImage:
               "linear-gradient(#333 1px, transparent 1px), linear-gradient(90deg, #333 1px, transparent 1px)",
-            backgroundSize: "40px 40px",
+            backgroundSize: "60px 60px",
             display: "flex",
           }}
         />
       </div>
+
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "30px",
           width: "100%",
+          marginBottom: "40px",
         }}
       >
         <div
           style={{
             display: "flex",
+            backgroundColor: "#000",
+            borderLeft: "4px solid #FFB300",
+            padding: "10px 20px",
+            flexDirection: "column",
+          }}
+        >
+          <span style={{ fontSize: "10px", color: "#666", fontWeight: 800 }}>
+            USUÁRIO DO DISCORD
+          </span>
+          <span style={{ fontSize: "18px", color: "#fff", fontWeight: 900 }}>
+            {id}
+          </span>
+        </div>
+
+        <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+          <div
+            style={{
+              width: "14px",
+              height: "14px",
+              borderRadius: "50%",
+              backgroundColor: status.hex,
+              boxShadow: `0 0 15px ${status.hex}66`,
+              display: "flex",
+            }}
+          />
+          <span
+            style={{
+              fontSize: "16px",
+              fontWeight: 900,
+              color: status.hex,
+              letterSpacing: "0.1em",
+            }}
+          >
+            {status.label}
+          </span>
+        </div>
+      </div>
+
+      <div
+        style={{
+          display: "flex",
+          flex: 1,
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+          textAlign: "center",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            backgroundColor: "#FFB300",
+            color: "#000",
+            padding: "6px 20px",
+            fontSize: "35px",
+            fontWeight: 900,
+            marginBottom: "20px",
+            transform: "skewX(-15deg)",
+          }}
+        >
+          <span style={{ transform: "skewX(15deg)" }}>
+            INSCRIÇÃO CONFIRMADA
+          </span>
+        </div>
+
+        <span
+          style={{
+            fontSize: "18px",
+            color: "#888",
+            fontWeight: 700,
+            marginBottom: "5px",
+          }}
+        >
+          BEM-VINDO AO TORNEIO, {role}:
+        </span>
+        <h1
+          style={{
+            fontSize: "90px",
+            fontWeight: 950,
+            color: "#fff",
+            margin: 0,
+            lineHeight: 1,
+            letterSpacing: "-0.05em",
+          }}
+        >
+          {playerNick}
+        </h1>
+
+        <div
+          style={{
+            display: "flex",
+            marginTop: "30px",
             alignItems: "center",
-            justifyContent: "space-between",
-            width: "100%",
             gap: "15px",
           }}
         >
           <div
-            style={{
-              display: "flex",
-              backgroundColor: "#FFB300",
-              padding: "8px 16px",
-              color: "#000000",
-              fontWeight: 900,
-              fontSize: "18px",
-              letterSpacing: "0.1em",
-            }}
-          >
-            <span>TORNEIO OFICIAL</span>
-          </div>
+            style={{ width: "40px", height: "1px", backgroundColor: "#333" }}
+          />
+          <span style={{ fontSize: "24px", fontWeight: 800, color: "#FFB300" }}>
+            {tournamentName}
+          </span>
           <div
-            style={{
-              display: "contents",
-              color: "#FFB300",
-              fontWeight: 900,
-              fontSize: "16px",
-              textAlign: "center",
-              letterSpacing: "0.3em",
-            }}
-          >
-            <span>INSCREVA-SE NO TORNEIO</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              border: "2px solid #FFB300",
-              padding: "8px 25px",
-              color: "#FFB300",
-              fontWeight: 900,
-              fontSize: "20px",
-              boxShadow: "0 0 20px rgba(255, 179, 0, 0.15)",
-            }}
-          >
-            <span>{status}</span>
-          </div>
+            style={{ width: "40px", height: "1px", backgroundColor: "#333" }}
+          />
         </div>
       </div>
-      <div
-        style={{
-          display: "flex",
-          flexDirection: "column",
-          flex: 1,
-          justifyContent: "center",
-          gap: "20px",
-        }}
-      >
-        <div style={{ display: "flex", flexDirection: "column" }}>
-          <div
-            style={{
-              display: "flex",
-              fontSize: "18px",
-              color: "#666666",
-              fontWeight: 700,
-              marginBottom: "8px",
-              letterSpacing: "0.2em",
-            }}
-          >
-            <span>ACESSE O CAMPEONATO</span>
-          </div>
-          <div
-            style={{
-              display: "flex",
-              fontSize: title.length > 50 ? "45px" : "55px",
-              fontWeight: 950,
-              color: "#ffffff",
-              lineHeight: 1.1,
-              letterSpacing: "-0.02em",
-            }}
-          >
-            <span>{title}</span>
-          </div>
-        </div>
-        <div
-          style={{
-            display: "flex",
-            flexDirection: "column",
-            backgroundColor: "#FFB300",
-            padding: "20px 30px",
-            alignSelf: "flex-start",
-            boxShadow: "10px 10px 0px rgba(255, 179, 0, 0.1)",
-            position: "relative",
-          }}
-        >
-          <span
-            style={{
-              display: "flex",
-              fontSize: "12px",
-              color: "rgba(0, 0, 0, 0.6)",
-              fontWeight: 900,
-              marginBottom: "4px",
-            }}
-          >
-            RECOMPENSA DE VITÓRIA
-          </span>
-          <span
-            style={{
-              fontSize: "45px",
-              fontWeight: 950,
-              color: "#000000",
-              lineHeight: 1,
-            }}
-          >
-            {prize}
-          </span>
-        </div>
-      </div>
+
       <div
         style={{
           display: "flex",
           justifyContent: "space-between",
           alignItems: "flex-end",
-          width: "100%",
           borderTop: "1px solid #222",
           paddingTop: "30px",
         }}
@@ -329,6 +330,7 @@ export const TournamentCardImage = ({
         <div
           style={{
             display: "flex",
+            flexDirection: "row-reverse",
             fontSize: "25px",
             fontWeight: 950,
             color: "#ffffff",
@@ -352,17 +354,6 @@ export const TournamentCardImage = ({
           </div>
         </div>
       </div>
-      <div
-        style={{
-          position: "absolute",
-          left: 0,
-          top: "25%",
-          bottom: "25%",
-          width: "6px",
-          backgroundColor: "#FFB300",
-          display: "flex",
-        }}
-      />
     </div>
   );
 };

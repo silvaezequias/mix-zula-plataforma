@@ -330,6 +330,7 @@ async function findParticipantByUserId(tournamentId: string, userId: string) {
 async function findParticipantById(participantId: string) {
   const participant = await prisma.participant.findUnique({
     where: { id: participantId },
+    include: { user: true, tournament: true },
   });
 
   return participant;

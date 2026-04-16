@@ -1,9 +1,7 @@
-import { DiscordWebhookConfig } from "@/app/torneios/[id]/(torneio)/tabs/WebhookTab/DiscordEmbedPreview";
 import {
   ParticipantStatusObject,
   StaffRole,
 } from "@/app/torneios/[id]/staff/StaffArea";
-import { brand } from "@/config/brand";
 import { Role } from "@/types";
 import {
   GameMode,
@@ -18,111 +16,6 @@ export const BETA_WHITELIST = [
   "557416664484937748",
   "299624104632254466",
   "597565657848217611",
-];
-
-export const TOKEN_REFERENCE = [
-  { token: "{tournament_name}", desc: "Nome oficial da missão." },
-  { token: "{tournament_prize}", desc: "Recompensa declarada." },
-  { token: "{tournament_map}", desc: "Mapa da operação." },
-  { token: "{player_nick}", desc: "Nick do agente (Contexto: Inscrição)." },
-  { token: "{player_discord}", desc: "Menção ao Discord do agente." },
-  {
-    token: "{loop_teams}",
-    desc: "Gera um campo automático por equipe cadastrada.",
-  },
-  {
-    token: "{team_members}",
-    desc: "Lista de membros (Use dentro do loop de equipes).",
-  },
-  { token: "{winner_name}", desc: "Nome da equipe vencedora." },
-  { token: "{match_status}", desc: "Estado atual do confronto." },
-];
-
-export type WebhookId = "invite" | "list_teams";
-
-export const MOCK_WEBHOOKS: {
-  id: WebhookId;
-  name: string;
-  description: string;
-  config: DiscordWebhookConfig;
-}[] = [
-  {
-    id: "invite",
-    name: "Convite de Inscrição",
-    description: "Convide jogadores para o torneio.",
-    config: {
-      username: "MIX ZULA - PARTICIPAR",
-      content: "@everyone",
-      embeds: [
-        {
-          description:
-            "# [CLIQUE PARA SE INSCREVER]({tournament_url}/participar)\n### {tournament_name}\n{tournament_description}",
-          url: "{tournament_url}/participar",
-          color: 0xffb300,
-          timestamp: true,
-          author: {
-            name: `CONVITE PARA ${brand.name.toUpperCase()}`,
-            url: "{tournament_url}/participar",
-          },
-          footer: { text: `${brand.slogan} ` },
-          image: {
-            url: "{tournament_url}/api/tournament/showcase/thumbnail?id={tournament_id}?format=.png",
-          },
-          fields: [
-            {
-              name: "Premiação",
-              value: "{tournament_prize}",
-              inline: true,
-            },
-            {
-              name: "Modo",
-              value: "{tournament_game_mode}",
-              inline: true,
-            },
-            {
-              name: "Inscritos",
-              value: "{tournament_slots}",
-              inline: true,
-            },
-          ],
-        },
-      ],
-    },
-  },
-  {
-    id: "list_teams",
-    name: "Listagem de Equipes",
-    description: "Envia a composição completa das formações dos times.",
-    config: {
-      username: "MIX ZULA - TIMES",
-      embeds: [
-        {
-          title: "{tournament_name}",
-          description:
-            "Abaixo estão listados todos os times definidos aleatoriamente pelo sistema.",
-          color: 0x4f46e5,
-          timestamp: true,
-          author: {
-            name: "CONFERIR TORNEIO ➞ TIMES SORTEADOS 🔗",
-            url: "{tournament_url}",
-          },
-          fields: [
-            {
-              name: "{loop_items}",
-              value: "{item_value}",
-              inline: true,
-            },
-            {
-              name: "BANCO DE RESERVA",
-              value: "{reserve_players}",
-              inline: false,
-            },
-          ],
-          footer: { text: "{tournament_status} • Última Atualização" },
-        },
-      ],
-    },
-  },
 ];
 
 export const STAFF_ROLES: StaffRole[] = [
@@ -342,10 +235,12 @@ export const tournamentStatusMap: Record<
   },
 };
 
-export const participantStatusMap: Record<
+export type ParticipantStatusMap = Record<
   ParticipantStatus,
   { label: string; color: string; hex: string; discordColor: number }
-> = {
+>;
+
+export const participantStatusMap: ParticipantStatusMap = {
   [ParticipantStatus.ACTIVE]: {
     label: "Ativo",
     color: "text-green-500",

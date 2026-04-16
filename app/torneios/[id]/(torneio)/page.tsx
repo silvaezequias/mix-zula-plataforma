@@ -8,16 +8,6 @@ import { AlertTriangle } from "lucide-react";
 import { TournamentService } from "@/features/tournament/service";
 import { ParticipantRole } from "@prisma/client";
 import { FullTournamentRoleRequest } from "@/types";
-import { headers } from "next/headers";
-
-export async function getCurrentUrl(path?: string) {
-  const headersList = await headers();
-
-  const host = headersList.get("host");
-  const protocol = headersList.get("x-forwarded-proto") || "http";
-
-  return `${protocol}://${host}` + (path ? `/${path}` : "");
-}
 
 export default async function TournamentPage(props: {
   params: Promise<{ id: string }>;

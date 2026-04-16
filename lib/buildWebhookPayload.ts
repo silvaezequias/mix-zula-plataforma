@@ -40,12 +40,13 @@ export function buildWebhookPayload(
     if (embedData.footer?.text) {
       builder.setFooter({
         text: parse(embedData.footer.text),
-        icon_url: embedData.footer.icon_url,
+        icon_url: parse(embedData.footer.icon_url),
       });
     }
 
-    if (embedData.thumbnail?.url) builder.setThumbnail(embedData.thumbnail.url);
-    if (embedData.image?.url) builder.setImage(embedData.image.url);
+    if (embedData.thumbnail?.url)
+      builder.setThumbnail(parse(embedData.thumbnail.url));
+    if (embedData.image?.url) builder.setImage(parse(embedData.image.url));
     if (embedData.timestamp) builder.setTimestamp();
 
     embedData.fields?.forEach((field) => {
@@ -56,7 +57,7 @@ export function buildWebhookPayload(
           };
 
           builder.addField(
-            item.label,
+            parse(item.label),
             parse(field.value, itemContext),
             field.inline,
           );

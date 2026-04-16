@@ -1,18 +1,15 @@
 import { TournamentService } from "../tournament/service";
 import { BadRequestError, NotFoundError } from "nextfastapi/errors";
 import { MessageComponent, WebhookClient } from "./core";
-import {
-  GAME_MODES,
-  MOCK_WEBHOOKS,
-  tournamentStatusMap,
-} from "@/constants/data";
+import { GAME_MODES, tournamentStatusMap } from "@/constants/data";
 import { buildWebhookPayload } from "@/lib/buildWebhookPayload";
-import { getCurrentUrl } from "@/app/torneios/[id]/(torneio)/page";
 import { ParticipantStatus } from "@prisma/client";
 import { numberOrInfinity } from "@/lib/formatter";
+import { getCurrentUrl, getHost } from "@/lib/serverUtils";
+import { webhookTemplates } from "./templates";
 
 async function listTeams(tournamentId: string) {
-  const webhook = MOCK_WEBHOOKS.find((w) => w.id === "list_teams")!;
+  const webhook = webhookTemplates.list_teams;
   const tournament = await TournamentService.findById(tournamentId);
 
   if (!tournament) {
@@ -71,7 +68,7 @@ async function listTeams(tournamentId: string) {
 }
 
 async function invite(tournamentId: string) {
-  const webhook = MOCK_WEBHOOKS.find((w) => w.id === "invite")!;
+  const webhook = webhookTemplates.invite;
   const tournament = await TournamentService.findById(tournamentId);
 
   if (!tournament) {
@@ -99,10 +96,11 @@ async function invite(tournamentId: string) {
   );
   const tournamentSlots = `${parcitipants.length}/${numberOrInfinity(tournament.maxRegistrations, false, true)}`;
   const tournamentUrl = await getCurrentUrl(`torneios/${tournament.id}`);
+  const hostUrl = await getHost(true);
 
   const dataObject = {
     "{tournament_id}": tournament.id,
-    "{tournament_name}": tournament.title,
+    "{tournament_name}": tournament.title.toUpperCase(),
     "{tournament_description}": tournament.description,
     "{tournament_prize}": tournament.prize,
     "{tournament_status}": tournamentStatusMap[tournament.status].label,
@@ -111,6 +109,7 @@ async function invite(tournamentId: string) {
       (gm) => gm.id === tournament.gameMode,
     )!.label,
     "{tournament_url}": tournamentUrl,
+    "{host_url}": hostUrl,
   };
 
   const redirectButton: MessageComponent = {
