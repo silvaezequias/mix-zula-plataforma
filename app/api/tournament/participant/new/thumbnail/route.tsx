@@ -40,7 +40,14 @@ export async function GET(req: NextRequest) {
         status: participantStatusMap[existingParticipant.status],
         role: STAFF_ROLES.find((r) => r.id === existingParticipant.role)?.title,
       }),
-      { fonts: fontData, width: 1200, height: 630 },
+      {
+        fonts: fontData,
+        width: 1200,
+        height: 630,
+        headers: {
+          "Content-Type": "image/png",
+        },
+      },
     );
   } catch (e) {
     console.error(e);
@@ -142,7 +149,14 @@ const NotFoundResponse = async (message?: string) => {
         CONTATE OS ADMINISTRADORES E COMPARILHE ESSE ERRO
       </div>
     </div>,
-    { width: 1200, height: 630, fonts: fontData },
+    {
+      width: 1200,
+      height: 630,
+      fonts: fontData,
+      headers: {
+        "Content-Type": "image/png",
+      },
+    },
   );
 };
 
