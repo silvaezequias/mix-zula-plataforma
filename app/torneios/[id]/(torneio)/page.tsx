@@ -8,6 +8,35 @@ import { AlertTriangle } from "lucide-react";
 import { TournamentService } from "@/features/tournament/service";
 import { ParticipantRole } from "@prisma/client";
 import { FullTournamentRoleRequest } from "@/types";
+import { getHost } from "@/lib/serverUtils";
+
+type MetadataProps = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateMetadata(props: MetadataProps) {
+  const params = await props.params;
+  const id = params.id;
+
+  const currenthost = await getHost(true);
+  const imageUrl = `${currenthost}/api/tournament/showcase/thumbnail?id=${id}`;
+
+  return {
+    title: "Torneio",
+    description: "Confira esse torneio",
+    openGraph: {
+      title: "Torneio",
+      description: "Confira esse torneio",
+      images: [imageUrl],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: "Torneio",
+      description: "Confira esse torneio",
+      images: [imageUrl],
+    },
+  };
+}
 
 export default async function TournamentPage(props: {
   params: Promise<{ id: string }>;
