@@ -9,6 +9,7 @@ import { TournamentService } from "@/features/tournament/service";
 import { ParticipantRole } from "@prisma/client";
 import { FullTournamentRoleRequest } from "@/types";
 import { getHost } from "@/lib/serverUtils";
+import { brand } from "@/config/brand";
 
 type MetadataProps = {
   params: Promise<{ id: string }>;
@@ -22,17 +23,15 @@ export async function generateMetadata(props: MetadataProps) {
   const imageUrl = `${currenthost}/api/tournament/showcase/thumbnail?id=${id}`;
 
   return {
-    title: "Torneio",
-    description: "Confira esse torneio",
     openGraph: {
-      title: "Torneio",
-      description: "Confira esse torneio",
+      title: brand.name,
+      description: brand.slogan,
       images: [imageUrl],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Torneio",
-      description: "Confira esse torneio",
+      title: brand.name,
+      description: brand.slogan,
       images: [imageUrl],
     },
   };
