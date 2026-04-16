@@ -4,8 +4,9 @@ import { getAuthOrThrow } from "@/lib/authorization/accessControl";
 import { safeExecute } from "@/lib/safeExecute";
 import { TournamentService } from "../tournament/service";
 import { NotFoundError, UnauthorizedError } from "nextfastapi/errors";
-import { STAFF_ROLES, WebhookId } from "@/constants/data";
+import { STAFF_ROLES } from "@/constants/data";
 import { DiscordWebhookService } from "./service";
+import { WebhookId } from "./templates";
 
 export async function dispatchWebhook(
   tournamentId: string,
