@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     if (!existingParticipant) {
       return NotFoundResponse(
-        "Não existe nenhum torneio com essa identificação",
+        "Não existe nenhum participante com essa identificação",
       );
     }
 
