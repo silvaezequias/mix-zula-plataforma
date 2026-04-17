@@ -1,6 +1,6 @@
 import { STAFF_ROLES } from "@/constants/data";
 import { prisma } from "@/infra/prisma";
-import validation from "@/lib/validation";
+import { DB } from "@/types";
 import { PayloadUser } from "@/types/next-auth";
 import {
   ParticipantRole,
@@ -19,88 +19,43 @@ import {
 
 export type TournamentProps = Partial<Tournament>;
 
-async function create(ownerId: string, data: TournamentProps) {
-  const validData = validation.tournament(
-    {
-      preset: false,
-      title: true,
-      description: true,
-      prize: false,
-
-      startDate: true,
-      endType: false,
-      endDate: false,
-
-      format: false,
-      gameMode: false,
-      statsType: false,
-      teamManagement: false,
-
-      swapTeam: false,
-      matchesPerMatch: false,
-
-      totalTeams: true,
-      playersPerTeam: true,
-      maxPlayers: true,
-      maxRegistrations: true,
-
-      confirmationSystem: false,
-      confirmationTime: false,
-
-      hasSubstitutes: true,
-      substitutesLimit: true,
-
-      broadcastPlatform: false,
-      broadcastUrl: false,
-    },
-    data,
-  );
-
+async function create(db: DB, ownerId: string, data: TournamentProps) {
   let createdTournament;
 
   try {
-    createdTournament = await prisma.tournament.create({
+    createdTournament = await db.tournament.create({
       data: {
         ownerId,
-        preset: validData.preset,
-        title: validData.title!,
-        description: validData.description!,
-        prize: validData.prize!,
+        preset: data.preset,
+        title: data.title!,
+        description: data.description!,
+        prize: data.prize!,
 
-        startDate: validData.startDate!,
-        endType: validData.endType!,
-        endDate: validData.endDate,
+        startDate: data.startDate!,
+        endType: data.endType!,
+        endDate: data.endDate,
 
-        format: validData.format,
-        gameMode: validData.gameMode,
-        statsType: validData.statsType,
-        teamManagement: validData.teamManagement,
+        format: data.format,
+        gameMode: data.gameMode,
+        statsType: data.statsType,
+        teamManagement: data.teamManagement,
 
-        swapTeam: validData.swapTeam,
-        matchesPerMatch: validData.matchesPerMatch,
+        swapTeam: data.swapTeam,
+        matchesPerMatch: data.matchesPerMatch,
 
-        totalTeams: validData.totalTeams!,
-        playersPerTeam: validData.playersPerTeam!,
-        maxPlayers: validData.maxPlayers!,
-        maxRegistrations: validData.maxRegistrations!,
+        totalTeams: data.totalTeams!,
+        playersPerTeam: data.playersPerTeam!,
+        maxPlayers: data.maxPlayers!,
+        maxRegistrations: data.maxRegistrations!,
 
-        confirmationSystem: validData.confirmationSystem,
-        confirmationTime: validData.confirmationTime,
+        confirmationSystem: data.confirmationSystem,
+        confirmationTime: data.confirmationTime,
 
-        hasSubstitutes: validData.hasSubstitutes!,
-        substitutesLimit: validData.substitutesLimit!,
+        hasSubstitutes: data.hasSubstitutes!,
+        substitutesLimit: data.substitutesLimit!,
 
-        broadcastPlatform: validData.broadcastPlatform,
-        broadcastUrl: validData.broadcastUrl,
-      },
-    });
-
-    await prisma.participant.create({
-      data: {
-        status: "ACTIVE",
-        userId: ownerId,
-        role: ParticipantRole.ADMIN,
-        tournamentId: createdTournament.id,
+        broadcastPlatform: data.broadcastPlatform,
+        broadcastUrl: data.broadcastUrl,
       },
     });
   } catch (err) {
@@ -113,81 +68,44 @@ async function create(ownerId: string, data: TournamentProps) {
   return createdTournament;
 }
 
-async function update(tournamentId: string, data: TournamentProps) {
-  const validData = validation.tournament(
-    {
-      title: false,
-      description: false,
-      prize: false,
-
-      status: false,
-
-      startDate: false,
-      endType: false,
-      endDate: false,
-
-      format: false,
-      gameMode: false,
-      statsType: false,
-      teamManagement: false,
-
-      swapTeam: false,
-      matchesPerMatch: false,
-
-      totalTeams: false,
-      playersPerTeam: false,
-      maxPlayers: false,
-      maxRegistrations: false,
-
-      confirmationSystem: false,
-      confirmationTime: false,
-
-      hasSubstitutes: false,
-      substitutesLimit: false,
-
-      broadcastPlatform: false,
-      broadcastUrl: false,
-    },
-    data,
-  );
-
+async function update(db: DB, tournamentId: string, data: TournamentProps) {
   let updatedTournament;
 
   try {
-    updatedTournament = await prisma.tournament.update({
+    updatedTournament = await db.tournament.update({
       where: { id: tournamentId },
       data: {
-        title: validData.title!,
-        description: validData.description!,
-        prize: validData.prize!,
+        title: data.title!,
+        description: data.description!,
+        prize: data.prize!,
 
-        status: validData.status!,
+        status: data.status!,
 
-        startDate: validData.startDate!,
-        endType: validData.endType!,
-        endDate: validData.endDate,
+        startDate: data.startDate!,
+        endType: data.endType!,
+        endDate: data.endDate,
 
-        format: validData.format,
-        gameMode: validData.gameMode,
-        statsType: validData.statsType,
-        teamManagement: validData.teamManagement,
+        format: data.format,
+        gameMode: data.gameMode,
+        statsType: data.statsType,
+        teamManagement: data.teamManagement,
 
-        swapTeam: validData.swapTeam,
-        matchesPerMatch: validData.matchesPerMatch,
+        swapTeam: data.swapTeam,
+        matchesPerMatch: data.matchesPerMatch,
 
-        totalTeams: validData.totalTeams!,
-        playersPerTeam: validData.playersPerTeam!,
-        maxPlayers: validData.maxPlayers!,
-        maxRegistrations: validData.maxRegistrations!,
+        totalTeams: data.totalTeams!,
+        playersPerTeam: data.playersPerTeam!,
+        maxPlayers: data.maxPlayers!,
+        maxRegistrations: data.maxRegistrations!,
 
-        confirmationSystem: validData.confirmationSystem,
-        confirmationTime: validData.confirmationTime,
+        confirmationSystem: data.confirmationSystem,
+        confirmationTime: data.confirmationTime,
 
-        hasSubstitutes: validData.hasSubstitutes!,
-        substitutesLimit: validData.substitutesLimit!,
+        hasSubstitutes: data.hasSubstitutes!,
+        substitutesLimit: data.substitutesLimit!,
 
-        broadcastPlatform: validData.broadcastPlatform,
-        broadcastUrl: validData.broadcastUrl,
+        broadcastPlatform: data.broadcastPlatform,
+        broadcastUrl: data.broadcastUrl,
       },
     });
   } catch (err) {
@@ -224,7 +142,7 @@ function list(include?: Prisma.TournamentInclude, cursor?: { id: string }) {
   });
 }
 
-async function findById(tournamentId: string) {
+async function findById(db: DB, tournamentId: string) {
   const includedTeam = {
     select: {
       id: true,
@@ -241,7 +159,7 @@ async function findById(tournamentId: string) {
     },
   };
 
-  const tournament = await prisma.tournament.findUnique({
+  const tournament = await db.tournament.findUnique({
     where: { id: tournamentId },
     include: {
       teams: {
@@ -395,7 +313,7 @@ async function createStaffParticipant(
   userId: string,
   role: ParticipantRole,
 ) {
-  const existingTournament = await findById(tournamentId);
+  const existingTournament = await findById(prisma, tournamentId);
 
   if (!existingTournament) {
     throw new NotFoundError({
@@ -428,7 +346,7 @@ async function createStaffParticipant(
 }
 
 async function createParticipant(tournamentId: string, userId: string) {
-  const existingTournament = await findById(tournamentId);
+  const existingTournament = await findById(prisma, tournamentId);
 
   if (!existingTournament) {
     throw new NotFoundError({
@@ -524,7 +442,7 @@ async function createTournamentRoleRequest(
   userId: string,
   requestedRole: ParticipantRole,
 ) {
-  const existingTournament = await findById(tournamentId);
+  const existingTournament = await findById(prisma, tournamentId);
 
   if (!existingTournament) {
     throw new NotFoundError({

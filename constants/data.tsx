@@ -18,6 +18,72 @@ export const BETA_WHITELIST = [
   "597565657848217611",
 ];
 
+export const staffRolesMap: Record<
+  ParticipantRole,
+  {
+    title: string;
+    description: string;
+    icon: React.ReactNode;
+    color: string;
+    bg: string;
+    level: number;
+  }
+> = {
+  [ParticipantRole.ADMIN]: {
+    title: "Administrador",
+    description: "Responsável geral pelo torneio e gestão.",
+    icon: <ShieldUser size={24} />,
+    color: "text-red-500",
+    bg: "bg-red-500/10",
+    level: 10,
+  },
+  [ParticipantRole.MODERADOR]: {
+    title: "Moderador",
+    description:
+      "Responsável pela ordem geral, Discord e cumprimento das condutas éticas dos jogadores.",
+    icon: <Shield size={24} />,
+    color: "text-green-500",
+    bg: "bg-green-500/10",
+    level: 9,
+  },
+  [ParticipantRole.JUIZ]: {
+    title: "Juiz",
+    description:
+      "Monitoria direta das partidas, validação de KDA e resolução de conflitos técnicos in-game.",
+    icon: <Target size={24} />,
+    color: "text-blue-500",
+    bg: "bg-blue-500/10",
+    level: 8,
+  },
+  [ParticipantRole.STREAMER]: {
+    title: "Streamer",
+    description:
+      "Voz oficial do Torneio. Narrador de combates e responsável pela transmissão ao vivo dos jogos.",
+    icon: <Radio size={24} />,
+    color: "text-purple-500",
+    bg: "bg-purple-500/10",
+    level: 3,
+  },
+  [ParticipantRole.AJUDANTE]: {
+    title: "Ajudante",
+    description:
+      "Suporte na organização, inscrições e auxílio geral aos jogadores.",
+    icon: <Users size={24} />,
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+    level: 5,
+  },
+  [ParticipantRole.PLAYER]: {
+    title: "Jogador",
+    description:
+      "Esse cargo não possui permissões especiais, é apenas uma identificação dos jogadores.",
+    icon: <User size={24} />,
+    color: "text-white-500",
+    bg: "bg-white-500/10",
+    level: 0,
+  },
+};
+
 export const STAFF_ROLES: StaffRole[] = [
   {
     id: "ADMIN",

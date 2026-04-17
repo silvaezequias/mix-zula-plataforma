@@ -1,4 +1,8 @@
-import { PARTICIPANT_STATUS, STAFF_ROLES } from "@/constants/data";
+import {
+  PARTICIPANT_STATUS,
+  staffRolesMap,
+  STAFF_ROLES,
+} from "@/constants/data";
 import { UserCheck, UserCog, X } from "lucide-react";
 import { FullTournament } from "@/types";
 import { Dispatch, SetStateAction, useState } from "react";
@@ -30,7 +34,7 @@ export const UserTab = ({
   );
 
   const { updateRole, updateStatus, kickoff, isLoading, loadingAction } =
-    useUserActions(tournament.id, () => setSelectedUser(undefined));
+    useUserActions(() => setSelectedUser(undefined));
 
   return (
     <div className="space-y-8">
@@ -82,7 +86,7 @@ interface RoleSectionProps {
   isLoading: boolean;
   loadingAction: LoadingAction;
   setSelectedRoleId: Dispatch<SetStateAction<$Enums.ParticipantRole>>;
-  updateRole: (userId: string, roleId: ParticipantRole) => void;
+  updateRole: (participantId: string, roleId: ParticipantRole) => void;
 }
 
 const RoleSection = ({
@@ -103,16 +107,16 @@ const RoleSection = ({
 
     reset();
     if (selectedRoleId && !cantUpdate) {
-      updateRole(selectedUser.user.id, selectedRoleId);
+      updateRole(selectedUser.id, selectedRoleId);
     }
   };
 
   return (
     <div className="flex flex-col gap-4">
       <ConfigDropdown
-        options={STAFF_ROLES.map((r) => r.id)}
-        labels={STAFF_ROLES.map(
-          (r) => `${r.id}${selectedUser.role === r.id ? " (Atual)" : ""}`,
+        options={Object.entries(staffRolesMap).map(([id]) => id)}
+        labels={Object.entries(staffRolesMap).map(
+          ([id]) => `${id}${selectedUser.role === id ? " (Atual)" : ""}`,
         )}
         value={selectedRoleId || selectedUser.role}
         label="Definição de Cargo"
@@ -163,7 +167,7 @@ const StatusSection = ({
 
     reset();
     if (selectedStatusId && !cantUpdate) {
-      updateStatus(selectedUser.user.id, selectedStatusId);
+      updateStatus(selectedUser.id, selectedStatusId);
     }
   };
 

@@ -8,12 +8,13 @@ import Link from "next/link";
 import { requireAuth } from "@/lib/authorization/accessControl";
 import { HasRequestedStaffRole } from "./HasRequestedStaffRole";
 import { redirect } from "next/navigation";
+import { prisma } from "@/infra/prisma";
 
 export default async function RequestTournamentRole(props: {
   params: Promise<{ id: string }>;
 }) {
   const params = await props.params;
-  const tournament = await TournamentService.findById(params.id);
+  const tournament = await TournamentService.findById(prisma, params.id);
 
   if (!tournament) {
     return (

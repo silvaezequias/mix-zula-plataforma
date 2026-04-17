@@ -1,6 +1,4 @@
-import { FullTournament } from "@/types";
-
-type Participant = FullTournament["participants"][number];
+import { Participant } from "@prisma/client";
 
 export const normalizeLimit = (value: number): number => {
   return value === 0 ? Infinity : value;

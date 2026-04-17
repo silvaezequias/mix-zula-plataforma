@@ -7,6 +7,7 @@ import { NotFoundError, UnauthorizedError } from "nextfastapi/errors";
 import { STAFF_ROLES } from "@/constants/data";
 import { DiscordWebhookService } from "./service";
 import { WebhookId } from "./templates";
+import { prisma } from "@/infra/prisma";
 
 export async function dispatchWebhook(
   tournamentId: string,
@@ -15,7 +16,7 @@ export async function dispatchWebhook(
   return await safeExecute(async () => {
     const session = await getAuthOrThrow();
 
-    const tournament = await TournamentService.findById(tournamentId);
+    const tournament = await TournamentService.findById(prisma, tournamentId);
 
     if (!tournament) {
       throw new NotFoundError({

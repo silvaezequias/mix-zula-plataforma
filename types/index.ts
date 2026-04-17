@@ -1,6 +1,8 @@
 import { MatchStatus, Prisma, Tournament } from "@prisma/client";
 import { PayloadUser } from "./next-auth";
 
+export type DB = Prisma.TransactionClient;
+
 export type Role =
   | "ADMIN"
   | "MODERADOR"

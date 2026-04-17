@@ -10,6 +10,7 @@ import { ParticipantRole } from "@prisma/client";
 import { FullTournamentRoleRequest } from "@/types";
 import { getHost } from "@/lib/serverUtils";
 import { brand } from "@/config/brand";
+import { prisma } from "@/infra/prisma";
 
 type MetadataProps = {
   params: Promise<{ id: string }>;
@@ -51,7 +52,7 @@ export default async function TournamentPage(props: {
     redirect(`/atualizar-cadastro?redirect=/torneios/${params.id}`);
   }
 
-  const tournament = await TournamentService.findById(params.id);
+  const tournament = await TournamentService.findById(prisma, params.id);
 
   if (!tournament) {
     return (

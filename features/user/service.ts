@@ -1,5 +1,6 @@
 import { prisma } from "@/infra/prisma";
 import validation from "@/lib/validation";
+import { DB } from "@/types";
 import { InternalError } from "nextfastapi/errors";
 
 export type UpdateUserProps = {
@@ -36,6 +37,13 @@ async function update(userId: string, data: UpdateUserProps) {
   return updatedUser;
 }
 
+async function findById(db: DB, userId: string) {
+  return await db.user.findUnique({
+    where: { id: userId },
+  });
+}
+
 export const UserService = {
   update,
+  findById,
 };

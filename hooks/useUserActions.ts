@@ -1,7 +1,7 @@
 import {
-  changeParticipantRole,
-  changeParticipantStatus,
-  removeParticipant,
+  changeParticipantRoleAction,
+  changeParticipantStatusAction,
+  removeParticipantAction,
 } from "@/features/tournament/action";
 import { ParticipantRole, ParticipantStatus } from "@prisma/client";
 import { useRouter } from "next/navigation";
@@ -10,10 +10,7 @@ import { toast } from "react-toastify";
 
 export type LoadingAction = "role" | "kick" | "status" | null;
 
-export function useUserActions(
-  tournamentId: string,
-  onUserRemoved: () => void,
-) {
+export function useUserActions(onUserRemoved: () => void) {
   const router = useRouter();
   const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
 
@@ -29,17 +26,17 @@ export function useUserActions(
     }
   };
 
-  const updateRole = (userId: string, roleId: ParticipantRole) => {
+  const updateRole = (participantId: string, roleId: ParticipantRole) => {
     runAction("role", async () => {
-      const res = await changeParticipantRole(tournamentId, userId, roleId);
+      const res = await changeParticipantRoleAction(participantId, roleId);
       if (!res.success) throw new Error(res.error);
       toast.info("Cargo atualizado com sucesso");
     });
   };
 
-  const updateStatus = (userId: string, statusId: ParticipantStatus) => {
+  const updateStatus = (participantId: string, statusId: ParticipantStatus) => {
     runAction("status", async () => {
-      const res = await changeParticipantStatus(tournamentId, userId, statusId);
+      const res = await changeParticipantStatusAction(participantId, statusId);
       if (!res.success) throw new Error(res.error);
       toast.info("Status atualizado com sucesso");
     });
@@ -47,7 +44,7 @@ export function useUserActions(
 
   const kickoff = (participantId: string) => {
     runAction("kick", async () => {
-      const res = await removeParticipant(participantId);
+      const res = await removeParticipantAction(participantId);
       if (!res.success) throw new Error(res.error);
       toast.info("Usuário foi expulso do torneio");
       onUserRemoved();

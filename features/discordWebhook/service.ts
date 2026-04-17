@@ -1,16 +1,17 @@
 import { TournamentService } from "../tournament/service";
 import { BadRequestError, NotFoundError } from "nextfastapi/errors";
-import { MessageComponent, WebhookClient } from "./core";
+import { WebhookClient } from "./core";
 import { GAME_MODES, tournamentStatusMap } from "@/constants/data";
 import { buildWebhookPayload } from "@/lib/buildWebhookPayload";
 import { ParticipantStatus } from "@prisma/client";
 import { numberOrInfinity } from "@/lib/formatter";
 import { getCurrentUrl, getHost } from "@/lib/serverUtils";
 import { webhookTemplates } from "./templates";
+import { prisma } from "@/infra/prisma";
 
 async function listTeams(tournamentId: string) {
   const webhook = webhookTemplates.list_teams;
-  const tournament = await TournamentService.findById(tournamentId);
+  const tournament = await TournamentService.findById(prisma, tournamentId);
 
   if (!tournament) {
     throw new NotFoundError({
@@ -69,7 +70,7 @@ async function listTeams(tournamentId: string) {
 
 async function invite(tournamentId: string) {
   const webhook = webhookTemplates.invite;
-  const tournament = await TournamentService.findById(tournamentId);
+  const tournament = await TournamentService.findById(prisma, tournamentId);
 
   if (!tournament) {
     throw new NotFoundError({
@@ -96,7 +97,7 @@ async function invite(tournamentId: string) {
   );
   const tournamentSlots = `${parcitipants.length}/${numberOrInfinity(tournament.maxRegistrations, false, true)}`;
   const tournamentUrl = await getCurrentUrl(`torneios/${tournament.id}`);
-  const hostUrl = await getHost(true);
+  const hostUrl = await getHost(false);
 
   const dataObject = {
     "{tournament_id}": tournament.id,
@@ -112,22 +113,7 @@ async function invite(tournamentId: string) {
     "{host_url}": hostUrl,
   };
 
-  const redirectButton: MessageComponent = {
-    type: 1,
-    components: [
-      {
-        type: 2,
-        style: 5,
-        label: "teste",
-        url: tournamentUrl,
-      },
-    ],
-  };
-
-  await hook.send({
-    ...buildWebhookPayload(webhook.config, dataObject),
-    components: [redirectButton],
-  });
+  await hook.send(buildWebhookPayload(webhook.config, dataObject));
 }
 
 export const DiscordWebhookService = {

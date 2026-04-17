@@ -8,6 +8,7 @@ import { TournamentService } from "@/features/tournament/service";
 import Link from "next/link";
 import { requireAuth } from "@/lib/authorization/accessControl";
 import { redirect } from "next/navigation";
+import { prisma } from "@/infra/prisma";
 
 export default async function RequestTournamentRole(props: {
   params: Promise<{ id: string }>;
@@ -15,7 +16,7 @@ export default async function RequestTournamentRole(props: {
 }) {
   const params = await props.params;
   const { afterDenied = "" } = await props.searchParams;
-  const tournament = await TournamentService.findById(params.id);
+  const tournament = await TournamentService.findById(prisma, params.id);
 
   if (!tournament) {
     return (

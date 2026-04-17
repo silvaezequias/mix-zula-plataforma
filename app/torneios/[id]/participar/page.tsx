@@ -16,6 +16,7 @@ import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { TournamentService } from "@/features/tournament/service";
 import { JoinInTournamentButton } from "./JoinInTournamentButton";
 import { numberOrInfinity } from "@/lib/formatter";
+import { prisma } from "@/infra/prisma";
 
 export default async function RegistrationPage(props: {
   params: Promise<{ id: string }>;
@@ -23,7 +24,7 @@ export default async function RegistrationPage(props: {
   const params = await props.params;
   const session = await getServerSession(authOptions);
 
-  const tournament = await TournamentService.findById(params.id);
+  const tournament = await TournamentService.findById(prisma, params.id);
 
   if (!tournament) {
     return (

@@ -12,7 +12,7 @@ import { Participant, ParticipantRole, TournamentStatus } from "@prisma/client";
 import { StaffTab } from "./tabs/StaffTab";
 import { Dispatch, SetStateAction, useTransition } from "react";
 import { UserTab } from "./tabs/UserTab";
-import { createRandomTeamsAction } from "@/features/team/action";
+import { createRandomTeamsAction } from "@/features/tournament/action";
 import { toast } from "react-toastify";
 import { useRouter } from "next/navigation";
 import { WebhookTab } from "./tabs/WebhookTab";
@@ -54,7 +54,10 @@ export const TournamentDetailView: React.FC<DetailProps> = (props) => {
     ) {
       setCurrentTab("teams");
       startTransition(async () => {
-        const result = await createRandomTeamsAction(tournament.id);
+        const result = await createRandomTeamsAction(
+          tournament.id,
+          !!tournament.teams?.length,
+        );
         if (!result.success) toast.error(result.error);
         router.refresh();
       });
