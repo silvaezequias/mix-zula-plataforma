@@ -12,10 +12,12 @@ import {
 } from "@prisma/client";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import {
+  ForbiddenError,
   InternalError,
   NotFoundError,
   UnauthorizedError,
 } from "nextfastapi/errors";
+import { UserService } from "../user/service";
 
 export type TournamentProps = Partial<Tournament>;
 
@@ -312,6 +314,8 @@ async function createStaffParticipant(
   tournamentId: string,
   userId: string,
   role: ParticipantRole,
+  name: string,
+  nickname: string,
 ) {
   const existingTournament = await findById(prisma, tournamentId);
 
@@ -335,6 +339,8 @@ async function createStaffParticipant(
 
   const newParticipant = await prisma.participant.create({
     data: {
+      name,
+      nickname,
       userId,
       tournamentId,
       status: ParticipantStatus.ACTIVE,
@@ -355,19 +361,29 @@ async function createParticipant(tournamentId: string, userId: string) {
   }
 
   if (existingTournament.status !== "OPEN") {
-    throw new UnauthorizedError({
+    throw new ForbiddenError({
       message: "Este torneio não está com as inscrições abertas",
     });
   }
 
+  const existingUser = await UserService.findById(prisma, userId);
+
+  if (!existingUser) {
+    throw new ForbiddenError({
+      message: "Você não pode executar essa ação",
+    });
+  }
+
   if (await findParticipantByUserId(tournamentId, userId)) {
-    throw new UnauthorizedError({
+    throw new ForbiddenError({
       message: "Você já está registrado nesse torneio",
     });
   }
 
   const newParticipant = await prisma.participant.create({
     data: {
+      name: existingUser.name!,
+      nickname: existingUser.player!.nickname!,
       userId,
       tournamentId,
       status: ParticipantStatus.ACTIVE,
@@ -465,6 +481,14 @@ async function createTournamentRoleRequest(
     });
   }
 
+  const existingUser = await UserService.findById(prisma, userId);
+
+  if (!existingUser) {
+    throw new ForbiddenError({
+      message: "Você não pode executar essa ação",
+    });
+  }
+
   const data = {
     tournamentId,
     requestedRole,
@@ -477,7 +501,13 @@ async function createTournamentRoleRequest(
         where: { id: existingRequest.id },
         data,
       })
-    : await prisma.tournamentRoleRequest.create({ data });
+    : await prisma.tournamentRoleRequest.create({
+        data: {
+          ...data,
+          name: existingUser.name!,
+          nickname: existingUser.player!.nickname!,
+        },
+      });
 
   return request;
 }

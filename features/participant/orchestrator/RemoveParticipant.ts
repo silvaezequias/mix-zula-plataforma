@@ -6,6 +6,7 @@ import { TournamentService } from "@/features/tournament/service";
 import { staffRolesMap } from "@/constants/data";
 import { TeamService } from "@/features/team/service";
 import { RoleService } from "@/features/role/service";
+import { ParticipantCache } from "../cache";
 
 export async function removeParticipant(participantId: string, userId: string) {
   const result = await prisma.$transaction(async (tx) => {
@@ -97,10 +98,13 @@ export async function removeParticipant(participantId: string, userId: string) {
     );
     await ParticipantService.removeParticipant(tx, participantId);
 
-    return true;
+    return participant;
   });
 
-  if (result) await TournamentCache.revalidate();
+  if (result) {
+    await ParticipantCache.revalidate(result.userId, result.tournamentId);
+    await TournamentCache.revalidate();
+  }
 
   return result;
 }

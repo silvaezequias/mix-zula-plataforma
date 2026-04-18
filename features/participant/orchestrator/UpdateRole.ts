@@ -4,13 +4,14 @@ import { ParticipantService } from "../service";
 import { ForbiddenError, NotFoundError } from "nextfastapi/errors";
 import { staffRolesMap } from "@/constants/data";
 import { TournamentService } from "@/features/tournament/service";
+import { ParticipantCache } from "../cache";
 
 export async function updateRole(
   participantId: string,
   role: ParticipantRole,
   userId: string,
 ) {
-  const result = prisma.$transaction(async (tx) => {
+  const result = await prisma.$transaction(async (tx) => {
     const existingParticipant = await ParticipantService.findById(
       tx,
       participantId,
@@ -94,6 +95,9 @@ export async function updateRole(
       role: role,
     });
   });
+
+  if (result)
+    await ParticipantCache.revalidate(result.userId, result.tournamentId);
 
   return result;
 }

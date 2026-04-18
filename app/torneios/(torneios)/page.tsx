@@ -71,7 +71,10 @@ export default async function TournamentListPage() {
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-2 gap-8 animate-in slide-in-from-bottom-4 duration-700">
             {tournaments.map((tournament) => (
-              <Link key={tournament.id} href={`/torneios/${tournament.id}`}>
+              <Link
+                key={tournament.id}
+                href={`/torneios/${tournament.id}/overview`}
+              >
                 <TournamentCard tournament={tournament as TournamentAtList} />
               </Link>
             ))}

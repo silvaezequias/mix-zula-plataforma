@@ -1,72 +1,61 @@
+"use client";
+
 import clsx from "clsx";
-import { useRouter } from "next/navigation";
-import { useEffect } from "react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { TabKey, useTabsContext } from "@/providers/TabContext";
 
 export type Tab = {
-  id: string;
+  id: TabKey;
   label: string;
-  enabled?: boolean;
-  content: React.ReactNode;
+  href: string;
 };
 
 export type WindowProps = {
   tabs: Tab[];
-  activeTab: string;
-  setActiveTab: (tab: string) => void;
+  children: React.ReactNode;
 };
 
-export const Window = ({ tabs, activeTab, setActiveTab }: WindowProps) => {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (!tabs.some((t) => t.id === activeTab)) {
-      setActiveTab("info");
-    }
-  }, [activeTab, setActiveTab, tabs]);
-
-  const handleChangeTab = (tabId: string) => {
-    if (tabs.find((t) => t.id)?.enabled) {
-      changeTab(tabId);
-    } else {
-      const someEnabledTab = tabs.find((t) => t.enabled);
-      if (someEnabledTab) changeTab(someEnabledTab.id);
-    }
-  };
-
-  const changeTab = (tabId: string) => {
-    router.replace(`?tab=${tabId}`);
-    setActiveTab(tabId);
-  };
+export const Window = ({ tabs, children }: WindowProps) => {
+  const pathname = usePathname();
+  const { isBlocked } = useTabsContext();
 
   return (
     <div className="lg:col-span-8 space-y-6 w-full h-full">
       <div className="flex border-b border-zinc-800 overflow-x-auto">
         {tabs.map((tab) => {
-          const isActive = activeTab === tab.id;
-          const isEnabled = tab.enabled !== false;
+          const isActive = pathname === tab.href;
+          const isEnabled = !isBlocked(tab.id);
+
+          const baseClass = clsx(
+            "transition-all duration-200 border-b-2 whitespace-nowrap",
+            "px-6 py-3 text-xs font-black flex gap-2 items-center uppercase tracking-widest",
+            "focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/50",
+            isActive
+              ? "border-yellow-500 text-yellow-500 bg-zinc-900/60"
+              : isEnabled
+                ? "border-transparent text-zinc-500 hover:text-white cursor-pointer hover:bg-zinc-900/30"
+                : "border-transparent text-zinc-500 cursor-not-allowed opacity-50",
+          );
+
+          if (!isEnabled) {
+            return (
+              <span key={tab.id} className={baseClass}>
+                {tab.label}
+              </span>
+            );
+          }
 
           return (
-            <button
-              key={tab.id}
-              onClick={() => isEnabled && handleChangeTab(tab.id)}
-              className={clsx(
-                "transition-all duration-200 border-b-2 whitespace-nowrap",
-                "px-6 py-3 text-xs font-black flex gap-2 items-center uppercase tracking-widest",
-                "focus:outline-none focus-visible:ring-2 focus-visible:ring-yellow-500/50",
-                isActive
-                  ? "border-yellow-500 text-yellow-500 bg-zinc-900/60"
-                  : isEnabled
-                    ? "border-transparent text-zinc-500 hover:text-white cursor-pointer hover:bg-zinc-900/30"
-                    : "border-transparent text-zinc-500 cursor-not-allowed opacity-50",
-              )}
-            >
+            <Link key={tab.id} href={tab.href} className={baseClass}>
               {tab.label}
-            </button>
+            </Link>
           );
         })}
       </div>
+
       <div className="pt-2 overflow-y-auto custom-scrollbar h-full">
-        {tabs.find((tab) => tab.id === activeTab)?.content}
+        {children}
       </div>
     </div>
   );

@@ -1,7 +1,7 @@
 import {
   ParticipantStatusObject,
   StaffRole,
-} from "@/app/torneios/[id]/staff/StaffArea";
+} from "@/app/torneios/[id]/seja/staff/StaffArea";
 import { Role } from "@/types";
 import {
   GameMode,
@@ -290,6 +290,10 @@ export const tournamentStatusMap: Record<
   [TournamentStatus.SETTING_TEAM]: {
     label: "Definindo Times",
     color: 0xca8a04, // yellow-600
+  },
+  [TournamentStatus.SETTING_MATCHES]: {
+    label: "Definindo Jogos",
+    color: 0x0284c7, // sky-600
   },
   [TournamentStatus.FINISHED]: {
     label: "Finalizado",

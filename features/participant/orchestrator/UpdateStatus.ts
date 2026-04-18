@@ -5,6 +5,7 @@ import { ForbiddenError, NotFoundError } from "nextfastapi/errors";
 import { participantStatusMap, staffRolesMap } from "@/constants/data";
 import { TournamentService } from "@/features/tournament/service";
 import { TournamentCache } from "@/features/tournament/cache";
+import { ParticipantCache } from "../cache";
 
 export async function updateStatus(
   participantId: string,
@@ -94,7 +95,10 @@ export async function updateStatus(
     });
   });
 
-  if (result) await TournamentCache.revalidate(result.tournamentId);
+  if (result) {
+    await ParticipantCache.revalidate(result.userId, result.tournamentId);
+    await TournamentCache.revalidate(result.tournamentId);
+  }
 
   return result;
 }

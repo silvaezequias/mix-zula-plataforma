@@ -1,4 +1,4 @@
-import { DiscordWebhookConfig } from "@/app/torneios/[id]/(torneio)/tabs/WebhookTab/DiscordEmbedPreview";
+import { DiscordWebhookConfig } from "@/app/torneios/[id]/(torneio)/webhooks/WebhookTab/DiscordEmbedPreview";
 
 export type WebhookBase = {
   name: string;

@@ -66,6 +66,8 @@ export async function createTournament(
     );
 
     await ParticipantService.create(tx, {
+      name: requester.name!,
+      nickname: requester.player!.nickname!,
       userId: requester.id,
       tournamentId: createdTournament.id,
       role: ParticipantRole.ADMIN,

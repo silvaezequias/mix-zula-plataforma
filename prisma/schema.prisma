@@ -139,7 +139,8 @@ model Match {
 
   status MatchStatus @default(WAITING)
 
-  nextMatchId String? @db.ObjectId
+  nextMatchId   String?    @db.ObjectId
+  nextMatchSlot MatchSlot?
 
   team1      Team? @relation("Team1", fields: [team1Id], references: [id])
   team2      Team? @relation("Team2", fields: [team2Id], references: [id])
@@ -150,6 +151,11 @@ model Match {
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+enum MatchSlot {
+  TEAM1
+  TEAM2
 }
 
 enum MatchStatus {
@@ -167,8 +173,8 @@ model Round {
 
   tournamentId String @db.ObjectId
 
-  number Int     @default(1)
-  name   String?
+  index Int     @default(1)
+  name  String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -184,6 +190,9 @@ model Participant {
 
   tournamentId String @db.ObjectId
   userId       String @db.ObjectId
+
+  name     String
+  nickname String
 
   status    ParticipantStatus
   confirmed Boolean           @default(false)
@@ -278,6 +287,9 @@ model TournamentRoleRequest {
   requestedRole ParticipantRole
   status        RequestStatus   @default(PENDING)
 
+  name     String
+  nickname String
+
   owner   User   @relation(fields: [ownerId], references: [id])
   ownerId String @db.ObjectId
 
@@ -300,6 +312,7 @@ enum TournamentStatus {
   CLOSED
   OPEN
   SETTING_TEAM
+  SETTING_MATCHES
   READY
   LIVE
   FINISHED

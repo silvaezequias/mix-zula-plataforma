@@ -56,6 +56,8 @@ async function create(
     userId: string;
     status: ParticipantStatus;
     role: ParticipantRole;
+    name: string;
+    nickname: string;
   },
 ) {
   return await db.participant.create({

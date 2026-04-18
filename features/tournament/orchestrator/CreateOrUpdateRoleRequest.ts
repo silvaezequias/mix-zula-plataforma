@@ -6,6 +6,7 @@ import { ForbiddenError, NotFoundError } from "nextfastapi/errors";
 import { RoleService } from "@/features/role/service";
 import { ParticipantService } from "@/features/participant/service";
 import { staffRolesMap } from "@/constants/data";
+import { RoleOchestrator } from "@/features/role/ochestrator";
 
 export async function createOrUpdateRoleRequest(
   tournamentId: string,
@@ -64,7 +65,7 @@ export async function createOrUpdateRoleRequest(
         });
       }
 
-      return RoleService.updateRoleRequest(tx, {
+      return RoleOchestrator.updateRoleRequest({
         status: RequestStatus.PENDING,
         tournamentId,
         role,
@@ -74,6 +75,8 @@ export async function createOrUpdateRoleRequest(
 
     return RoleService.createRoleRequest(tx, {
       status: RequestStatus.PENDING,
+      nickname: participant.nickname,
+      name: participant.name,
       tournamentId,
       role,
       userId,

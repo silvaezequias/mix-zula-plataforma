@@ -5,6 +5,8 @@ import { ParticipantService } from "@/features/participant/service";
 import { staffRolesMap } from "@/constants/data";
 import { TournamentService } from "../service";
 import { RequestStatus } from "@prisma/client";
+import { ParticipantCache } from "@/features/participant/cache";
+import { TournamentCache } from "../cache";
 
 export async function handleRoleRequest(
   requestId: string,
@@ -103,6 +105,9 @@ export async function handleRoleRequest(
       userId: existingRequest.ownerId,
     });
   });
+
+  await ParticipantCache.revalidate(result.ownerId, result.tournamentId);
+  await TournamentCache.revalidate(result.tournamentId);
 
   return result;
 }

@@ -8,6 +8,8 @@ async function createRoleRequest(
     tournamentId: string;
     role: ParticipantRole;
     status: RequestStatus;
+    name: string;
+    nickname: string;
   },
 ) {
   return await db.tournamentRoleRequest.create({
@@ -16,6 +18,8 @@ async function createRoleRequest(
       ownerId: data.userId,
       tournamentId: data.tournamentId,
       status: data.status,
+      name: data.name,
+      nickname: data.nickname,
     },
   });
 }

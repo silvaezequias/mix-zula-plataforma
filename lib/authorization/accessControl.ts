@@ -30,6 +30,11 @@ export async function requireAuth<SP extends RedirectSearchParams>(
     redirect(`/login?redirect=${encoded}`, "replace");
   }
 
+  if (!session.user.isOnboarded) {
+    const encoded = encodeURIComponent(redirectUrl);
+    redirect(`/atualizar-cadastro?redirect=${encoded}`, "replace");
+  }
+
   return { session, searchParams };
 }
 
