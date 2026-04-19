@@ -39,10 +39,9 @@ export default async function RequestTournamentRole(props: {
     );
   }
 
-  const { session } = await requireAuth(
-    undefined,
-    `/torneios/${tournament.id}/staff`,
-  );
+  const { session } = await requireAuth({
+    forceRedirect: `/torneios/${tournament.id}/staff`,
+  });
 
   if (!session.user.isOnboarded) {
     redirect(`/atualizar-cadastro?redirect=/torneios/${params.id}/staff`);

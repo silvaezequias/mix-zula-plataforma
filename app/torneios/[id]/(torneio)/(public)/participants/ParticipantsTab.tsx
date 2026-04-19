@@ -12,17 +12,19 @@ type ParticipantsTabProps = {
   tournament: Prisma.TournamentGetPayload<{
     include: { participants: true };
   }>;
+  isStaff: boolean;
 };
 
-export const ParticipantsTab = ({ tournament }: ParticipantsTabProps) => {
+export const ParticipantsTab = ({
+  tournament,
+  isStaff,
+}: ParticipantsTabProps) => {
   const { selectParticipant } = useSelectedParticipantContext();
   const [searchTerm, setSearchTerm] = useState("");
 
   let filteredPlayers = tournament.participants.filter((p) =>
     p.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
   );
-
-  const isStaff = true; // TODO: Atualizar logica de verificação de cargo
 
   if (!isStaff) {
     filteredPlayers = filteredPlayers.filter((p) => p.status === "ACTIVE");

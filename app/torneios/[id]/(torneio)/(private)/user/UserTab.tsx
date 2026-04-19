@@ -18,31 +18,32 @@ import {
   ParticipantRole,
   ParticipantStatus,
 } from "@prisma/client";
-import { useSelectedParticipantContext } from "@/providers/SelectedParticipantContext";
-import { useTabsContext } from "@/providers/TabContext";
+import { useRouter } from "next/navigation";
 
-export const UserTab = () => {
-  const { clearParticipant, selectedParticipant } =
-    useSelectedParticipantContext();
-  const { changeTab } = useTabsContext();
+type UserTabProps = {
+  participant: Participant;
+  tournamentId: string;
+};
+
+export const UserTab = ({ participant, tournamentId }: UserTabProps) => {
+  const router = useRouter();
+
   const { updateRole, updateStatus, kickoff, isLoading, loadingAction } =
-    useUserActions(() => clearParticipant);
+    useUserActions(tournamentId);
 
   const [selectedRoleId, setSelectedRoleId] = useState<
     ParticipantRole | undefined
-  >(selectedParticipant?.role);
+  >(participant?.role);
 
   const [selectedStatusId, setSelectedStatusId] = useState<
     ParticipantStatus | undefined
-  >(selectedParticipant?.status);
-
-  if (!selectedParticipant) return changeTab("participants");
+  >(participant?.status);
 
   return (
     <div className="space-y-8">
       <TabHeader
-        selectedParticipant={selectedParticipant}
-        onClose={() => clearParticipant()}
+        participant={participant}
+        onClose={() => router.push(`/torneios/${tournamentId}`)}
       />
 
       <div className="columns-1 xl:columns-2 gap-8 space-y-8">
@@ -58,11 +59,11 @@ export const UserTab = () => {
               selectedRoleId={selectedRoleId}
               setSelectedRoleId={setSelectedRoleId}
               updateRole={updateRole}
-              selectedParticipant={selectedParticipant}
+              participant={participant}
             />
 
             <StatusSection
-              selectedParticipant={selectedParticipant}
+              participant={participant}
               isLoading={isLoading}
               loadingAction={loadingAction}
               selectedStatusId={selectedStatusId}
@@ -73,7 +74,7 @@ export const UserTab = () => {
             <KickSection
               disabled={isLoading}
               loading={loadingAction === "kick"}
-              onKick={() => kickoff(selectedParticipant.id)}
+              onKick={() => kickoff(participant.id)}
             />
           </div>
         </Card>
@@ -84,7 +85,7 @@ export const UserTab = () => {
 
 interface RoleSectionProps {
   selectedRoleId: ParticipantRole | undefined;
-  selectedParticipant: Participant;
+  participant: Participant;
   isLoading: boolean;
   loadingAction: LoadingAction;
   setSelectedRoleId: Dispatch<
@@ -95,7 +96,7 @@ interface RoleSectionProps {
 
 const RoleSection = ({
   selectedRoleId,
-  selectedParticipant,
+  participant,
   setSelectedRoleId,
   isLoading,
   loadingAction,
@@ -103,7 +104,7 @@ const RoleSection = ({
 }: RoleSectionProps) => {
   const { time, active, start, reset } = useCountdown(3);
 
-  const isCurrent = selectedParticipant.role === selectedRoleId;
+  const isCurrent = participant.role === selectedRoleId;
   const cantUpdate = isCurrent || isLoading;
 
   const handleUpdate = () => {
@@ -111,7 +112,7 @@ const RoleSection = ({
 
     reset();
     if (selectedRoleId && !cantUpdate) {
-      updateRole(selectedParticipant.id, selectedRoleId);
+      updateRole(participant.id, selectedRoleId);
     }
   };
 
@@ -120,9 +121,9 @@ const RoleSection = ({
       <ConfigDropdown
         options={Object.entries(staffRolesMap).map(([id]) => id)}
         labels={Object.entries(staffRolesMap).map(
-          ([id]) => `${id}${selectedParticipant.role === id ? " (Atual)" : ""}`,
+          ([id]) => `${id}${participant.role === id ? " (Atual)" : ""}`,
         )}
-        value={selectedRoleId || selectedParticipant.role}
+        value={selectedRoleId || participant.role}
         label="Definição de Cargo"
         name="Cargos"
         onChange={(e) => setSelectedRoleId(e.target.value as ParticipantRole)}
@@ -147,7 +148,7 @@ const RoleSection = ({
 interface StatusSectionProps {
   isLoading: boolean;
   selectedStatusId: ParticipantStatus | undefined;
-  selectedParticipant: Participant;
+  participant: Participant;
   loadingAction: LoadingAction;
   setSelectedStatusId: Dispatch<
     SetStateAction<$Enums.ParticipantStatus | undefined>
@@ -157,7 +158,7 @@ interface StatusSectionProps {
 
 const StatusSection = ({
   selectedStatusId,
-  selectedParticipant,
+  participant,
   isLoading,
   loadingAction,
   setSelectedStatusId,
@@ -165,7 +166,7 @@ const StatusSection = ({
 }: StatusSectionProps) => {
   const { time, active, start, reset } = useCountdown(3);
 
-  const isCurrent = selectedParticipant.status === selectedStatusId;
+  const isCurrent = participant.status === selectedStatusId;
   const cantUpdate = isCurrent || isLoading;
 
   const handleUpdate = () => {
@@ -173,7 +174,7 @@ const StatusSection = ({
 
     reset();
     if (selectedStatusId && !cantUpdate) {
-      updateStatus(selectedParticipant.id, selectedStatusId);
+      updateStatus(participant.id, selectedStatusId);
     }
   };
 
@@ -182,10 +183,9 @@ const StatusSection = ({
       <ConfigDropdown
         options={PARTICIPANT_STATUS.map((r) => r.id)}
         labels={PARTICIPANT_STATUS.map(
-          (r) =>
-            `${r.title}${selectedParticipant.status === r.id ? " (Atual)" : ""}`,
+          (r) => `${r.title}${participant.status === r.id ? " (Atual)" : ""}`,
         )}
-        value={selectedStatusId || selectedParticipant.status}
+        value={selectedStatusId || participant.status}
         label="Definição de Cargo"
         name="Cargos"
         onChange={(e) =>
@@ -210,18 +210,18 @@ const StatusSection = ({
 };
 
 interface TabHeaderProps {
-  selectedParticipant: Participant;
+  participant: Participant;
   onClose: () => void;
 }
 
-const TabHeader = ({ selectedParticipant, onClose }: TabHeaderProps) => {
-  const role = STAFF_ROLES.find((r) => r.id === selectedParticipant.role)!;
+const TabHeader = ({ participant, onClose }: TabHeaderProps) => {
+  const role = STAFF_ROLES.find((r) => r.id === participant.role)!;
 
   return (
     <div className="bg-zinc-900 p-6 md:p-8 border-b border-zinc-800 flex items-center justify-between gap-6">
       <div className="flex items-center gap-6 flex-1">
         <div className="w-20 h-20 hidden md:flex bg-primary text-black text-3xl font-black italic items-center justify-center border-4 border-zinc-800 shadow-2xl relative">
-          {selectedParticipant.name?.charAt(0)}
+          {participant.name?.charAt(0)}
 
           <div className="absolute -bottom-2 -right-2 bg-green-500 p-1.5 border-2 border-zinc-800">
             <UserCheck size={14} className="text-white" />
@@ -231,7 +231,7 @@ const TabHeader = ({ selectedParticipant, onClose }: TabHeaderProps) => {
         <div className="flex flex-col justify-center">
           <div className="flex items-center gap-4 flex-wrap">
             <span className="text-2xl md:text-3xl font-black italic text-white tracking-tighter uppercase">
-              {selectedParticipant.nickname}
+              {participant.nickname}
             </span>
 
             <span
@@ -241,7 +241,7 @@ const TabHeader = ({ selectedParticipant, onClose }: TabHeaderProps) => {
             </span>
           </div>
           <span className="text-primary text-xs md:text-sm font-black italic tracking-[0.3em] uppercase mt-1">
-            {selectedParticipant.name}
+            {participant.name}
           </span>
         </div>
       </div>

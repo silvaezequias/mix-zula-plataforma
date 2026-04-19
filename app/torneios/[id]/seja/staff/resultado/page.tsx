@@ -37,10 +37,9 @@ export default async function RequestTournamentRole(props: {
     );
   }
 
-  const { session } = await requireAuth(
-    undefined,
-    `/torneios/${tournament.id}/staff/resultado`,
-  );
+  const { session } = await requireAuth({
+    forceRedirect: `/torneios/${tournament.id}/staff/resultado`,
+  });
 
   const requestedRole = await TournamentService.findTournamentRoleRequest(
     tournament?.id,

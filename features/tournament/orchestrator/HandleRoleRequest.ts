@@ -94,9 +94,11 @@ export async function handleRoleRequest(
       });
     }
 
-    await ParticipantService.update(tx, requesterParticipant.id, {
-      role: existingRequest.requestedRole,
-    });
+    if (acceptRequest) {
+      await ParticipantService.update(tx, requesterParticipant.id, {
+        role: existingRequest.requestedRole,
+      });
+    }
 
     return await RoleService.updateRoleRequest(tx, {
       role: existingRequest.requestedRole,

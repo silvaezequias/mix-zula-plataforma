@@ -1,4 +1,4 @@
-import { DiscordWebhookConfig } from "@/app/torneios/[id]/(torneio)/webhooks/WebhookTab/DiscordEmbedPreview";
+import { DiscordWebhookConfig } from "@/app/torneios/[id]/(torneio)/(private)/webhooks/WebhookTab/DiscordEmbedPreview";
 import { EmbedBuilder } from "@/features/discordWebhook/core";
 
 type GenericListItem = {

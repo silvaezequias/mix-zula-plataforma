@@ -1,7 +1,7 @@
 "use server";
 
 import { redirect } from "next/navigation";
-import { canShow, redirectToOverview } from "../_protect-flow";
+import { canShow, redirectToOverview } from "../../_protect-flow";
 import { getTournamentOverviewAction } from "@/features/tournament/action/feed/getTournamentOverviewAction";
 import { MatchesTab } from "./MatchesTab";
 import { getTournamentMatchesAction } from "@/features/tournament/action/feed/getTournamentMatches";

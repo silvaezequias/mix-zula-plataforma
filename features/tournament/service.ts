@@ -12,12 +12,14 @@ import {
 } from "@prisma/client";
 import { revalidatePath, revalidateTag, unstable_cache } from "next/cache";
 import {
+  BadRequestError,
   ForbiddenError,
   InternalError,
   NotFoundError,
   UnauthorizedError,
 } from "nextfastapi/errors";
 import { UserService } from "../user/service";
+import { validateObjectId } from "@/lib/validation/fields";
 
 export type TournamentProps = Partial<Tournament>;
 
@@ -145,6 +147,12 @@ function list(include?: Prisma.TournamentInclude, cursor?: { id: string }) {
 }
 
 async function findById(db: DB, tournamentId: string) {
+  if (!validateObjectId(tournamentId)) {
+    throw new BadRequestError({
+      message: "ID inserido não é válido",
+    });
+  }
+
   const includedTeam = {
     select: {
       id: true,

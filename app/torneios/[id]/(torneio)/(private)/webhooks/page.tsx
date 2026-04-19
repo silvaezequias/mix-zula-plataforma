@@ -3,7 +3,7 @@
 import { getTournamentParticipantsAction } from "@/features/tournament/action/feed/getTournamentParticipantsAction";
 import { requireAuth } from "@/lib/authorization/accessControl";
 import { WebhookTab } from "./WebhookTab";
-import { OnlyStaff, redirectToOverview } from "../_protect-flow";
+import { OnlyStaff, redirectToOverview } from "../../_protect-flow";
 
 type StaffPage = {
   params: Promise<{ id: string }>;

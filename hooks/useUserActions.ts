@@ -10,7 +10,7 @@ import { toast } from "react-toastify";
 
 export type LoadingAction = "role" | "kick" | "status" | null;
 
-export function useUserActions(onUserRemoved: () => void) {
+export function useUserActions(tournamentId: string) {
   const router = useRouter();
   const [loadingAction, setLoadingAction] = useState<LoadingAction>(null);
 
@@ -31,6 +31,7 @@ export function useUserActions(onUserRemoved: () => void) {
       const res = await changeParticipantRoleAction(participantId, roleId);
       if (!res.success) throw new Error(res.error);
       toast.info("Cargo atualizado com sucesso");
+      router.refresh();
     });
   };
 
@@ -39,6 +40,7 @@ export function useUserActions(onUserRemoved: () => void) {
       const res = await changeParticipantStatusAction(participantId, statusId);
       if (!res.success) throw new Error(res.error);
       toast.info("Status atualizado com sucesso");
+      router.refresh();
     });
   };
 
@@ -47,7 +49,7 @@ export function useUserActions(onUserRemoved: () => void) {
       const res = await removeParticipantAction(participantId);
       if (!res.success) throw new Error(res.error);
       toast.info("Usuário foi expulso do torneio");
-      onUserRemoved();
+      router.push(`/torneios/${tournamentId}/overview`);
     });
   };
 

@@ -1,7 +1,7 @@
 "use server";
 
 import { requireAuth } from "@/lib/authorization/accessControl";
-import { OnlyStaff, redirectToOverview } from "../_protect-flow";
+import { OnlyStaff, redirectToOverview } from "../../_protect-flow";
 import { SettingsTab } from "./SettingsTab";
 import { getTournamentOverviewAction } from "@/features/tournament/action/feed/getTournamentOverviewAction";
 

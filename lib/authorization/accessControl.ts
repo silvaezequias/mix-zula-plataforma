@@ -18,10 +18,9 @@ export function registerRequesterCredentials(role: Roles) {
 
 export async function requireAuth<SP extends RedirectSearchParams>(
   req?: RequestWithSearchParams<SP>,
-  forceRedirect?: string,
 ) {
   const searchParams = (await req?.searchParams) ?? ({} as SP);
-  const redirectUrl = forceRedirect ?? searchParams.redirect ?? "/";
+  const redirectUrl = req?.forceRedirect ?? searchParams.redirect ?? "/";
 
   const session = await getServerSession(authOptions);
 

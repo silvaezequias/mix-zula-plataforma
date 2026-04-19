@@ -53,7 +53,17 @@ export const staffRolesMap: Record<
     icon: <Target size={24} />,
     color: "text-blue-500",
     bg: "bg-blue-500/10",
-    level: 8,
+    level: 6,
+  },
+
+  [ParticipantRole.AJUDANTE]: {
+    title: "Ajudante",
+    description:
+      "Suporte na organização, inscrições e auxílio geral aos jogadores.",
+    icon: <Users size={24} />,
+    color: "text-emerald-500",
+    bg: "bg-emerald-500/10",
+    level: 5,
   },
   [ParticipantRole.STREAMER]: {
     title: "Streamer",
@@ -63,15 +73,6 @@ export const staffRolesMap: Record<
     color: "text-purple-500",
     bg: "bg-purple-500/10",
     level: 3,
-  },
-  [ParticipantRole.AJUDANTE]: {
-    title: "Ajudante",
-    description:
-      "Suporte na organização, inscrições e auxílio geral aos jogadores.",
-    icon: <Users size={24} />,
-    color: "text-emerald-500",
-    bg: "bg-emerald-500/10",
-    level: 5,
   },
   [ParticipantRole.PLAYER]: {
     title: "Jogador",

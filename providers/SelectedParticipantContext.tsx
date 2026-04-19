@@ -1,6 +1,7 @@
 "use client";
 
 import { Participant } from "@prisma/client";
+import { useParams, useRouter } from "next/navigation";
 import { createContext, useContext, useState } from "react";
 
 type CustomParticipant = Participant;
@@ -19,10 +20,14 @@ export function SelectedParticipantProvider({
 }: {
   children: React.ReactNode;
 }) {
+  const router = useRouter();
+  const params = useParams<{ id: string }>();
+
   const [selectedParticipant, setSelectedParticipant] =
     useState<CustomParticipant | null>(null);
 
   function selectParticipant(participant: CustomParticipant) {
+    router.push(`/torneios/${params.id}/user/${participant.userId}`);
     setSelectedParticipant(participant);
   }
 

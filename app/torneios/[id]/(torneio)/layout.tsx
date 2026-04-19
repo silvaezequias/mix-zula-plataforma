@@ -8,7 +8,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import { getTournamentMemberAction } from "@/features/tournament/action/feed/getTournamentMemberAction";
 import { staffRolesMap } from "@/constants/data";
-import { canShow, redirectToOverview } from "./_protect-flow";
+import { canShow } from "./_protect-flow";
 
 type LayoutProps = {
   children: React.ReactNode;
@@ -37,11 +37,11 @@ export default async function Layout(props: LayoutProps) {
       href: `/torneios/${tournamentId}/overview`,
     },
   ];
+  const { data: tournament, success } =
+    await getTournamentOverviewAction(tournamentId);
 
-  const { data: tournament } = await getTournamentOverviewAction(tournamentId);
-
-  if (!tournament) {
-    return redirectToOverview(tournamentId);
+  if (!success || !tournament) {
+    return redirect(`/torneios/nao-encontrado?id=${tournamentId}`);
   }
 
   if (canShow("teams", tournament)) {
@@ -75,7 +75,7 @@ export default async function Layout(props: LayoutProps) {
         href: `/torneios/${tournamentId}/participants`,
       });
 
-      if (participantRole.level > 2) {
+      if (participantRole.level > 3) {
         tabs.push({
           id: "staff",
           label: "Staff",
@@ -99,12 +99,6 @@ export default async function Layout(props: LayoutProps) {
         });
       }
     }
-  }
-
-  const resultTournament = await getTournamentOverviewAction(tournamentId);
-
-  if (!resultTournament.success || !resultTournament.data) {
-    return redirect(`/torneios/nao-encontrado?id=${tournamentId}`);
   }
 
   return (

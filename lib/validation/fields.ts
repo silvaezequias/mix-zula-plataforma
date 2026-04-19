@@ -178,3 +178,9 @@ export function validateBroadcastUrl(url?: string) {
     throwError("URL de transmissão inválida");
   }
 }
+
+export function validateObjectId(objectId?: string) {
+  if (!objectId) return null;
+
+  return /^[a-fA-F0-9]{24}$/.test(objectId);
+}

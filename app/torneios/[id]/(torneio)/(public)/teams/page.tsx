@@ -3,7 +3,7 @@
 import { redirect } from "next/navigation";
 import { TeamsView } from "./TeamsTab";
 import { getTournamentTeamsAction } from "@/features/tournament/action/feed/getTournamentTeamsAction";
-import { canShow, redirectToOverview } from "../_protect-flow";
+import { canShow, redirectToOverview } from "../../_protect-flow";
 import { getTournamentOverviewAction } from "@/features/tournament/action/feed/getTournamentOverviewAction";
 
 type TeamsProps = {
