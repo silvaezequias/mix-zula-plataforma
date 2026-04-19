@@ -6,7 +6,10 @@ import { UpdateUserForm } from "./UpdateUserForm";
 import { redirect } from "next/navigation";
 
 export default async function UpdateRegistration(req: RequestWithSearchParams) {
-  const { session, searchParams } = await requireAuth(req);
+  const { session, searchParams } = await requireAuth({
+    forceOnboard: false,
+    searchParams: req.searchParams,
+  });
 
   if (session.user.isOnboarded) {
     if (searchParams.redirect) redirect(searchParams.redirect);

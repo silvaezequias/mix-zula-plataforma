@@ -6,4 +6,5 @@ export type RequestWithSearchParams<T = RedirectSearchParams> = {
   searchParams?: Promise<T>;
   redirectUrl?: string;
   forceRedirect?: string;
+  forceOnboard?: boolean;
 };

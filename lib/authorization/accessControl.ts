@@ -16,11 +16,13 @@ export function registerRequesterCredentials(role: Roles) {
   };
 }
 
-export async function requireAuth<SP extends RedirectSearchParams>(
-  req?: RequestWithSearchParams<SP>,
-) {
-  const searchParams = (await req?.searchParams) ?? ({} as SP);
-  const redirectUrl = req?.forceRedirect ?? searchParams.redirect ?? "/";
+export async function requireAuth<SP extends RedirectSearchParams>({
+  forceOnboard = true,
+  forceRedirect,
+  searchParams: sp,
+}: RequestWithSearchParams<SP> = {}) {
+  const searchParams = (await sp) ?? ({} as SP);
+  const redirectUrl = forceRedirect ?? searchParams.redirect ?? "/";
 
   const session = await getServerSession(authOptions);
 
@@ -29,7 +31,7 @@ export async function requireAuth<SP extends RedirectSearchParams>(
     redirect(`/login?redirect=${encoded}`, "replace");
   }
 
-  if (!session.user.isOnboarded) {
+  if (!session.user.isOnboarded && forceOnboard) {
     const encoded = encodeURIComponent(redirectUrl);
     redirect(`/atualizar-cadastro?redirect=${encoded}`, "replace");
   }
