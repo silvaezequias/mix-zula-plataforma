@@ -31,8 +31,6 @@ export type HandleTournamentToggle = <
 export const SettingsTab = (props: SettingsTabProps) => {
   const { isLoading, updateAll } = useTournamentActions(props.tournament.id);
 
-  const handleRandomize = () => {};
-
   const [dirtyFields, setDirtyFields] = useState<
     Partial<Record<keyof Tournament, boolean>>
   >({});
@@ -148,10 +146,9 @@ export const SettingsTab = (props: SettingsTabProps) => {
       </div>
       <div className="break-inside-avoid mb-8">
         <ActionsSection
+          tournamentId={tournament.id}
           status={tournament.status}
-          handleRandomize={handleRandomize}
           handleChange={handleTournamentChange}
-          tournamentCurrentStatus={props.tournament.status}
         />
       </div>
       <div className="break-inside-avoid mb-8">

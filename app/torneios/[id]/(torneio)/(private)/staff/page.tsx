@@ -5,6 +5,8 @@ import { StaffTab } from "./StaffTab";
 import { getTournamentParticipantsAction } from "@/features/tournament/action/feed/getTournamentParticipantsAction";
 import { requireAuth } from "@/lib/authorization/accessControl";
 import { OnlyStaff } from "../../_protect-flow";
+import { getTournamentRoleRequestsAction } from "@/features/tournament/action/feed/getTournamentRoleRequests";
+import { getTournamentOverviewAction } from "@/features/tournament/action/feed/getTournamentOverviewAction";
 
 type StaffPage = {
   params: Promise<{ id: string }>;
@@ -12,7 +14,7 @@ type StaffPage = {
 
 export default async function StaffPage(props: StaffPage) {
   const { id: tournamentId } = await props.params;
-  const resultTournament = await getTournamentParticipantsAction(tournamentId);
+  const resultTournament = await getTournamentOverviewAction(tournamentId);
 
   const { session } = await requireAuth({
     forceRedirect: `/torneios/${tournamentId}/overview`,
@@ -22,7 +24,17 @@ export default async function StaffPage(props: StaffPage) {
     return redirect(`/torneios/nao-encontrado?id=${tournamentId}`);
   }
 
+  const { data: roleRequests } =
+    await getTournamentRoleRequestsAction(tournamentId);
+  const { data: participants } =
+    await getTournamentParticipantsAction(tournamentId);
+
   await OnlyStaff(tournamentId, session.user.id);
 
-  return <StaffTab tournament={resultTournament.data} />;
+  return (
+    <StaffTab
+      tournament={resultTournament.data}
+      {...{ roleRequests, participants }}
+    />
+  );
 }

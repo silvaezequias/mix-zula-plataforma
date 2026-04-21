@@ -4,25 +4,23 @@ import { Button } from "@/components/ui/Button";
 import { CardPlayer } from "@/components/ui/CardPlayer";
 import { participantStatusMap, roleColors } from "@/constants/data";
 import { useSelectedParticipantContext } from "@/providers/SelectedParticipantContext";
-import { Prisma } from "@prisma/client";
+import { Participant } from "@prisma/client";
 import { Search, Users } from "lucide-react";
 import { useState } from "react";
 
 type ParticipantsTabProps = {
-  tournament: Prisma.TournamentGetPayload<{
-    include: { participants: true };
-  }>;
+  participants: Participant[];
   isStaff: boolean;
 };
 
 export const ParticipantsTab = ({
-  tournament,
+  participants,
   isStaff,
 }: ParticipantsTabProps) => {
   const { selectParticipant } = useSelectedParticipantContext();
   const [searchTerm, setSearchTerm] = useState("");
 
-  let filteredPlayers = tournament.participants.filter((p) =>
+  let filteredPlayers = participants.filter((p) =>
     p.nickname.toLowerCase().includes(searchTerm.toLowerCase()),
   );
 

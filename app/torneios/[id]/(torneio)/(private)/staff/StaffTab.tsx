@@ -16,21 +16,22 @@ import { handleTournamentRoleRequestAction } from "@/features/tournament/action"
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { useSelectedParticipantContext } from "@/providers/SelectedParticipantContext";
-import { Prisma } from "@prisma/client";
+import { Participant, Tournament, TournamentRoleRequest } from "@prisma/client";
 
 type StaffTabProps = {
-  tournament: Prisma.TournamentGetPayload<{
-    include: { participants: true; tournamentRoleRequest: true };
-  }>;
+  tournament: Tournament;
+  roleRequests?: TournamentRoleRequest[];
+  participants?: Participant[];
 };
 
-export const StaffTab = ({ tournament }: StaffTabProps) => {
+export const StaffTab = ({
+  tournament,
+  roleRequests,
+  participants,
+}: StaffTabProps) => {
   const { selectParticipant } = useSelectedParticipantContext();
-  const { tournamentRoleRequest } = tournament;
 
-  const filteredStaff = tournament.participants.filter(
-    (p) => p.role !== "PLAYER",
-  );
+  const filteredStaff = participants?.filter((p) => p.role !== "PLAYER") ?? [];
 
   const router = useRouter();
   const [copied, setCopied] = useState(false);
@@ -106,8 +107,8 @@ export const StaffTab = ({ tournament }: StaffTabProps) => {
         className="h-[75vh] max-h-[80vh] overflow-y-auto"
       >
         <div className="flex flex-col gap-5">
-          {tournamentRoleRequest && tournamentRoleRequest.length > 0 ? (
-            tournamentRoleRequest.map((p) => (
+          {roleRequests && roleRequests.length > 0 ? (
+            roleRequests.map((p) => (
               <CardPlayer key={p.id} name={p.name} nickname={p.nickname}>
                 <span className="text-white text-xs uppercase font-bold place-self-end self-center">
                   Solicitado:{" "}

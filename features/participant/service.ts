@@ -58,6 +58,7 @@ async function create(
     role: ParticipantRole;
     name: string;
     nickname: string;
+    discordId: string;
   },
 ) {
   return await db.participant.create({

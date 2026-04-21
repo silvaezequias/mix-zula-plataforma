@@ -1,13 +1,33 @@
-import { Prisma } from "@prisma/client";
-import { Check, Users } from "lucide-react";
+"use client";
+
+import { ActionButton } from "@/components/ui/ActionButton";
+import { createRandomTeamsAction } from "@/features/tournament/action";
+import { useCountdown } from "@/hooks/useCooldown";
+import { Prisma, Tournament } from "@prisma/client";
+import { Check, Shuffle, Users } from "lucide-react";
+import { toast } from "react-toastify";
 
 export const TeamsView = ({
   teams,
+  tournament,
 }: {
   teams: Prisma.TeamGetPayload<{
     include: { members: { include: { participant: true } } };
   }>[];
+  tournament: Tournament;
 }) => {
+  const randomizeTeamCooldown = useCountdown(5);
+  const handleRandomizeClick = () => {
+    if (!randomizeTeamCooldown.active) return randomizeTeamCooldown.start();
+    randomizeTeamCooldown.reset();
+    handleRandomize();
+  };
+
+  const handleRandomize = async () => {
+    const result = await createRandomTeamsAction(tournament.id);
+    if (!result.success) toast.error(result.error);
+  };
+
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-700">
       {teams.length > 0 ? (
@@ -72,11 +92,39 @@ export const TeamsView = ({
           );
         })
       ) : (
-        <div className="col-span-2 py-32 text-center border-2 border-dashed border-zinc-900">
+        <div className="col-span-2 flex flex-col items-center gap-5 py-32 text-center border-2 border-dashed border-zinc-900">
           <Users size={48} className="mx-auto text-zinc-900 mb-4" />
           <p className="text-zinc-700 font-black uppercase italic tracking-[0.4em]">
             As equipes ainda não foram sorteadas.
           </p>
+
+          {(tournament.status === "SETTING_TEAM" ||
+            tournament.status === "READY" ||
+            tournament.status === "SETTING_MATCHES") && (
+            <ActionButton
+              onClick={handleRandomizeClick}
+              className="uppercase max-w-fit"
+              intent={
+                randomizeTeamCooldown.active
+                  ? tournament.status === "READY" ||
+                    tournament.status === "SETTING_MATCHES"
+                    ? "danger"
+                    : "success"
+                  : "default"
+              }
+            >
+              <Shuffle
+                size={18}
+                className="group-hover:scale-125 transition-transform "
+              />
+              {randomizeTeamCooldown.active
+                ? `Confirmar  ${tournament.status === "READY" || tournament.status === "SETTING_MATCHES" ? "re-sorteio" : "sorteio"} em (${randomizeTeamCooldown.time}s)`
+                : tournament.status === "READY" ||
+                    tournament.status === "SETTING_MATCHES"
+                  ? "RE-SORTEAR EQUIPES"
+                  : "SORTEAR EQUIPES"}
+            </ActionButton>
+          )}
         </div>
       )}
     </div>

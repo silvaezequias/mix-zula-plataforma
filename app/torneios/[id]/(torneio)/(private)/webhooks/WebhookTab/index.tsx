@@ -11,8 +11,23 @@ import {
   WebhookId,
   webhookTemplates,
 } from "@/features/discordWebhook/templates";
+import { Participant, Prisma } from "@prisma/client";
 
-export const WebhookTab = ({ tournamentId }: { tournamentId: string }) => {
+export type WebhookTapProps = {
+  participants?: Participant[];
+  tournament: Prisma.TournamentGetPayload<{
+    include: { _count: { select: { participants: true } } };
+  }>;
+  teams?: Prisma.TeamGetPayload<{
+    include: { members: { include: { participant: true } } };
+  }>[];
+};
+
+export const WebhookTab = ({
+  tournament,
+  participants,
+  teams,
+}: WebhookTapProps) => {
   const { active, reset, start, time } = useCountdown(3);
   const [isPending, startTransition] = useTransition();
 
@@ -24,7 +39,7 @@ export const WebhookTab = ({ tournamentId }: { tournamentId: string }) => {
     reset();
 
     startTransition(async () => {
-      const result = await dispatchWebhook(tournamentId, selectedId);
+      const result = await dispatchWebhook(tournament.id, selectedId);
       if (!result.success) toast.error(result.error);
     });
   };
@@ -40,7 +55,13 @@ export const WebhookTab = ({ tournamentId }: { tournamentId: string }) => {
               </h4>
             </div>
             <div className="p-8 bg-zinc-950">
-              <DiscordEmbedPreview config={selectedWebhook.config} />
+              <DiscordEmbedPreview
+                participants={participants}
+                teams={teams}
+                tournament={tournament}
+                config={selectedWebhook.config}
+                templateId={selectedId}
+              />
             </div>
 
             <div className="p-6 border-t border-zinc-900 flex justify-between items-center bg-zinc-900/10">

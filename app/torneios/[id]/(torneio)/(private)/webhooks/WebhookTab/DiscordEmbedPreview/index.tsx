@@ -1,7 +1,14 @@
-import React, { useMemo, useCallback } from "react";
+import { useMemo, useCallback, useEffect, useState } from "react";
 import { Webhook } from "lucide-react";
 import Image from "next/image";
-import { PREVIEW_DATA } from "./contants";
+import markdownParser from "./components/parser";
+import { WebhookId } from "@/features/discordWebhook/templates";
+import {
+  getInviteWebhookData,
+  getListTeamsWebhookData,
+} from "@/features/discordWebhook/service";
+import { WebhookTapProps } from "..";
+import { Mention } from "./components/content";
 
 export interface DiscordEmbedField {
   name: string;
@@ -42,34 +49,78 @@ export interface DiscordWebhookConfig {
 
 export const DiscordEmbedPreview = ({
   config,
+  templateId,
+  participants,
+  teams,
+  tournament,
 }: {
   config: DiscordWebhookConfig;
-}) => {
+  templateId: WebhookId;
+} & WebhookTapProps) => {
+  const [data, setData] = useState<{ [key: string]: string } | null>(null);
+
+  useEffect(() => {
+    async function fetchData() {
+      if (templateId === "invite") {
+        if (tournament) {
+          const currentData = await getInviteWebhookData(tournament);
+
+          setData(currentData);
+        }
+      }
+
+      if (templateId === "list_teams") {
+        if (tournament && participants) {
+          const reservedPlayers = participants
+            .filter((p) => p.status === "RESERVED")
+            .map((member, index) => {
+              return `${index + 1}. @${member.name} - ${member.nickname}`;
+            });
+
+          const currentData = await getListTeamsWebhookData(
+            tournament,
+            reservedPlayers,
+          );
+
+          setData(currentData);
+        }
+      }
+    }
+
+    fetchData();
+  }, [participants, templateId, tournament]);
+
   const embed = config.embeds[0] || {};
 
-  const processTokens = useCallback((text: string | undefined) => {
-    if (!text) return "";
-    return Object.entries(PREVIEW_DATA).reduce((acc, [token, value]) => {
-      return acc.replace(new RegExp(token, "g"), value);
-    }, String(text));
-  }, []);
+  const processTokens = useCallback(
+    (text: string | undefined) => {
+      if (!text || !data) return "";
+      return markdownParser(
+        Object.entries(data).reduce((acc, [token, value]) => {
+          return acc.replace(new RegExp(token, "g"), value);
+        }, String(text)),
+      );
+    },
+    [data],
+  );
 
   const finalFields = useMemo(() => {
     if (!embed.fields) return [];
     return embed.fields.flatMap((f) => {
-      if (f.name === "{loop_teams}") {
-        return [
-          {
-            name: "SQUAD ALPHA",
-            value: processTokens(f.value),
+      if (f.name === "{loop_items}") {
+        return (teams || []).map((team) => {
+          return {
+            name: team.name!.toUpperCase(),
+            value: team.members.map((member, index) => (
+              <>
+                {index + 1}.{" "}
+                <Mention key={member.id} content={member.participant.name} /> -{" "}
+                {member.participant.nickname}
+              </>
+            )) as unknown as string,
             inline: f.inline,
-          },
-          {
-            name: "SQUAD BRAVO",
-            value: processTokens(f.value),
-            inline: f.inline,
-          },
-        ];
+          };
+        });
       }
       return {
         name: processTokens(f.name),
@@ -77,10 +128,14 @@ export const DiscordEmbedPreview = ({
         inline: f.inline,
       };
     });
-  }, [embed.fields, processTokens]);
+  }, [embed.fields, processTokens, teams]);
+
+  if (!data) {
+    return <div>Carregando....</div>;
+  }
 
   return (
-    <div className="bg-[#313338] p-4 font-sans rounded-sm text-[15px] shadow-lg border border-white/5 text-left normal-case tracking-normal">
+    <div className="bg-[#313338] not-italic p-4 font-sans rounded-sm text-[15px] shadow-lg border border-white/5 text-left normal-case tracking-normal">
       <div className="flex items-start gap-4">
         <div className="w-10 h-10 rounded-full bg-[#5865f2] shrink-0 flex items-center justify-center overflow-hidden">
           {config.avatar_url ? (
@@ -114,7 +169,7 @@ export const DiscordEmbedPreview = ({
           </div>
 
           <div
-            className="max-w-108 border-l-4 rounded-lg bg-[#2b2d31] flex flex-col md:flex-row overflow-hidden shadow-md"
+            className="max-w-130 border-l-4 rounded-lg bg-[#2b2d31] flex flex-col md:flex-row overflow-hidden shadow-md"
             style={{
               borderColor: embed.color
                 ? `#${embed.color.toString(16).padStart(6, "0")}`
@@ -154,7 +209,7 @@ export const DiscordEmbedPreview = ({
               )}
 
               <div className="grid grid-cols-12 gap-y-2 gap-x-4 mb-3">
-                {finalFields.map((f, i) => (
+                {finalFields?.map((f, i) => (
                   <div
                     key={i}
                     className={f.inline ? "col-span-4" : "col-span-12"}
@@ -168,8 +223,15 @@ export const DiscordEmbedPreview = ({
                   </div>
                 ))}
               </div>
+              {embed.image?.url && (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={processTokens(embed.image?.url) as string}
+                  className="rounded"
+                  alt="imagem gerada automaticamente"
+                />
+              )}
 
-              {/* Footer */}
               {(embed.footer?.text || embed.timestamp) && (
                 <div className="flex items-center gap-2 mt-2 border-t border-white/5 pt-2">
                   {embed.footer?.icon_url && (

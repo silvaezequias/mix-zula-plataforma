@@ -24,5 +24,7 @@ export default async function TeamsPage(props: TeamsProps) {
     return redirectToOverview(tournamentId);
   }
 
-  return <TeamsView teams={resultTeams.data} />;
+  return (
+    <TeamsView teams={resultTeams.data} tournament={resultTournament.data} />
+  );
 }

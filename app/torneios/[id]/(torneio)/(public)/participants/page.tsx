@@ -1,10 +1,11 @@
 "use server";
 import { requireAuth } from "@/lib/authorization/accessControl";
 import { ParticipantsTab } from "./ParticipantsTab";
-import { getTournamentParticipantsAction } from "@/features/tournament/action/feed/getTournamentParticipantsAction";
 import { OnlyMember, redirectToOverview } from "../../_protect-flow";
 import { getTournamentMemberAction } from "@/features/tournament/action/feed/getTournamentMemberAction";
 import { staffRolesMap } from "@/constants/data";
+import { getTournamentOverviewAction } from "@/features/tournament/action/feed/getTournamentOverviewAction";
+import { getTournamentParticipantsAction } from "@/features/tournament/action/feed/getTournamentParticipantsAction";
 
 type ParticipantsPage = {
   params: Promise<{ id: string }>;
@@ -12,7 +13,7 @@ type ParticipantsPage = {
 
 export default async function ParticipantsPage(props: ParticipantsPage) {
   const { id: tournamentId } = await props.params;
-  const resultTournament = await getTournamentParticipantsAction(tournamentId);
+  const resultTournament = await getTournamentOverviewAction(tournamentId);
 
   if (!resultTournament.success || !resultTournament.data) {
     return redirectToOverview(tournamentId);
@@ -30,9 +31,16 @@ export default async function ParticipantsPage(props: ParticipantsPage) {
 
   const participantRole = staffRolesMap[participant.role];
 
+  const { data: participants } =
+    await getTournamentParticipantsAction(tournamentId);
+
+  if (!participants) {
+    return redirectToOverview(tournamentId);
+  }
+
   return (
     <ParticipantsTab
-      tournament={resultTournament.data}
+      participants={participants}
       isStaff={participantRole.level > 3}
     />
   );

@@ -64,6 +64,7 @@ export async function createParticipant(tournamentId: string, userId: string) {
       nickname: requester.player!.nickname!,
       role: ParticipantRole.PLAYER,
       status: ParticipantStatus.ACTIVE,
+      discordId: requester.discordId!,
       tournamentId,
       userId,
     });

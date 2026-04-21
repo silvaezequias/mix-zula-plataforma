@@ -10,6 +10,7 @@ import { updateTournament } from "./UpdateTournament";
 import { getTournamentParticipants } from "./feed/GetTournamentParticipants";
 import { getTournamentTeams } from "./feed/GetTournamentTeams";
 import { getTournamentMatches } from "./feed/GetTournamentMatches";
+import { getTournamentRoleRequests } from "./feed/GetTournamentRoleRequests";
 
 export const TournamentOrchestrator = {
   handleRoleRequest,
@@ -26,5 +27,6 @@ export const TournamentOrchestrator = {
     getTournamentParticipants,
     getTournamentTeams,
     getTournamentMatches,
+    getTournamentRoleRequests,
   },
 };

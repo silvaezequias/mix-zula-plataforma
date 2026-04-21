@@ -7,6 +7,7 @@ import { RoleService } from "@/features/role/service";
 import { ParticipantService } from "@/features/participant/service";
 import { staffRolesMap } from "@/constants/data";
 import { RoleOchestrator } from "@/features/role/ochestrator";
+import { RoleCache } from "@/features/role/cache";
 
 export async function createOrUpdateRoleRequest(
   tournamentId: string,
@@ -83,7 +84,10 @@ export async function createOrUpdateRoleRequest(
     });
   });
 
-  if (result) await TournamentCache.revalidate(tournamentId);
+  if (result) {
+    await TournamentCache.revalidate(tournamentId);
+    await RoleCache.revalidate(tournamentId);
+  }
 
   return result;
 }

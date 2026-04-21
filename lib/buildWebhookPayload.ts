@@ -22,6 +22,7 @@ export function buildWebhookPayload(
       return acc.replace(new RegExp(token, "g"), value);
     }, text);
   };
+
   const builders = (config.embeds || []).map((embedData) => {
     const builder = new EmbedBuilder()
       .setTitle(parse(embedData.title))

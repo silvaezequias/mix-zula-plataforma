@@ -191,8 +191,9 @@ model Participant {
   tournamentId String @db.ObjectId
   userId       String @db.ObjectId
 
-  name     String
-  nickname String
+  name      String
+  nickname  String
+  discordId String
 
   status    ParticipantStatus
   confirmed Boolean           @default(false)

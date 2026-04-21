@@ -4,9 +4,8 @@ import { unstable_cache } from "next/cache";
 export async function getTournamentParticipants(tournamentId: string) {
   const participants = await unstable_cache(
     async (tournamentId: string) =>
-      prisma.tournament.findUnique({
-        where: { id: tournamentId },
-        include: { participants: true, tournamentRoleRequest: true },
+      prisma.participant.findMany({
+        where: { tournamentId },
       }),
     ["participants"],
     { tags: [`participants:${tournamentId}`] },
