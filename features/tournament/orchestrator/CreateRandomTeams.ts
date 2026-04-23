@@ -13,6 +13,7 @@ import { Participant, Tournament } from "@prisma/client";
 import { TournamentCache } from "../cache";
 import { staffRolesMap } from "@/constants/data";
 import { TeamsCache } from "@/features/team/cache";
+import { ParticipantCache } from "@/features/participant/cache";
 
 async function createTeams(
   tx: DB,
@@ -107,6 +108,7 @@ export async function createRandomTeams(
   if (result.teamsCreated) {
     await TournamentCache.revalidate(tournamentId);
     await TeamsCache.revalidate(tournamentId);
+    await ParticipantCache.revalidate(undefined, tournamentId);
   }
 
   return result;

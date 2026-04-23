@@ -1,6 +1,6 @@
 import { brand } from "@/config/brand";
 import { tournamentStatusMap } from "@/constants/data";
-import { TournamentService } from "@/features/tournament/service";
+import { getTournamentOverview } from "@/features/tournament/orchestrator/feed/GetTournamentOverview";
 import { getFontData } from "@/lib/fonts";
 import { isValidObjectId } from "@/lib/utils";
 import { ImageResponse } from "next/og";
@@ -19,8 +19,7 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    const existingTournament =
-      await TournamentService.findByIdForImage(tournamentId);
+    const existingTournament = await getTournamentOverview(tournamentId);
 
     if (!existingTournament) {
       return NotFoundResponse(

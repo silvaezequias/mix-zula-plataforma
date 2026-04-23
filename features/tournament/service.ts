@@ -324,6 +324,7 @@ async function createStaffParticipant(
   role: ParticipantRole,
   name: string,
   nickname: string,
+  discordId: string,
 ) {
   const existingTournament = await findById(prisma, tournamentId);
 
@@ -351,6 +352,7 @@ async function createStaffParticipant(
       nickname,
       userId,
       tournamentId,
+      discordId,
       status: ParticipantStatus.ACTIVE,
       role: role,
     },
@@ -392,6 +394,7 @@ async function createParticipant(tournamentId: string, userId: string) {
     data: {
       name: existingUser.name!,
       nickname: existingUser.player!.nickname!,
+      discordId: existingUser.discordId!,
       userId,
       tournamentId,
       status: ParticipantStatus.ACTIVE,

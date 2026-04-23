@@ -51,7 +51,7 @@ function handleContent(token: Token, index: number): React.ReactNode {
   }
 
   if (token.type === "everyone") {
-    return <Mention content="everyone" />;
+    return <Mention key={index} content="everyone" />;
   }
 
   if (token.type === "twemoji") {
@@ -59,16 +59,17 @@ function handleContent(token: Token, index: number): React.ReactNode {
   }
 
   if (token.type === "text") {
-    return <Text content={token.content} />;
+    return <Text key={index} content={token.content} />;
   }
 
   if (token.type === "codeBlock") {
-    return <Codeblock content={token.content} lang={token.lang} />;
+    return <Codeblock key={index} content={token.content} lang={token.lang} />;
   }
 
   if (token.type === "link") {
     return (
       <Link
+        key={index}
         content={token.content.map((t, i) => handleContent(t, -(i * index)))}
         url={token.target}
       />
@@ -78,6 +79,7 @@ function handleContent(token: Token, index: number): React.ReactNode {
   if (token.type === "heading") {
     return (
       <Heading
+        key={index}
         level={token.level}
         content={token.content.map((t, i) => handleContent(t, -(i * index)))}
       />
@@ -91,21 +93,27 @@ function handleContent(token: Token, index: number): React.ReactNode {
     token.content;
 
   const typeMap = {
-    em: (props: { content: React.ReactNode }) => <Italic {...props} />,
-    strong: (props: { content: React.ReactNode }) => <Strong {...props} />,
-    spoiler: (props: { content: React.ReactNode }) => <Spoiler {...props} />,
+    em: (props: { content: React.ReactNode }) => (
+      <Italic key={index} {...props} />
+    ),
+    strong: (props: { content: React.ReactNode }) => (
+      <Strong key={index} {...props} />
+    ),
+    spoiler: (props: { content: React.ReactNode }) => (
+      <Spoiler key={index} {...props} />
+    ),
     underline: (props: { content: React.ReactNode }) => (
-      <Underline {...props} />
+      <Underline key={index} {...props} />
     ),
     blockQuote: (props: { content: React.ReactNode }) => (
-      <BlockQuote {...props} />
+      <BlockQuote key={index} {...props} />
     ),
     inlineCode: (props: { content: React.ReactNode }) => (
-      <InlineCode {...props} />
+      <InlineCode key={index} {...props} />
     ),
 
     strikethrough: (props: { content: React.ReactNode }) => (
-      <Strike {...props} />
+      <Strike key={index} {...props} />
     ),
   };
 

@@ -20,7 +20,7 @@ export const ListTournamentTeamsTemplate: WebhookBase = {
           {
             name: "{loop_items}",
             value: "{item_value}",
-            inline: true,
+            inline: false,
           },
           {
             name: "BANCO DE RESERVA",

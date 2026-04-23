@@ -74,7 +74,13 @@ export const DiscordEmbedPreview = ({
           const reservedPlayers = participants
             .filter((p) => p.status === "RESERVED")
             .map((member, index) => {
-              return `${index + 1}. @${member.name} - ${member.nickname}`;
+              return (
+                <>
+                  {index + 1}. <Mention key={member.id} content={member.name} />{" "}
+                  - {member.nickname}
+                  <br />
+                </>
+              );
             });
 
           const currentData = await getListTeamsWebhookData(
@@ -116,11 +122,20 @@ export const DiscordEmbedPreview = ({
                 {index + 1}.{" "}
                 <Mention key={member.id} content={member.participant.name} /> -{" "}
                 {member.participant.nickname}
+                <br />
               </>
             )) as unknown as string,
             inline: f.inline,
           };
         });
+      } else if (f.name === "BANCO DE RESERVA") {
+        return {
+          name: f.name,
+          value: (data?.["{reserve_players}"] as string)?.length
+            ? data?.["{reserve_players}"]
+            : markdownParser("_`Nenhum jogador na lista de reservas`_"),
+          inline: f.inline,
+        };
       }
       return {
         name: processTokens(f.name),
@@ -128,7 +143,7 @@ export const DiscordEmbedPreview = ({
         inline: f.inline,
       };
     });
-  }, [embed.fields, processTokens, teams]);
+  }, [embed.fields, processTokens, teams, data]);
 
   if (!data) {
     return <div>Carregando....</div>;
@@ -178,7 +193,11 @@ export const DiscordEmbedPreview = ({
           >
             <div className="p-3 pr-4 flex-1">
               {embed.author?.name && (
-                <div className="flex items-center gap-2 mb-2">
+                <a
+                  target="_blank"
+                  href={processTokens(embed.author.url) as string}
+                  className="flex items-center gap-2 mb-2 hover:underline"
+                >
                   {embed.author.icon_url && (
                     <Image
                       src={embed.author.icon_url}
@@ -191,7 +210,7 @@ export const DiscordEmbedPreview = ({
                   <span className="text-sm font-semibold text-white uppercase">
                     {processTokens(embed.author.name)}
                   </span>
-                </div>
+                </a>
               )}
 
               {embed.title && (

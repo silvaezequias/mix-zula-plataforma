@@ -77,7 +77,10 @@ async function listTeams(tournamentId: string) {
   hook.send(
     buildWebhookPayload(
       webhook.config,
-      await getListTeamsWebhookData(tournament, reservedPlayers),
+      await getListTeamsWebhookData(
+        tournament,
+        reservedPlayers.join("\n") || "_`Nenhum jogador na lista de reservas`_",
+      ),
       teams,
     ),
   );
@@ -119,16 +122,13 @@ export const DiscordWebhookService = {
 
 export const getListTeamsWebhookData = async (
   tournament: Tournament,
-  reservedPlayers: string[],
+  reservedPlayers: React.ReactNode,
 ) => {
   const dataObject = {
-    "{tournament_name}": tournament.title,
+    "{tournament_name}": tournament.title.toUpperCase(),
     "{tournament_status}": tournamentStatusMap[tournament.status].label,
-    "{tournament_url}": await getCurrentUrl(
-      `torneios/${tournament.id}?tab=teams`,
-    ),
-    "{reserve_players}":
-      reservedPlayers.join("\n") || "_`Sem jogadores reserva`_",
+    "{tournament_url}": await getCurrentUrl(`torneios/${tournament.id}/teams`),
+    "{reserve_players}": reservedPlayers as string,
   };
 
   return dataObject;
@@ -147,7 +147,7 @@ export const getInviteWebhookData = async (
     "{tournament_id}": tournament.id,
     "{tournament_name}": tournament.title.toUpperCase(),
     "{tournament_description}": tournament.description,
-    "{tournament_prize}": tournament.prize,
+    "{tournament_prize}": tournament.prize.toUpperCase(),
     "{tournament_status}": tournamentStatusMap[tournament.status].label,
     "{tournament_slots}": tournamentSlots,
     "{tournament_game_mode}": GAME_MODES.find(

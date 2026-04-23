@@ -12,5 +12,5 @@ export async function getTournamentTeams(tournamentId: string) {
     { tags: [`teams:${tournamentId}`] },
   )(tournamentId);
 
-  return teams;
+  return teams.sort((a, b) => a.name?.localeCompare?.(b.name!) || 0);
 }

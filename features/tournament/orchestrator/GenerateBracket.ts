@@ -8,6 +8,7 @@ import { TeamService } from "@/features/team/service";
 import { buildBracket } from "@/lib/buildBracket";
 import { RoundService } from "@/features/round/service";
 import { MatchService } from "@/features/match/service";
+import { MatchCache } from "@/features/match/cache";
 
 export async function generateBracket(tournamentId: string, userId: string) {
   const result = await prisma.$transaction(async (tx) => {
@@ -85,7 +86,10 @@ export async function generateBracket(tournamentId: string, userId: string) {
     };
   });
 
-  await TournamentCache.revalidate(tournamentId);
+  if (result) {
+    await TournamentCache.revalidate(tournamentId);
+    await MatchCache.revalidate(tournamentId);
+  }
 
   return result;
 }

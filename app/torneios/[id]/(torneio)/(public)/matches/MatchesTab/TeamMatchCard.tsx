@@ -1,21 +1,30 @@
 import { Match, Prisma, TeamSide } from "@prisma/client";
 import { Clock, Settings, Trophy } from "lucide-react";
+import { useRouter } from "next/navigation";
 
 export const TeamMatchCard = ({
   team,
   match,
   displaySide,
+  isStaff,
 }: {
   displaySide: TeamSide;
   team: Prisma.TeamGetPayload<{
     include: { members: { include: { participant: true } } };
   }> | null;
   match: Match;
+  isStaff: boolean;
 }) => {
+  const router = useRouter();
+
   const isWinner = team?.id === match.winnerTeamId;
   const isLost = match.winnerTeamId && !isWinner;
   const isCurrentMatch = match.status === "ONGOING";
-  const isStaff = true;
+
+  const openPlayerMenu = (participantId: string) => {
+    if (!isStaff) return;
+    router.push(`/torneios/${match.tournamentId}/user/${participantId}`);
+  };
 
   return (
     <div
@@ -49,6 +58,7 @@ export const TeamMatchCard = ({
         {team?.members.map((p) => (
           <div
             key={p.id}
+            onClick={() => openPlayerMenu(p.participantId)}
             className="flex justify-between items-center text-[10px] font-bold py-1 border-b border-zinc-900/30 group"
           >
             <span className="text-zinc-400 group-hover:text-white transition-colors uppercase italic">

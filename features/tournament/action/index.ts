@@ -3,7 +3,11 @@
 import { getAuthOrThrow } from "@/lib/authorization/accessControl";
 import { TournamentProps } from "../service";
 import { safeExecute } from "@/lib/safeExecute";
-import { ParticipantRole, ParticipantStatus } from "@prisma/client";
+import {
+  MatchStatus,
+  ParticipantRole,
+  ParticipantStatus,
+} from "@prisma/client";
 import { TournamentOrchestrator } from "../orchestrator";
 import { ParticipantOrchestrator } from "../../participant/orchestrator";
 
@@ -132,6 +136,21 @@ export async function generateBracketAction(tournamentId: string) {
 
     return await TournamentOrchestrator.generateBracket(
       tournamentId,
+      session.user.id,
+    );
+  });
+}
+
+export async function updateMatchStatusAction(
+  matchId: string,
+  status: MatchStatus,
+) {
+  return await safeExecute(async () => {
+    const session = await getAuthOrThrow();
+
+    return await TournamentOrchestrator.updateMatchStatus(
+      matchId,
+      status,
       session.user.id,
     );
   });

@@ -7,7 +7,7 @@ export async function getTournamentMember(
   tournamentId: string,
   userId: string,
 ) {
-  const existingParticipant = await unstable_cache(
+  let existingParticipant = await unstable_cache(
     async (tournamentId: string, userId: string) =>
       ParticipantService.findByUserId(prisma, tournamentId, userId),
     ["participant"],
@@ -15,9 +15,18 @@ export async function getTournamentMember(
   )(tournamentId, userId);
 
   if (!existingParticipant) {
-    throw new NotFoundError({
-      message: "Não foi possível encontrar o participante com o ID inserido",
-    });
+    existingParticipant = await unstable_cache(
+      async (participantId: string) =>
+        ParticipantService.findById(prisma, participantId),
+      ["participant"],
+      { tags: [`participant:${userId}`] },
+    )(userId);
+
+    if (!existingParticipant) {
+      throw new NotFoundError({
+        message: "Não foi possível encontrar o participante com o ID inserido",
+      });
+    }
   }
 
   return existingParticipant;

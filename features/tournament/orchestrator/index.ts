@@ -11,6 +11,7 @@ import { getTournamentParticipants } from "./feed/GetTournamentParticipants";
 import { getTournamentTeams } from "./feed/GetTournamentTeams";
 import { getTournamentMatches } from "./feed/GetTournamentMatches";
 import { getTournamentRoleRequests } from "./feed/GetTournamentRoleRequests";
+import { updateMatchStatus } from "./UpdateMatchStatus";
 
 export const TournamentOrchestrator = {
   handleRoleRequest,
@@ -20,6 +21,7 @@ export const TournamentOrchestrator = {
   createTournament,
   updateTournament,
   generateBracket,
+  updateMatchStatus,
 
   feed: {
     getTournamentOverview,

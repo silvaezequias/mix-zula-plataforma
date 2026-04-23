@@ -5,128 +5,163 @@ import { createRandomTeamsAction } from "@/features/tournament/action";
 import { useCountdown } from "@/hooks/useCooldown";
 import { Prisma, Tournament } from "@prisma/client";
 import { Check, Shuffle, Users } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 
 export const TeamsView = ({
   teams,
   tournament,
+  isStaff,
 }: {
   teams: Prisma.TeamGetPayload<{
     include: { members: { include: { participant: true } } };
   }>[];
   tournament: Tournament;
+  isStaff: boolean;
 }) => {
+  const router = useRouter();
   const randomizeTeamCooldown = useCountdown(5);
-  const handleRandomizeClick = () => {
+  const handleRandomizeClick = (reshuffle = false) => {
     if (!randomizeTeamCooldown.active) return randomizeTeamCooldown.start();
     randomizeTeamCooldown.reset();
-    handleRandomize();
+    handleRandomize(reshuffle);
   };
 
-  const handleRandomize = async () => {
-    const result = await createRandomTeamsAction(tournament.id);
+  const handleRandomize = async (reshuffle: boolean) => {
+    const result = await createRandomTeamsAction(tournament.id, reshuffle);
     if (!result.success) toast.error(result.error);
   };
 
+  const openPlayerMenu = (participantId: string) => {
+    if (!isStaff) return;
+    router.push(`/torneios/${tournament.id}/user/${participantId}`);
+  };
+
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-700">
-      {teams.length > 0 ? (
-        teams.map((team) => {
-          return (
-            <div
-              key={team.id}
-              className={`bg-[#111] border-t-2 ${team.side === "TR" ? "border-orange-600" : "border-blue-600"} shadow-2xl overflow-hidden`}
-            >
+    <div className="flex flex-col gap-5">
+      {isStaff &&
+        (tournament.status === "SETTING_TEAM" ||
+          tournament.status === "READY" ||
+          tournament.status === "SETTING_MATCHES") && (
+          <ActionButton
+            onClick={() => handleRandomizeClick(true)}
+            className="uppercase max-w-fit self-end"
+            variant={randomizeTeamCooldown.active ? "solid" : "outline"}
+            intent={randomizeTeamCooldown.active ? "danger" : "default"}
+          >
+            <Shuffle
+              size={18}
+              className="group-hover:scale-125 transition-transform "
+            />
+            {randomizeTeamCooldown.active
+              ? `Confirmar  ${"re-sorteio"} em (${randomizeTeamCooldown.time}s)`
+              : "RE-SORTEAR EQUIPES"}
+          </ActionButton>
+        )}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-8 animate-in fade-in duration-700">
+        {teams.length > 0 ? (
+          teams.map((team) => {
+            return (
               <div
-                className={`p-4 flex justify-between  items-center ${team.side === "TR" ? "bg-orange-600/10" : "bg-blue-600/10"}`}
+                key={team.id}
+                className={`bg-[#111] border-t-2 flex flex-col justify-between ${team.side === "TR" ? "border-orange-600" : "border-blue-600"} shadow-2xl overflow-hidden`}
               >
-                <div className="flex items-center gap-4">
-                  <div
-                    className={`w-10 h-10 flex items-center justify-center font-black text-sm ${team.side === "TR" ? "bg-orange-600" : "bg-blue-600"}`}
-                  >
-                    {team.side}
+                <div
+                  className={`p-4 flex justify-between items-center ${team.side === "TR" ? "bg-orange-600/10" : "bg-blue-600/10"}`}
+                >
+                  <div className="flex items-center gap-4">
+                    <div
+                      className={`w-10 h-10 flex items-center justify-center font-black text-sm ${team.side === "TR" ? "bg-orange-600" : "bg-blue-600"}`}
+                    >
+                      {team.side}
+                    </div>
+                    <h3 className="text-xl font-black italic tracking-tighter uppercase">
+                      {team.name}
+                    </h3>
                   </div>
-                  <h3 className="text-xl font-black italic tracking-tighter uppercase">
-                    {team.name}
-                  </h3>
+                  <Users size={20} className="text-zinc-700" />
                 </div>
-                <Users size={20} className="text-zinc-700" />
-              </div>
 
-              <div className="p-6 space-y-3 bg-black/20">
-                <p className="text-[9px] font-black text-zinc-500 tracking-[0.3em] uppercase mb-4 italic">
-                  Lista de Jogadores
-                </p>
-                {team.members.map((member) => (
-                  <div
-                    key={member.id}
-                    className="flex items-center justify-between border-b border-zinc-800/50 pb-2 last:border-0 group"
-                  >
-                    <div className="flex items-center gap-3">
-                      <div className="w-6 h-6 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500 group-hover:text-primary transition-colors uppercase italic font-bold">
-                        {member.participant.name.charAt(0)}
+                <div className="p-6 space-y-3 bg-black/20 h-full">
+                  <p className="text-[9px] font-black text-zinc-500 tracking-[0.3em] uppercase mb-4 italic">
+                    Lista de Jogadores
+                  </p>
+                  {team.members.map((member) => (
+                    <div
+                      key={member.id}
+                      onClick={() => openPlayerMenu(member.participantId)}
+                      className="flex items-center justify-between border-b border-zinc-800/50 pb-2 last:border-0 group"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-6 h-6 bg-zinc-900 border border-zinc-800 flex items-center justify-center text-[10px] text-zinc-500 group-hover:text-primary transition-colors uppercase italic font-bold">
+                          {member.participant.name.charAt(0)}
+                        </div>
+                        <span className="text-xs font-black italic text-zinc-300 group-hover:text-white transition-colors uppercase">
+                          {member.participant.nickname}
+                        </span>
                       </div>
-                      <span className="text-xs font-black italic text-zinc-300 group-hover:text-white transition-colors uppercase">
-                        {member.participant.nickname}
-                      </span>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[8px] font-bold text-zinc-600 uppercase italic">
+                          Verificado
+                        </span>
+                        <Check
+                          size={12}
+                          className="text-green-600 opacity-50"
+                        />
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[8px] font-bold text-zinc-600 uppercase italic">
-                        Verificado
-                      </span>
-                      <Check size={12} className="text-green-600 opacity-50" />
-                    </div>
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              <div className="px-6 py-4 bg-zinc-900/30 border-t border-zinc-800 flex justify-between items-center">
-                <span className="text-[9px] font-black text-zinc-600 uppercase italic tracking-widest">
-                  TIME ALEATORIO
-                </span>
-                <span className="text-[9px] font-black text-green-500 uppercase italic tracking-widest animate-pulse">
-                  Definido
-                </span>
+                <div className="px-6 py-4 bg-zinc-900/30 border-t border-zinc-800 flex justify-between items-center">
+                  <span className="text-[9px] font-black text-zinc-600 uppercase italic tracking-widest">
+                    TIME ALEATORIO
+                  </span>
+                  <span className="text-[9px] font-black text-green-500 uppercase italic tracking-widest animate-pulse">
+                    Definido
+                  </span>
+                </div>
               </div>
-            </div>
-          );
-        })
-      ) : (
-        <div className="col-span-2 flex flex-col items-center gap-5 py-32 text-center border-2 border-dashed border-zinc-900">
-          <Users size={48} className="mx-auto text-zinc-900 mb-4" />
-          <p className="text-zinc-700 font-black uppercase italic tracking-[0.4em]">
-            As equipes ainda não foram sorteadas.
-          </p>
+            );
+          })
+        ) : (
+          <div className="col-span-2 flex flex-col items-center gap-5 py-32 text-center border-2 border-dashed border-zinc-900">
+            <Users size={48} className="mx-auto text-zinc-900 mb-4" />
+            <p className="text-zinc-700 font-black uppercase italic tracking-[0.4em]">
+              As equipes ainda não foram sorteadas.
+            </p>
 
-          {(tournament.status === "SETTING_TEAM" ||
-            tournament.status === "READY" ||
-            tournament.status === "SETTING_MATCHES") && (
-            <ActionButton
-              onClick={handleRandomizeClick}
-              className="uppercase max-w-fit"
-              intent={
-                randomizeTeamCooldown.active
-                  ? tournament.status === "READY" ||
-                    tournament.status === "SETTING_MATCHES"
-                    ? "danger"
-                    : "success"
-                  : "default"
-              }
-            >
-              <Shuffle
-                size={18}
-                className="group-hover:scale-125 transition-transform "
-              />
-              {randomizeTeamCooldown.active
-                ? `Confirmar  ${tournament.status === "READY" || tournament.status === "SETTING_MATCHES" ? "re-sorteio" : "sorteio"} em (${randomizeTeamCooldown.time}s)`
-                : tournament.status === "READY" ||
-                    tournament.status === "SETTING_MATCHES"
-                  ? "RE-SORTEAR EQUIPES"
-                  : "SORTEAR EQUIPES"}
-            </ActionButton>
-          )}
-        </div>
-      )}
+            {isStaff &&
+              (tournament.status === "SETTING_TEAM" ||
+                tournament.status === "READY" ||
+                tournament.status === "SETTING_MATCHES") && (
+                <ActionButton
+                  onClick={handleRandomizeClick}
+                  className="uppercase max-w-fit"
+                  intent={
+                    randomizeTeamCooldown.active
+                      ? tournament.status === "READY" ||
+                        tournament.status === "SETTING_MATCHES"
+                        ? "danger"
+                        : "success"
+                      : "default"
+                  }
+                >
+                  <Shuffle
+                    size={18}
+                    className="group-hover:scale-125 transition-transform "
+                  />
+                  {randomizeTeamCooldown.active
+                    ? `Confirmar  ${tournament.status === "READY" || tournament.status === "SETTING_MATCHES" ? "re-sorteio" : "sorteio"} em (${randomizeTeamCooldown.time}s)`
+                    : tournament.status === "READY" ||
+                        tournament.status === "SETTING_MATCHES"
+                      ? "RE-SORTEAR EQUIPES"
+                      : "SORTEAR EQUIPES"}
+                </ActionButton>
+              )}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

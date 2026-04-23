@@ -130,7 +130,7 @@ export default async function RegistrationPage(props: {
     );
   }
 
-  const maxPlayers = tournament.totalTeams * tournament.playersPerTeam;
+  const maxPlayers = tournament.maxRegistrations || Infinity;
   const currentPlayersCount = tournament.participants.length;
   const isFull = currentPlayersCount >= maxPlayers;
 

@@ -5,6 +5,7 @@ import { ForbiddenError, NotFoundError } from "nextfastapi/errors";
 import { TournamentService } from "../../tournament/service";
 import { ParticipantRole, ParticipantStatus } from "@prisma/client";
 import { UserService } from "@/features/user/service";
+import { ParticipantCache } from "../cache";
 
 export async function createParticipant(tournamentId: string, userId: string) {
   const result = await prisma.$transaction(async (tx) => {
@@ -44,7 +45,7 @@ export async function createParticipant(tournamentId: string, userId: string) {
     );
 
     if (existingTournament.maxRegistrations) {
-      if (totalParticipants < existingTournament.maxRegistrations) {
+      if (totalParticipants >= existingTournament.maxRegistrations) {
         throw new ForbiddenError({
           message: "Torneio já atingiu limite de participantes.",
         });
@@ -70,7 +71,10 @@ export async function createParticipant(tournamentId: string, userId: string) {
     });
   });
 
-  if (result.id) await TournamentCache.revalidate(tournamentId);
+  if (result.id) {
+    await TournamentCache.revalidate(tournamentId);
+    await ParticipantCache.revalidate(userId, tournamentId);
+  }
 
   return result;
 }

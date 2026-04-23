@@ -1,10 +1,15 @@
-import { Minus, Plus, Shuffle, Sword } from "lucide-react";
+import { Shuffle, Sword } from "lucide-react";
 import { TeamMatchCard } from "./TeamMatchCard";
 import { Match, MatchStatus, Prisma } from "@prisma/client";
+import { ActionButton } from "@/components/ui/ActionButton";
+import { useCountdown } from "@/hooks/useCooldown";
+import { updateMatchStatusAction } from "@/features/tournament/action";
+import { toast } from "react-toastify";
 
 export function DisplayTeams({
   match,
   swapTeam,
+  isStaff,
 }: {
   match: Prisma.MatchGetPayload<{
     include: {
@@ -13,15 +18,20 @@ export function DisplayTeams({
     };
   }>;
   swapTeam: boolean;
+  isStaff: boolean;
 }) {
   const isCurrentMatch = match.status === "ONGOING";
   const isFinished = match.status === "FINISHED";
-  const isLocked = swapTeam;
-  const isStaff = true;
+  const isLocked = !swapTeam;
 
   return (
     <div className="flex flex-col md:flex-row items-center justify-center gap-8 md:gap-0 w-full max-w-4xl relative">
-      <TeamMatchCard match={match} team={match.team1} displaySide={"CT"} />
+      <TeamMatchCard
+        isStaff={isStaff}
+        match={match}
+        team={match.team1}
+        displaySide={"CT"}
+      />
       <div className="flex flex-row md:flex-col mb-10 md:mb-0 items-center justify-center h-full min-w-25 relative">
         <div
           className={`hidden md:block w-px h-32 transition-colors ${isCurrentMatch ? "bg-primary/40" : "bg-zinc-800"}`}
@@ -71,33 +81,78 @@ export function DisplayTeams({
         </div>
       </div>
 
-      <TeamMatchCard match={match} team={match.team1} displaySide={"TR"} />
+      <TeamMatchCard
+        isStaff={isStaff}
+        match={match}
+        team={match.team2}
+        displaySide={"TR"}
+      />
     </div>
   );
 }
 
 export function HandleGameSection({ match }: { match: Match }) {
+  const initGameCooldown = useCountdown(3);
+  const finishGameCooldown = useCountdown(3);
+
+  const handleClick = (status: MatchStatus) => {
+    if (match.status !== status) {
+      if (status === MatchStatus.ONGOING) {
+        if (!initGameCooldown.active) return initGameCooldown.start();
+
+        initGameCooldown.reset();
+        handleStatusChange(status);
+      } else {
+        if (status === MatchStatus.FINISHED) {
+          if (!finishGameCooldown.active) return finishGameCooldown.start();
+          finishGameCooldown.reset();
+          handleStatusChange(status);
+        }
+      }
+    }
+  };
+
+  const handleStatusChange = async (status: MatchStatus) => {
+    const result = await updateMatchStatusAction(match.id, status);
+    if (!result.success) toast.error(result.error);
+  };
+
   return (
-    <div className="mt-16 animate-in fade-in duration-1000">
-      <button
-        onClick={() => {}}
-        className={`px-10 py-3 text-[11px] font-black border transition-all uppercase italic tracking-[0.3em] ${
-          match.status === "ONGOING"
-            ? "bg-indigo-600 border-indigo-500 text-white shadow-[0_0_25px_rgba(99,102,241,0.3)]"
-            : "bg-transparent border-primary text-primary hover:bg-primary hover:text-black"
-        }`}
+    <div className="mt-16 animate-in fade-in duration-1000 gap-5 flex justify-center">
+      <ActionButton
+        onClick={() => handleClick(MatchStatus.ONGOING)}
+        intent={initGameCooldown.active ? "success" : "default"}
+        disabled={match.status === "ONGOING"}
       >
-        {match.status === "ONGOING" ? "JOGO INICIADO" : "INICIAR JOGO"}
-      </button>
+        {initGameCooldown.active
+          ? `INICIAR JOGO (${initGameCooldown.time})`
+          : match.status === "ONGOING"
+            ? "JOGO INICIADO"
+            : "INICIAR JOGO"}
+      </ActionButton>
+      <ActionButton
+        onClick={() => handleClick(MatchStatus.FINISHED)}
+        intent={finishGameCooldown.active ? "danger" : "default"}
+        disabled={match.status === "FINISHED"}
+      >
+        {finishGameCooldown.active
+          ? `FINALIZAR JOGO (${finishGameCooldown.time})`
+          : match.status === "FINISHED"
+            ? "FINALIZADO"
+            : "FINALIZAR JOGO"}
+      </ActionButton>
     </div>
   );
 }
 
-export function MatchHeader({ match }: { match: Match }) {
+export function MatchHeader({
+  match,
+  // isStaff,
+}: {
+  match: Match;
+  isStaff: boolean;
+}) {
   const isCurrentMatch = match.status === "ONGOING";
-  const isFinished = match.status === "FINISHED";
-
-  const isStaff = true; // TODO: STAFF MANAGEMENT
 
   return (
     <div className="flex flex-col items-center gap-2 mb-10">
@@ -109,42 +164,12 @@ export function MatchHeader({ match }: { match: Match }) {
           className={`font-black text-xs sm:text-sm tracking-[0.5em] uppercase italic transition-colors ${isCurrentMatch ? "text-primary" : "text-zinc-600"}`}
         >
           {match.status === "ONGOING"
-            ? "GRANDE FINAL"
-            : `CONFRONTO ${match.id.replace("m", "")}`}
+            ? `ROLANDO AGORA - ${match.id.replace("m", "")}`
+            : `CONFRONTO - ${match.id.replace("m", "")}`}
         </h4>
         <div
           className={`h-px w-12 sm:w-32 transition-colors ${isCurrentMatch ? "bg-primary" : "bg-zinc-800"}`}
         ></div>
-      </div>
-
-      {/* Controle de Rounds (Apenas se em destaque) */}
-      <div
-        className={`flex items-center gap-4 bg-zinc-900 border px-6 py-2 mt-3 shadow-2xl transition-all ${isCurrentMatch ? "border-primary shadow-[0_0_20px_rgba(255,179,0,0.1)]" : "border-zinc-800 opacity-40"}`}
-      >
-        <span className="text-[10px] font-black text-zinc-500 uppercase tracking-widest italic mr-2">
-          RODADA ATUAL:
-        </span>
-        {isStaff && !isFinished && isCurrentMatch && (
-          <button
-            onClick={() => {}}
-            className="text-zinc-600 hover:text-primary transition-colors"
-          >
-            <Minus size={16} />
-          </button>
-        )}
-        <span
-          className={`text-xl font-black w-8 text-center ${isCurrentMatch ? "text-white" : "text-zinc-700"}`}
-        >
-          {match.status === "ONGOING"}
-        </span>
-        {isStaff && !isFinished && isCurrentMatch && (
-          <button
-            onClick={() => {}}
-            className="text-zinc-600 hover:text-primary transition-colors"
-          >
-            <Plus size={16} />
-          </button>
-        )}
       </div>
     </div>
   );

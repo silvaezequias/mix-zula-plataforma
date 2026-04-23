@@ -1,7 +1,7 @@
 // /features/match/service.ts
 
 import { DB } from "@/types";
-import { MatchSlot } from "@prisma/client";
+import { MatchSlot, MatchStatus } from "@prisma/client";
 import { InternalError } from "nextfastapi/errors";
 
 type CreateMatchInput = {
@@ -86,7 +86,24 @@ async function linkMatches(
   }
 }
 
+async function findById(db: DB, matchId: string) {
+  return await db.match.findUnique({
+    where: { id: matchId },
+  });
+}
+
+async function updateStatus(db: DB, matchId: string, status: MatchStatus) {
+  return await db.match.update({
+    where: { id: matchId },
+    data: {
+      status,
+    },
+  });
+}
+
 export const MatchService = {
   linkMatches,
   createMany,
+  findById,
+  updateStatus,
 };

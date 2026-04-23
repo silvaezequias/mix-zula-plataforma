@@ -1,12 +1,19 @@
 "use client";
 
 import React from "react";
-import { Gamepad, Trophy } from "lucide-react";
+import { Gamepad, Gamepad2, Trophy } from "lucide-react";
 import { MatchHeader, DisplayTeams, HandleGameSection } from "./Match";
 import { Prisma } from "@prisma/client";
+import { ActionButton } from "@/components/ui/ActionButton";
+import { useCountdown } from "@/hooks/useCooldown";
+import { toast } from "react-toastify";
+import { generateBracketAction } from "@/features/tournament/action";
+import { useRouter } from "next/navigation";
 
 interface MatchesTabProps {
+  isStaff: boolean;
   swapTeam: boolean;
+  tournamentId: string;
   matches: Prisma.MatchGetPayload<{
     include: {
       team1: { include: { members: { include: { participant: true } } } };
@@ -18,16 +25,47 @@ interface MatchesTabProps {
 }
 
 export const MatchesTab: React.FC<MatchesTabProps> = ({
+  tournamentId,
   matches,
   swapTeam,
+  isStaff,
 }) => {
+  const router = useRouter();
+  const generateBracketCooldown = useCountdown(5);
+  const handleClick = () => {
+    if (!generateBracketCooldown.active) return generateBracketCooldown.start();
+    generateBracketCooldown.reset();
+    handleGenerateBracket();
+  };
+
+  const handleGenerateBracket = async () => {
+    const result = await generateBracketAction(tournamentId);
+    if (!result.success) toast.error(result.error);
+    router.refresh();
+  };
+
   if (matches.length === 0) {
     return (
-      <div className="col-span-2 py-32 text-center border-2 border-dashed border-zinc-900">
+      <div className="col-span-2 py-32 flex flex-col gap-5 items-center text-center border-2 border-dashed border-zinc-900">
         <Gamepad size={48} className="mx-auto text-zinc-900 mb-4" />
         <p className="text-zinc-700 font-black uppercase italic tracking-[0.4em]">
           Os jogos ainda não foram definidos
         </p>
+        {isStaff && (
+          <ActionButton
+            onClick={handleClick}
+            className="uppercase max-w-fit"
+            intent={generateBracketCooldown.active ? "success" : "default"}
+          >
+            <Gamepad2
+              size={22}
+              className="group-hover:scale-125 transition-transform "
+            />
+            {generateBracketCooldown.active
+              ? `Confirme criação de jogos (${generateBracketCooldown.time}s)`
+              : "CRIAR JOGOS COM BASE NAS EQUIPES"}
+          </ActionButton>
+        )}
       </div>
     );
   }
@@ -36,10 +74,10 @@ export const MatchesTab: React.FC<MatchesTabProps> = ({
     <div className="py-10 px-4 space-y-24 flex flex-col items-center italic tracking-widest">
       {matches.map((match) => {
         return (
-          <div key={match.id}>
-            <MatchHeader match={match} />
-            <DisplayTeams match={match} swapTeam={swapTeam} />
-            <HandleGameSection match={match} />
+          <div key={match.id} className="flex flex-col items-center">
+            <MatchHeader match={match} isStaff={isStaff} />
+            <DisplayTeams match={match} swapTeam={swapTeam} isStaff={isStaff} />
+            {isStaff && <HandleGameSection match={match} />}
           </div>
         );
       })}
