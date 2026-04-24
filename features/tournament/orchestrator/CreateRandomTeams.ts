@@ -100,6 +100,10 @@ export async function createRandomTeams(
       data: { status: "RESERVED" },
     });
 
+    await TournamentService.update(tx, tournamentId, {
+      status: "SETTING_MATCHES",
+    });
+
     return {
       teamsCreated: createdTeams.length,
     };

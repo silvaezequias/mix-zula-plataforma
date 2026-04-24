@@ -66,6 +66,7 @@ export async function createTournament(
     );
 
     await ParticipantService.create(tx, {
+      discordId: requester.discordId!,
       name: requester.name!,
       nickname: requester.player!.nickname!,
       userId: requester.id,
